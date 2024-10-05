@@ -2,6 +2,9 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "overrides": {
+    "vue": "latest"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -10,7 +13,12 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.5.5",
+    "@quasar/extras": "^1.16.12",
     "nuxt": "^3.13.0",
+    "nuxt-quasar-ui": "^2.1.6",
+    "pinia": "^2.2.4",
+    "quasar": "^2.17.0",
     "vue": "latest",
     "vue-router": "latest"
   }
