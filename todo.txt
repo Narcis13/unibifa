@@ -1,0 +1,9 @@
+SELECT ord.id id,ord.nrdoc ordnr,ang.nrdoc nrangaj,aut.obs numesefcomp,ang.dataang dataang,ang.detalii detalii,f.id furnizorID, f.denumire numefurnizor,f.iban iban,IF( ord.viza =1,TRUE ,FALSE ) viza,IF( ord.idFP =1,TRUE ,FALSE ) validat, f.adresa adresa, f.localitate localitate, f.judet judet,ar.nrfact nrfact,ar.data datafact, ar.nrdoc recnr,ord.suma suma, ord.data dataord,  c.denumire numecompartiment,ord.idFP idFP,b.articole artbug 
+FROM ordonantari ord
+INNER JOIN antetereceptii ar ON ar.idOrd = ord.id
+INNER JOIN anteteangajamente ang ON ar.idAng = ang.id
+INNER JOIN furnizori f ON ar.furnizorID = f.id
+INNER JOIN compartimente c ON ar.idComp = c.id
+inner join authentication aut on aut.id=c.idsef
+INNER JOIN (SELECT idAntet AS a,angj.numecap numecap,angj.artbug artbug, GROUP_CONCAT( artbug ORDER BY artbug ASC SEPARATOR  ', ' ) AS articole FROM angajamente angj GROUP BY a) b ON b.a = ang.id
+WHERE ord.idClient =8 and ord.stare='activ' and ord.data>'2024-09-01'
