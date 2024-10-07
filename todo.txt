@@ -7,3 +7,10 @@ INNER JOIN compartimente c ON ar.idComp = c.id
 inner join authentication aut on aut.id=c.idsef
 INNER JOIN (SELECT idAntet AS a,angj.numecap numecap,angj.artbug artbug, GROUP_CONCAT( artbug ORDER BY artbug ASC SEPARATOR  ', ' ) AS articole FROM angajamente angj GROUP BY a) b ON b.a = ang.id
 WHERE ord.idClient =8 and ord.stare='activ' and ord.data>'2024-09-01'
+
+
+SELECT * FROM adata.detaliifp dfp 
+inner join adata.antetfp afp on afp.id=dfp.idAntet
+inner join adata.detaliiplati dp on dp.idFP=dfp.id
+inner join  adata.antetplati ap on ap.id=dp.idOP;
+
