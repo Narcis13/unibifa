@@ -16,6 +16,7 @@
     "@pinia/nuxt": "^0.5.5",
     "@prisma/nuxt": "^0.0.35",
     "@quasar/extras": "^1.16.12",
+    "ejs": "^3.1.10",
     "nuxt": "^3.13.0",
     "nuxt-quasar-ui": "^2.1.6",
     "pinia": "^2.2.4",

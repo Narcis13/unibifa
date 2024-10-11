@@ -1,12 +1,12 @@
 import { createRouter, defineEventHandler, useBase } from 'h3';
-
+import { index,getTemplate } from './model';
 const router = createRouter();
 
 // Routes /api/iam/doodads
 
 // Get all doodads
 router.get('/', defineEventHandler(async (event) => { 
-  return {mesaj:'dude'}
+  return await index(event)
 }));
 
 // Create a doodad
@@ -15,8 +15,8 @@ router.post('/', defineEventHandler(async (event) => {
 }));
 
 // Get a single doodad
-router.get('/:id', defineEventHandler(async (event) => { 
-  return  {}
+router.get('/:uuid', defineEventHandler(async (event) => { 
+  return  await getTemplate(event)
 }));
 
 // Edit a doodad
