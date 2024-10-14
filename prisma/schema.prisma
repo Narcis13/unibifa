@@ -25,3 +25,43 @@ model Post {
   author    User    @relation(fields: [authorId], references: [id])
   authorId  Int
 }
+
+model users {
+  id             Int              @id @default(autoincrement())
+  name          String            @db.VarChar(255)
+  password       String           @db.VarChar(255)
+  avatar         String?          @db.VarChar(1000)
+  permissions    String?          @db.VarChar(4000)
+  first_name     String           @db.VarChar(255)
+  last_name      String           @db.VarChar(255)
+  role           Role             @default(GENERAL)
+  is_active      Boolean          @default(true)
+  last_login     DateTime?        @db.DateTime(0)
+  created_at     DateTime         @default(now()) @db.DateTime(0)
+  deleted_at     DateTime?        @db.DateTime(0)
+  updated_at     DateTime?        @updatedAt
+  sessions       sessions[]
+}
+
+
+
+model sessions {
+  id           Int       @id @default(autoincrement())
+  user         users?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id      Int
+  start_time   DateTime  @default(now())
+  end_time     DateTime?
+  access_token String?    @db.VarChar(4000)
+  csrf_token   String?    @db.VarChar(255)
+  ip_address   String?
+  updated_at   DateTime? @updatedAt
+}
+
+enum Role {
+  ADMIN
+  GENERAL
+  CFPP
+  RESPONSABIL
+  ECONOMIST
+  CONTABIL
+}

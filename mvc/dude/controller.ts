@@ -1,5 +1,5 @@
 import { createRouter, defineEventHandler, useBase } from 'h3';
-import { index , create} from './model';
+import { index,getTemplate } from './model';
 const router = createRouter();
 
 // Routes /api/iam/doodads
@@ -11,13 +11,12 @@ router.get('/', defineEventHandler(async (event) => {
 
 // Create a doodad
 router.post('/', defineEventHandler(async (event) => { 
-  console.log('controller auth/create')
-  return await create(event)
+  return {}
 }));
 
 // Get a single doodad
 router.get('/:uuid', defineEventHandler(async (event) => { 
- return {}
+  return  await getTemplate(event)
 }));
 
 // Edit a doodad
@@ -39,4 +38,4 @@ router.get('/:id/abc/:author-id', defineEventHandler((event) => {
   }
 }));
 
-export default useBase('/api/auth', router.handler);
+export default useBase('/api/dude', router.handler);
