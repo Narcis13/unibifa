@@ -1,5 +1,5 @@
 import { createRouter, defineEventHandler, useBase } from 'h3';
-import { index , create} from './model';
+import { index , create, register} from './model';
 const router = createRouter();
 
 // Routes /api/iam/doodads
@@ -14,6 +14,11 @@ router.post('/', defineEventHandler(async (event) => {
   console.log('controller auth/create')
   return await create(event)
 }));
+
+router.post('/register',defineEventHandler(async (event)=>{
+
+  return await register(event)
+}))
 
 // Get a single doodad
 router.get('/:uuid', defineEventHandler(async (event) => { 

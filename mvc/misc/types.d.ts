@@ -2,13 +2,11 @@ export type User = {
     id: number;
     first_name: string;
     last_name: string;
-    uuid: string;
-    email: string;
+    name: string;
     password: string;
-    permissions: string | null;
+    permissions?: string | null;
     avatar?: string | null;
-    role: "SUPER_ADMIN" | "ADMIN" | "GENERAL";
-    csrf_token?: string;
+    role: "CFPP" | "ADMIN" | "GENERAL" | "RESPONSABIL"| "CONTABIL"| "ECONOMIST";
     current_password?: string;
     new_password?: string;
     email_verified: boolean;
