@@ -1,9 +1,9 @@
 import { H3Event,H3Error } from "h3";
-import type { User} from "~~/mvc/misc/types";
-import { validateUserRegistration } from "~~/mvc/misc/utils/validators";
+import type { User,TokensSession,UserDetails} from "~~/mvc/misc/types";
+import { validateUserRegistration , validateUserLogin} from "~~/mvc/misc/utils/validators";
 import { hashPassword } from "../misc/utils/passwords";
 import { PrismaClient } from "@prisma/client";
-
+import { login,logout } from "~~/mvc/misc/utils/logins";
 
 const prisma = new PrismaClient();
 
@@ -55,3 +55,73 @@ export async function registerUser(event: H3Event): Promise<User | H3Error> {
     const newUser = user as User;
     return newUser;
   }
+
+  /**
+ * @desc Authenticate user into database
+ * @param event H3Event
+ */
+export async function loginUser(
+  event: H3Event
+): Promise<TokensSession | H3Error> {
+  const validateError = await validateUserLogin(event);
+  if (validateError instanceof H3Error) return validateError;
+
+  const loginErrorOrTokens = await login(event);
+  if (loginErrorOrTokens instanceof H3Error) return loginErrorOrTokens;
+
+  const tokens = loginErrorOrTokens as TokensSession;
+
+  return tokens;
+}
+
+/**
+ * @desc Log user out
+ * @param event H3Event
+ */
+export async function logoutUser(event: H3Event): Promise<boolean | H3Error> {
+  const error = await logout(event);
+  if (error instanceof H3Error) return error;
+
+  // Create api result
+  return true;
+}
+
+export async function detailsOfUser(event: H3Event): Promise<UserDetails | H3Error> {
+  let error=null
+  let details=null
+  const name=event.context.params?.name
+  await prisma.users
+    .findFirst({
+      where: {
+        name: name,
+      },
+    })
+    .then(async (response) => {
+      details = response;
+    })
+    .catch(async (e) => {
+      console.error(e);
+      error = e;
+    });
+
+    // Check for database errors
+    if (error) {
+     
+      return createError({
+        statusCode: 500,
+        statusMessage: "Server error",
+      });
+    }
+  
+    // If we have a session, return it
+    if (details) return details;
+  
+    // Otherwise, return an error
+   
+    return createError({
+      statusCode: 500,
+      statusMessage: "Server error",
+    });
+  // Create api result
+
+}

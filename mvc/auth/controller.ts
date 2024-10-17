@@ -1,5 +1,5 @@
 import { createRouter, defineEventHandler, useBase } from 'h3';
-import { index , create, register} from './model';
+import { index , create, register, login,logout,details} from './model';
 const router = createRouter();
 
 // Routes /api/iam/doodads
@@ -20,9 +20,20 @@ router.post('/register',defineEventHandler(async (event)=>{
   return await register(event)
 }))
 
+// login user
+router.post('/login',defineEventHandler(async (event)=>{
+
+  return await login(event)
+}))
+
+// login user
+router.post('/logout',defineEventHandler(async (event)=>{
+
+  return await logout(event)
+}))
 // Get a single doodad
-router.get('/:uuid', defineEventHandler(async (event) => { 
- return {}
+router.get('/user/:name', defineEventHandler(async (event) => { 
+ return await details(event)
 }));
 
 // Edit a doodad

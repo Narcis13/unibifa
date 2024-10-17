@@ -15,6 +15,14 @@ export type User = {
     created_at: Date;
   };
   
+  export type UserDetails = {
+    id: number;
+    first_name: string;
+    last_name: string;
+    name: string;
+    role:string;
+  }
+
   export type Transfer = {
       nume_pacient: string;
       email:string;
@@ -51,7 +59,7 @@ export type User = {
   
   export type TokensSession = {
     accessToken: string;
-    refreshToken: string;
+    refreshToken?: string;
     sid?: string;
   };
   

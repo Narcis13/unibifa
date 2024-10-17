@@ -28,7 +28,7 @@ model Post {
 
 model users {
   id             Int              @id @default(autoincrement())
-  name          String            @db.VarChar(255)
+  name          String            @unique(map: "name") @db.VarChar(255)
   password       String           @db.VarChar(255)
   avatar         String?          @db.VarChar(1000)
   permissions    String?          @db.VarChar(4000)
@@ -49,6 +49,8 @@ model sessions {
   id           Int       @id @default(autoincrement())
   user         users?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id      Int
+  sid          String    @unique(map: "sid")
+  is_active    Boolean
   start_time   DateTime  @default(now())
   end_time     DateTime?
   access_token String?    @db.VarChar(4000)

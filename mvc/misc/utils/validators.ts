@@ -81,3 +81,35 @@ export function validatePassword(password: string): boolean {
   
     return true;
   }
+
+  /**
+ * @desc Suite of checks to validate data before logging user in
+ * @param event Event from Api
+ */
+export async function validateUserLogin(
+  event: H3Event
+): Promise<H3Error | void> {
+  const body = await readBody(event);
+
+  // Check if body contains email, and password
+  const bodyError = validateLoginBody(body);
+  if (bodyError) {
+    return createError({ statusCode: 400, statusMessage: bodyError });
+  }
+
+
+}
+
+/**
+ * @desc Checks whether the body in login post request is in correct format
+ * @param body Body object passed in login post request
+ */
+export function validateLoginBody(body: Object) {
+  if ("name" in body === false) {
+    return "'name' is required";
+  }
+
+  if ("password" in body === false) {
+    return "'password' is required";
+  }
+}
