@@ -24,12 +24,29 @@ async function login(){
         },
       });
 
-      console.log('Raspuns autentificare',response)
+     
     if(response.status==='success'){
 
+      const detaliiUser= await $fetch("/api/auth/user/"+response.data.name)
+      const institutie= await $fetch("/api/auth/institutie")
+     // console.log('Raspuns autentificare',response,detaliiUser)
+      if(detaliiUser.status==='success'&&institutie.status==='success'&&institutie.data.institutie.length==1) {
+        utilizatorStore.autentificare(detaliiUser.data.details)
+        utilizatorStore.asigneazaInstitutie(institutie.data.institutie[0])
         navigateTo("./dashboard")
+      }
+      else
+      $q.notify({
+          type: 'negative',
+          position:'top',
+      
+          message: 'Server Error!'
+        })
+        
     }
     else {
+      name.value=""
+      password.value=""
         $q.notify({
           type: 'negative',
           position:'top',

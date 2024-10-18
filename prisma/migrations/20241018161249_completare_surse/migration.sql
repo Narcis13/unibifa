@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `sursefinantare` ADD COLUMN `created_at` DATETIME(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    ADD COLUMN `updated_at` DATETIME(3) NULL,
+    MODIFY `stare` VARCHAR(24) NULL DEFAULT 'activ';

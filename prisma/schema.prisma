@@ -67,3 +67,24 @@ enum Role {
   ECONOMIST
   CONTABIL
 }
+
+model institutie {
+  id           Int       @id @default(autoincrement())
+  denumire   String?    @db.VarChar(255)
+  adresa   String?    @db.VarChar(255)
+  cui   String?    @db.VarChar(255)
+  reprezentant   String?    @db.VarChar(255)
+  observatii   String?    @db.VarChar(255)
+ 
+}
+
+model sursefinantare {
+  id           Int       @id @default(autoincrement())
+  denumire   String    @db.VarChar(255)
+  cod   String    @db.VarChar(64)
+  scurt   String    @db.VarChar(64)
+  stare   String?  @default("activ")  @db.VarChar(24)
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @updatedAt
+ 
+}

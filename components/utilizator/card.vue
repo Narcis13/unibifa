@@ -1,25 +1,41 @@
 <script setup>
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
 defineProps({
   denumire:String,
   cui:String,
   administrator:String
 })
+
+const utilizatorStore = useUtilizatorStore();
+
+async function logout(){
+  let response=  await $fetch("/api/auth/logout", {
+        method: "POST"
+      });
+    if(response.status=='success'){
+      utilizatorStore.logout()
+      navigateTo('/')
+    }  
+}
 </script>
 <template>
 <q-card class=" bg-indigo text-white">
     <q-card-section>
-      <div class="text-h6">{{ denumire }}</div>
-      <div class="text-subtitle2">Cod fiscal: {{ cui }}</div>
+      <div v-if="utilizatorStore.eAutentificat" class="text-h6"> {{ utilizatorStore.utilizator.first_name }} {{ utilizatorStore.utilizator.last_name }}</div>
+      <div v-if="utilizatorStore.eAutentificat" class="text-h6">Rol: {{utilizatorStore.utilizator.role }}</div>
     </q-card-section>
 
     <q-card-section>
-    Administrator: {{ administrator? administrator:'Nedefinit' }}
+      <div class="text-subtitle2">
+        Administrator: {{ administrator? administrator:'Nedefinit' }}
+      </div>
+    
     </q-card-section>
 
     <q-separator dark />
 
-    <q-card-actions>
-      <q-btn flat @click="navigateTo('/client/actualizeazadate')">Actualizeaza</q-btn>
+    <q-card-actions class="flex flex-center">
+      <q-btn flat @click="logout">Inchide sesiunea</q-btn>
     
     </q-card-actions>
   </q-card>

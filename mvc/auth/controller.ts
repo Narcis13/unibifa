@@ -1,5 +1,5 @@
 import { createRouter, defineEventHandler, useBase } from 'h3';
-import { index , create, register, login,logout,details} from './model';
+import { index , create, register, login,logout,details,institutia} from './model';
 const router = createRouter();
 
 // Routes /api/iam/doodads
@@ -37,8 +37,8 @@ router.get('/user/:name', defineEventHandler(async (event) => {
 }));
 
 // Edit a doodad
-router.put('/:id', defineEventHandler(async (event) => { 
-  return {}
+router.get('/institutie', defineEventHandler(async (event) => { 
+  return await institutia(event)
 }));
 
 // Delete a doodad

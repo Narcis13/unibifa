@@ -1,6 +1,6 @@
 import { H3Event,H3Error } from "h3";
 import type { JSONResponse ,User, TokensSession} from "~~/mvc/misc/types";
-import { registerUser,loginUser ,logoutUser,detailsOfUser} from "./queries";
+import { registerUser,loginUser ,logoutUser,detailsOfUser,institutie} from "./queries";
 
 
 /**
@@ -148,6 +148,24 @@ export async function details(event:H3Event):Promise<JSONResponse> {
   response.status = "success";
   response.data = {
     details: errorOrUserDetails
+  };
+  return response;
+
+}
+
+export async function institutia(event:H3Event):Promise<JSONResponse> {
+  const response = {} as JSONResponse;
+
+  const errorOrInstitutie = await institutie(event)
+  if (errorOrInstitutie instanceof H3Error) {
+    response.status = "fail";
+    response.error = errorOrInstitutie;
+    return response;
+  }
+
+  response.status = "success";
+  response.data = {
+    institutie: errorOrInstitutie
   };
   return response;
 

@@ -95,6 +95,13 @@ export async function detailsOfUser(event: H3Event): Promise<UserDetails | H3Err
       where: {
         name: name,
       },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        name: true,
+        role: true,
+      }
     })
     .then(async (response) => {
       details = response;
@@ -114,7 +121,43 @@ export async function detailsOfUser(event: H3Event): Promise<UserDetails | H3Err
     }
   
     // If we have a session, return it
-    if (details) return details;
+    if (details) return details as UserDetails;
+  
+    // Otherwise, return an error
+   
+    return createError({
+      statusCode: 500,
+      statusMessage: "Server error",
+    });
+  // Create api result
+
+}
+
+export async function institutie(event: H3Event): Promise<any | H3Error> {
+  let error=null
+  let institutie=null
+
+  await prisma.institutie
+    .findMany()
+    .then(async (response) => {
+      institutie = response;
+    })
+    .catch(async (e) => {
+      console.error(e);
+      error = e;
+    });
+
+    // Check for database errors
+    if (error) {
+     
+      return createError({
+        statusCode: 500,
+        statusMessage: "Server error",
+      });
+    }
+  
+    // If we have a session, return it
+    if (institutie) return institutie ;
   
     // Otherwise, return an error
    

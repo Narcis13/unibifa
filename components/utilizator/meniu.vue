@@ -1,45 +1,37 @@
 <script setup>
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
 
+
+const utilizatorStore = useUtilizatorStore();
 
 
 
 
 function executa(link){
-  console.log('executa',link)
+ // console.log('executa',link)
   navigateTo(link.ruta)
 }
 
-const  links1= [
-    { icon: 'home', text: 'Clienti' ,ruta:'/nomenclatoare/client'},
-    { icon: 'whatshot', text: 'Furnizori', ruta:'/nomenclatoare/furnizor' },
-    { icon: 'subscriptions', text: 'Produse / servicii',ruta:'/nomenclatoare/produs' },
-    { icon: 'thumb_up_alt', text: 'Serii documente',ruta:'/nomenclatoare/serie' },
-    { icon: 'restore', text: 'Gestiuni',ruta:'/nomenclatoare/gestiune' }
+const  links_administrare= [
+    { icon: 'home', text: 'Surse finantare' ,ruta:'/nomenclatoare/sursefinantare'},
+    { icon: 'whatshot', text: 'Articole bugetare', ruta:'/neimplementat' },
+    { icon: 'subscriptions', text: 'Compartimente',ruta:'/neimplementat' },
+    { icon: 'thumb_up_alt', text: 'Categorii',ruta:'/neimplementat' },
+    { icon: 'restore', text: 'Utilizatori',ruta:'/neimplementat' }
   ]
-const   links2= [
-    { icon: 'folder', text: 'Facturi emise',ruta:'../client/femise' },
-    { icon: 'restore', text: 'Facturi primite' },
-    { icon: 'watch_later', text: 'Plati / Incasari' },
-    { icon: 'thumb_up_alt', text: 'Alte operatiuni' }
-  ]
-  const   linksfe= [
-    { icon: 'folder', text: 'Facturi fiscale',ruta:'/client/femise/fiscala' },
-    { icon: 'restore', text: 'Facturi proforma',ruta:'/client/femise/proforma'  },
-    { icon: 'watch_later', text: 'Avize',ruta:'/client/femise/avize' },
-    { icon: 'thumb_up_alt', text: 'Facturi recurente',ruta:'/client/femise/recurente'  }
+
+  
+  const   links_operatiuni= [
+    { icon: 'folder', text: 'Buget',ruta:'/neimplementat' },
+    { icon: 'restore', text: 'Furnizori',ruta:'/neimplementat'  },
+    { icon: 'watch_later', text: 'Angajamente',ruta:'/neimplementat' },
+    { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/neimplementat'  },
+    { icon: 'thumb_up_alt', text: 'Ordonantari plata',ruta:'/neimplementat'  },
+    { icon: 'thumb_up_alt', text: 'Plati',ruta:'/neimplementat'  },
+    { icon: 'thumb_up_alt', text: 'Registru vize CFPP',ruta:'/neimplementat'  },
+
   ] 
-const    links3= [
-    { icon: 'local_movies', text: 'YouTube Premium' },
-    { icon: 'local_movies', text: 'Movies & Shows' },
-    { icon: 'videogame_asset', text: 'Gaming' },
-    { icon: 'live_tv', text: 'Live' }
-  ]
-const     links4= [
-   // { icon: 'settings', text: 'Settings' },
-  //  { icon: 'flag', text: 'Report history' },
-  //  { icon: 'help', text: 'Help' },
-  //  { icon: 'feedback', text: 'Send feedback' }
-  ]
+
 const    buttons1=[
     { text: 'About' },
     { text: 'Press' },
@@ -49,12 +41,7 @@ const    buttons1=[
     { text: 'Advertise' },
     { text: 'Developers' }
   ]
-const   buttons2= [
-    { text: 'Terms' },
-    { text: 'Privacy' },
-    { text: 'Policy & Safety' },
-    { text: 'Test new features' }
-  ]
+
 
 </script>
 
@@ -63,11 +50,11 @@ const   buttons2= [
           <UtilizatorCard denumire="FIRMA" cui="123456"/>
           <q-list padding>
 
-            <q-item-label header class="text-weight-bold text-uppercase">
-                  Nomenclatoare
+            <q-item-label v-show="utilizatorStore.eAdmin" header class="text-weight-bold text-uppercase">
+                  Administrare
             </q-item-label>
 
-            <q-item v-for="link in links1" :key="link.text" v-ripple clickable @click="executa(link)">
+            <q-item  v-show="utilizatorStore.eAdmin" v-for="link in links_administrare" :key="link.text" v-ripple clickable @click="executa(link)">
               <q-item-section avatar>
                 <q-icon color="grey" :name="link.icon" />
               </q-item-section>
@@ -76,7 +63,7 @@ const   buttons2= [
               </q-item-section>
             </q-item>
   
-            <q-separator class="q-my-md" />
+            <q-separator v-show="utilizatorStore.eAdmin" class="q-my-md" />
              <q-item-label header class="text-weight-bold text-uppercase">
                   Operatiuni
             </q-item-label>
@@ -88,11 +75,11 @@ const   buttons2= [
                 <q-item-label>{{ link.text }}</q-item-label>
               </q-item-section>
             </q-item> -->
-            <q-expansion-item group="somegroup" icon="edit_calendar" label="Facturi emise" header-class="text-weight-bold text-uppercase">
+            <q-expansion-item group="somegroup" icon="edit_calendar" label="ALOP" header-class="text-weight-bold text-uppercase">
             <q-card>
               <q-card-section>
 
-                <q-item v-for="link in linksfe" :key="link.text" v-ripple clickable  @click="executa(link)">
+                <q-item class="text-weight-bold text-uppercase" v-for="link in links_operatiuni" :key="link.text" v-ripple clickable  @click="executa(link)">
                     <q-item-section avatar>
                       <q-icon color="grey" :name="link.icon" />
                     </q-item-section>
@@ -123,18 +110,7 @@ const   buttons2= [
                 </a>
               </div>
             </div>
-            <div class="q-py-md q-px-md text-grey-9">
-              <div class="row items-center q-gutter-x-sm q-gutter-y-xs">
-                <a
-                  v-for="button in buttons2"
-                  :key="button.text"
-                  class="YL__drawer-footer-link"
-                  href="javascript:void(0)"
-                >
-                  {{ button.text }}
-                </a>
-              </div>
-            </div>
+ 
           </q-list>
         </q-scroll-area>
 </template>

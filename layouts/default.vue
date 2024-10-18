@@ -5,6 +5,7 @@
       <q-header elevated class="bg-white text-grey-8 q-py-xs" height-hint="58">
         <q-toolbar>
           <q-btn
+          v-if="utilizatorStore.eAutentificat"
             flat
             dense
             round
@@ -49,7 +50,7 @@
   
       <q-drawer
         v-model="leftDrawerOpen"
-     
+        v-if="utilizatorStore.eAutentificat"
         show-if-above 
         bordered
         class="bg-grey-2"
@@ -67,7 +68,8 @@
   </template>
   
   <script setup>
-
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
+const utilizatorStore = useUtilizatorStore()
   
 const leftDrawerOpen = ref(false)
 function toggleLeftDrawer () {
