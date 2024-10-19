@@ -41,6 +41,7 @@ model users {
   deleted_at     DateTime?        @db.DateTime(0)
   updated_at     DateTime?        @updatedAt
   sessions       sessions[]
+  compartiment   compartimente?   @relation("ResponsabilCompartiment")
 }
 
 
@@ -83,6 +84,30 @@ model sursefinantare {
   denumire   String    @db.VarChar(255)
   cod   String    @db.VarChar(64)
   scurt   String    @db.VarChar(64)
+  stare   String?  @default("activ")  @db.VarChar(24)
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @updatedAt
+ 
+}
+
+model articolebugetare {
+  id           Int       @id @default(autoincrement())
+  denumire   String    @db.VarChar(255)
+  cod   String    @db.VarChar(64)
+  iban   String?    @db.VarChar(24)
+  codang   String?    @db.VarChar(24)
+  indicator   String?    @db.VarChar(24)
+  stare   String?  @default("activ")  @db.VarChar(24)
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @updatedAt
+ 
+}
+
+model compartimente {
+  id           Int       @id @default(autoincrement())
+  denumire   String    @db.VarChar(255)
+  idresponsabil   Int    @unique
+  responsabil     users   @relation("ResponsabilCompartiment", fields: [idresponsabil], references: [id])
   stare   String?  @default("activ")  @db.VarChar(24)
   created_at  DateTime  @default(now()) @db.DateTime(0)
   updated_at  DateTime? @updatedAt

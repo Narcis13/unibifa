@@ -13,6 +13,12 @@ if(utilizatorStore.eAdmin){
     surse.map(s=>{
         nomenclatoareStore.baza.sursefinantare_index.push(s)
     })
+
+    const articole =  await $fetch(`/api/nomenclatoare/articolebugetare`);
+    nomenclatoareStore.baza.articolebugetare_index=[]
+    articole.map(a=>{
+        nomenclatoareStore.baza.articolebugetare_index.push(a)
+    })
 } 
 </script>
 

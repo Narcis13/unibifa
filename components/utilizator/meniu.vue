@@ -14,8 +14,8 @@ function executa(link){
 
 const  links_administrare= [
     { icon: 'home', text: 'Surse finantare' ,ruta:'/nomenclatoare/sursefinantare'},
-    { icon: 'whatshot', text: 'Articole bugetare', ruta:'/neimplementat' },
-    { icon: 'subscriptions', text: 'Compartimente',ruta:'/neimplementat' },
+    { icon: 'whatshot', text: 'Articole bugetare', ruta:'/nomenclatoare/articolebugetare' },
+    { icon: 'subscriptions', text: 'Compartimente',ruta:'/nomenclatoare/compartimente' },
     { icon: 'thumb_up_alt', text: 'Categorii',ruta:'/neimplementat' },
     { icon: 'restore', text: 'Utilizatori',ruta:'/neimplementat' }
   ]
