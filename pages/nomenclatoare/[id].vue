@@ -10,7 +10,7 @@ const columns = [
 ...arhitectura.proprietati.filter(obj=>obj.displayed_in_table)
 ]
 //console.log(arhitectura)
-console.log(arhitecturaStore.arhitectura[id],columns)
+//console.log(arhitecturaStore.arhitectura[id],columns)
 const  initialPagination = {
        // sortBy: 'desc',
        // descending: false,

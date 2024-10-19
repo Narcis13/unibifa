@@ -1,7 +1,19 @@
 <script setup>
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
-const utilizatorStore = useUtilizatorStore();
+import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 
+const utilizatorStore = useUtilizatorStore();
+const nomenclatoareStore=useNomenclatoareStore()
+
+
+ 
+if(utilizatorStore.eAdmin){
+    const surse =  await $fetch(`/api/nomenclatoare/sursefinantare`);
+    nomenclatoareStore.baza.sursefinantare_index=[]
+    surse.map(s=>{
+        nomenclatoareStore.baza.sursefinantare_index.push(s)
+    })
+} 
 </script>
 
 <template>
