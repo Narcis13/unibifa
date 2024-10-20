@@ -8,8 +8,8 @@ export  const useNomenclatoareStore = defineStore('nomenclatoareStore',()=>{
         articolebugetare_demodificat:{},
         compartimente_index:reactive([]),
         compartimente_demodificat:{},
-        serie_index:reactive([]),
-        serie_demodificat:{},
+        Categorii_index:reactive([]),
+        Categorii_demodificat:{},
         gestiune_index:reactive([]),
         gestiune_demodificat:{},
         coduricpv:[],
@@ -38,10 +38,17 @@ export  const useNomenclatoareStore = defineStore('nomenclatoareStore',()=>{
    
       }
 
+      function reset(){
+        baza.sursefinantare_index=[]
+        baza.articolebugetare_index=[]
+        baza.compartimente_index=[]
+      }
+
       return {
         baza,
         add_item,
         mod_item,
-        integreaza_item
+        integreaza_item,
+        reset
       }
 })

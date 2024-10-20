@@ -1,5 +1,6 @@
 <script setup>
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
+import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 defineProps({
   denumire:String,
   cui:String,
@@ -7,13 +8,14 @@ defineProps({
 })
 
 const utilizatorStore = useUtilizatorStore();
-
+const nomenclatoareStore = useNomenclatoareStore()
 async function logout(){
   let response=  await $fetch("/api/auth/logout", {
         method: "POST"
       });
     if(response.status=='success'){
       utilizatorStore.logout()
+      nomenclatoareStore.reset()
       navigateTo('/')
     }  
 }

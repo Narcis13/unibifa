@@ -6,20 +6,8 @@ const utilizatorStore = useUtilizatorStore();
 const nomenclatoareStore=useNomenclatoareStore()
 
 
- 
-if(utilizatorStore.eAdmin){
-    const surse =  await $fetch(`/api/nomenclatoare/sursefinantare`);
-    nomenclatoareStore.baza.sursefinantare_index=[]
-    surse.map(s=>{
-        nomenclatoareStore.baza.sursefinantare_index.push(s)
-    })
+ //cred ca mut codul asta in [id]
 
-    const articole =  await $fetch(`/api/nomenclatoare/articolebugetare`);
-    nomenclatoareStore.baza.articolebugetare_index=[]
-    articole.map(a=>{
-        nomenclatoareStore.baza.articolebugetare_index.push(a)
-    })
-} 
 </script>
 
 <template>

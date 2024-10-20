@@ -1,8 +1,10 @@
 <script setup>
 import { useArhitecturaStore } from '~/stores/useArhitecturaStore';
 import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
 const arhitecturaStore = useArhitecturaStore()
 const nomenclatoareStore=useNomenclatoareStore()
+const utilizatorStore = useUtilizatorStore();
 const {id} = useRoute().params
 
 const arhitectura = arhitecturaStore.arhitectura[id]
@@ -40,6 +42,36 @@ arhitectura.proprietati.map(async item=>{
 let alert = ref(false)
 let mesajAlerta = ref('')
 let actiune = ref('adaug')
+
+if(utilizatorStore.eAdmin){
+    const surse =  await $fetch(`/api/nomenclatoare/sursefinantare`);
+    nomenclatoareStore.baza.sursefinantare_index=[]
+    surse.map(s=>{
+        nomenclatoareStore.baza.sursefinantare_index.push(s)
+    })
+
+    const articole =  await $fetch(`/api/nomenclatoare/articolebugetare`);
+    nomenclatoareStore.baza.articolebugetare_index=[]
+    articole.map(a=>{
+        nomenclatoareStore.baza.articolebugetare_index.push(a)
+    })
+
+    const compartimente =  await $fetch(`/api/nomenclatoare/compartimente`);
+    nomenclatoareStore.baza.compartimente_index=[]
+    compartimente.map(c=>{
+        c.responsabil=c.responsabil.name;
+        nomenclatoareStore.baza.compartimente_index.push(c)
+    })
+
+    const categorii =  await $fetch(`/api/nomenclatoare/Categorii`);
+    nomenclatoareStore.baza.Categorii_index=[]
+    categorii.map(c=>{
+        c.compartiment=c.compartiment.denumire;
+        c.articolBugetar=c.articolBugetar.cod;
+        c.sursaFinantare=c.sursaFinantare.scurt;
+        nomenclatoareStore.baza.Categorii_index.push(c)
+    })
+} 
 
 function afiseazaAlerta(mesaj){
    alert.value=true

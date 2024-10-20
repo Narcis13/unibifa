@@ -9,7 +9,7 @@ export default function useUtilitare(){
        let rez = {}
        Object.keys(obj).map(k=>{
         if(obj[k]&&k!=='id'){
-            rez[k]=obj[k]
+            rez[k]=typeof obj[k]=='object'?obj[k].value:obj[k]
         }
        })
        return rez;

@@ -32,8 +32,20 @@ export const useArhitecturaStore = defineStore("arhitecturaStore",()=>{
             "proprietati":[
              {"name": "id", "align": "center", "label": "ID", "field": "id", "sortable": false,"displayed_in_table":false,"hidden_in_form":true,"qtype":"QInput"},
              {"name": "denumire", "align": "left", "label": "Denumire *", "field": "denumire", "sortable": true,"displayed_in_table":true,"qtype":"QInput"},
-             {"name": "responsabil", "align": "left", "label": "Responsabil *", "field": "idresponsabil", "sortable": false,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/responsabili"]} 
+             {"name": "idresponsabil", "align": "left", "label": "Responsabil *", "field": "responsabil", "sortable": false,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/responsabili"]} 
            
+             
+            ]
+        },
+        Categorii:{
+            "titlu":"Categorii",
+            "proprietati":[
+             {"name": "id", "align": "center", "label": "ID", "field": "id", "sortable": false,"displayed_in_table":false,"hidden_in_form":true,"qtype":"QInput"},
+             {"name": "denumire", "align": "left", "label": "Denumire *", "field": "denumire", "sortable": true,"displayed_in_table":true,"qtype":"QInput"},
+             {"name": "explicatii", "align": "left", "label": "Explicatii *", "field": "explicatii", "sortable": false,"displayed_in_table":true,"qtype":"QInput"},
+             {"name": "idsursa", "align": "left", "label": "Sursa finantare *", "field": "sursaFinantare", "sortable": false,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/surse"]} ,
+             {"name": "idarticol", "align": "left", "label": "Articol bugetar *", "field": "articolBugetar", "sortable": false,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/articole"]} ,
+             {"name": "idcompartiment", "align": "left", "label": "Compartiment *", "field": "compartiment", "sortable": false,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/compartimente"]} 
              
             ]
         }
