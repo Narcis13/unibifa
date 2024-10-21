@@ -1,0 +1,88 @@
+-- Current budget situation
+SELECT 
+  sf.denumire AS "Sursa finantare",
+  ab.denumire AS "Articol bugetar",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'I' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim I",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'II' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim II",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'III' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim III",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'IV' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim IV",
+  COALESCE(SUM(CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END), 0) AS "Total"
+FROM 
+  sursefinantare sf
+CROSS JOIN
+  articolebugetare ab
+LEFT JOIN
+  budgetTransaction bt ON sf.id = bt.idSursa AND ab.id = bt.idArticol AND bt.year = :year
+GROUP BY 
+  sf.id, sf.denumire, ab.id, ab.denumire
+ORDER BY 
+  sf.denumire, ab.denumire;
+
+-- Budget situation on a specific date in the past
+SELECT 
+  sf.denumire AS "Sursa finantare",
+  ab.denumire AS "Articol bugetar",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'I' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim I",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'II' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim II",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'III' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim III",
+  COALESCE(SUM(CASE WHEN bt.trimester = 'IV' THEN 
+    CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END
+  ELSE 0 END), 0) AS "Trim IV",
+  COALESCE(SUM(CASE WHEN bt.transactionType = 'INCREASE' THEN bt.amount ELSE -bt.amount END), 0) AS "Total"
+FROM 
+  sursefinantare sf
+CROSS JOIN
+  articolebugetare ab
+LEFT JOIN
+  budgetTransaction bt ON sf.id = bt.idSursa AND ab.id = bt.idArticol 
+  AND bt.year = :year AND bt.created_at <= :specificDate
+GROUP BY 
+  sf.id, sf.denumire, ab.id, ab.denumire
+ORDER BY 
+  sf.denumire, ab.denumire;
+
+
+
+model budgetTransaction {
+  id               Int              @id @default(autoincrement())
+  year             Int
+  trimester        Trimester
+  sursaFinantare   sursefinantare   @relation(fields: [idSursa], references: [id])
+  idSursa          Int
+  articolBugetar   articolebugetare @relation(fields: [idArticol], references: [id])
+  idArticol        Int
+  amount           Decimal          @db.Decimal(15, 2)
+  transactionType  TransactionType
+  createdBy        users            @relation(fields: [createdById], references: [id])
+  createdById      Int
+  created_at       DateTime         @default(now()) @db.DateTime(0)
+  notes            String?          @db.Text
+
+  @@index([year, trimester, idSursa, idArticol])
+}
+
+enum Trimester {
+  I
+  II
+  III
+  IV
+}
+
+enum TransactionType {
+  INCREASE
+  DECREASE
+}
