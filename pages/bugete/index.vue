@@ -2,7 +2,7 @@
     <div class="q-pa-md">
       <div class="row q-mb-md">
         <div class="col-12">
-          <h1 class="text-h4">Budget Management</h1>
+          <h1 class="text-h5">Surse de finantere / bugete</h1>
         </div>
       </div>
   
@@ -50,8 +50,8 @@
         <!-- Custom Column Slots -->
         <template v-slot:body-cell-total="props">
           <q-td :props="props">
-            <span :class="{'text-positive': props.value > 0, 'text-negative': props.value < 0}">
-              {{ formatCurrency(props.value) }}
+            <span >
+              {{ props.value }}
             </span>
           </q-td>
         </template>
@@ -67,7 +67,7 @@
                 icon="edit"
                 @click="handleEdit(props.row)"
               >
-                <q-tooltip>Edit Budget</q-tooltip>
+                <q-tooltip>Editare Buget</q-tooltip>
               </q-btn>
               <q-btn
                 flat
@@ -76,7 +76,7 @@
                 icon="delete"
                 @click="handleDelete(props.row.id)"
               >
-                <q-tooltip>Delete Budget</q-tooltip>
+                <q-tooltip>Informatii suplimentare</q-tooltip>
               </q-btn>
             </q-btn-group>
           </q-td>
@@ -108,14 +108,14 @@ import type { Buget } from '~/types/bugete';
   }
   
   const handleDelete = async (id: number) => {
-    try {
+   /* try {
       await $fetch(`/api/bugete/${id}`, {
         method: 'DELETE'
       })
       await fetchBugete()
     } catch (err) {
       console.error('Error deleting budget:', err)
-    }
+    } */
   }
   
   // Table columns definition
@@ -130,14 +130,14 @@ import type { Buget } from '~/types/bugete';
     {
       name: 'articolBugetar',
       label: 'Articol Bugetar',
-      field: (row: Buget) => row.articolBugetar.denumire,
+      field: (row: Buget) => row.articolBugetar.cod,
       align: 'left',
       sortable: true
     },
     {
       name: 'explicatii',
       label: 'Explicatii',
-      field: 'explicatii',
+      field: (row: Buget) => row.articolBugetar.denumire,
       align: 'left',
     },
     {
@@ -182,7 +182,7 @@ import type { Buget } from '~/types/bugete';
     },
     {
       name: 'actions',
-      label: 'Actions',
+      label: 'Actiuni',
       field: 'actions',
       align: 'center',
     }

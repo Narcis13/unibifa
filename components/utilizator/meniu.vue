@@ -23,7 +23,7 @@ const  links_administrare= [
 
   
   const   links_operatiuni= [
-    { icon: 'folder', text: 'Buget',ruta:'/neimplementat' },
+    { icon: 'folder', text: 'Buget',ruta:'/bugete' },
     { icon: 'restore', text: 'Furnizori',ruta:'/neimplementat'  },
     { icon: 'watch_later', text: 'Angajamente',ruta:'/neimplementat' },
     { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/neimplementat'  },

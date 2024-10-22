@@ -9,6 +9,7 @@ export interface Buget {
     idArticol: number
     articolBugetar: {
       id: number
+      cod: string
       denumire: string
     }
     explicatii: string
