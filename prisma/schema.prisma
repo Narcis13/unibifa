@@ -74,6 +74,7 @@ model sursefinantare {
   created_at  DateTime  @default(now()) @db.DateTime(0)
   updated_at  DateTime? @updatedAt
   categorii Categorii[]
+  bugete Bugete[]
 }
 
 model articolebugetare {
@@ -87,6 +88,7 @@ model articolebugetare {
   created_at  DateTime  @default(now()) @db.DateTime(0)
   updated_at  DateTime? @updatedAt
   categorii Categorii[]
+  bugete Bugete[]
 }
 
 model compartimente {
@@ -114,4 +116,23 @@ model Categorii {
   sursaFinantare sursefinantare    @relation(fields: [idsursa], references: [id])
   articolBugetar articolebugetare  @relation(fields: [idarticol], references: [id])
   compartiment   compartimente     @relation(fields: [idcompartiment], references: [id])
+}
+
+model Bugete {
+  id             Int              @id @default(autoincrement())
+  idSursa        Int
+  sursaFinantare sursefinantare   @relation(fields: [idSursa], references: [id])
+  idArticol      Int
+  articolBugetar articolebugetare @relation(fields: [idArticol], references: [id])
+  codarticol     String?          @db.VarChar(255)
+  explicatii     String?          @db.VarChar(255)
+  trimI          Decimal          @default(0) @db.Decimal(15, 2)
+  trimII         Decimal          @default(0) @db.Decimal(15, 2)
+  trimIII        Decimal          @default(0) @db.Decimal(15, 2)
+  trimIV         Decimal          @default(0) @db.Decimal(15, 2)
+  total          Decimal          @default(0) @db.Decimal(15, 2)
+  created_at     DateTime         @default(now()) @db.DateTime(0)
+  lastUpdated    DateTime         @updatedAt
+
+  @@unique([idSursa, idArticol])
 }

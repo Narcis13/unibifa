@@ -10,8 +10,8 @@ export  const useNomenclatoareStore = defineStore('nomenclatoareStore',()=>{
         compartimente_demodificat:{},
         Categorii_index:reactive([]),
         Categorii_demodificat:{},
-        gestiune_index:reactive([]),
-        gestiune_demodificat:{},
+        Bugete_index:reactive([]),
+        Bugete_demodificat:{},
         coduricpv:[],
         codurinc:[]
       })

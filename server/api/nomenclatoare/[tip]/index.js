@@ -37,6 +37,22 @@ if(tip=='Categorii'){
         }
       }
 }
+
+if(tip=='Bugete'){
+  inc.include= {
+    
+    articolBugetar: {
+      select: {
+        cod: true
+      }
+    },
+    sursaFinantare: {
+      select: {
+        scurt: true
+      }
+    }
+  }
+}
 //console.log('cruta',q)
     return prisma[tip].findMany({
         ...inc,

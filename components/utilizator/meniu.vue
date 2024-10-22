@@ -17,6 +17,7 @@ const  links_administrare= [
     { icon: 'whatshot', text: 'Articole bugetare', ruta:'/nomenclatoare/articolebugetare' },
     { icon: 'subscriptions', text: 'Compartimente',ruta:'/nomenclatoare/compartimente' },
     { icon: 'thumb_up_alt', text: 'Categorii',ruta:'/nomenclatoare/Categorii' },
+    { icon: 'thumb_up_alt', text: 'Bugete / articole',ruta:'/nomenclatoare/Bugete' },
     { icon: 'restore', text: 'Utilizatori',ruta:'/neimplementat' }
   ]
 

@@ -48,6 +48,15 @@ export const useArhitecturaStore = defineStore("arhitecturaStore",()=>{
              {"name": "idcompartiment", "align": "left", "label": "Compartiment *", "field": "compartiment", "sortable": false,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/compartimente"]} 
              
             ]
+        },
+        Bugete:{
+            "titlu":"Linii bugete",
+            "proprietati":[
+             {"name": "id", "align": "center", "label": "ID", "field": "id", "sortable": false,"displayed_in_table":false,"hidden_in_form":true,"qtype":"QInput"},
+             {"name": "idSursa", "align": "left", "label": "Sursa finantare *", "field": "sursaFinantare", "sortable": true,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/surse"]} ,
+             {"name": "idArticol", "align": "left", "label": "Articol bugetar *", "field": "articolBugetar", "sortable": true,"displayed_in_table":true,"qtype":"QSelect","options":["api/info/articole"]}
+             
+            ]
         }
     }
 

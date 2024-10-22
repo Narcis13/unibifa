@@ -71,6 +71,15 @@ if(utilizatorStore.eAdmin){
         c.sursaFinantare=c.sursaFinantare.scurt;
         nomenclatoareStore.baza.Categorii_index.push(c)
     })
+
+    const bugete =  await $fetch(`/api/nomenclatoare/Bugete`);
+    nomenclatoareStore.baza.Bugete_index=[]
+    bugete.map(b=>{
+ 
+        b.articolBugetar=b.articolBugetar.cod;
+        b.sursaFinantare=b.sursaFinantare.scurt;
+        nomenclatoareStore.baza.Bugete_index.push(b)
+    })
 } 
 
 function afiseazaAlerta(mesaj){
