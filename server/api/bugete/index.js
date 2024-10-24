@@ -8,7 +8,19 @@ export default defineEventHandler(async (event) => {
       include: {
         sursaFinantare: true,
         articolBugetar: true
-      }
+      },
+      orderBy: [
+        {
+          sursaFinantare: {
+            denumire: 'asc'
+          }
+        },
+        {
+          articolBugetar: {
+            cod: 'asc'  
+          }
+        }
+      ]
     })
     return bugete
   } catch (error) {
