@@ -20,7 +20,7 @@ const $q = useQuasar()
 const faraValidare = computed(()=>{
   return true;
 })
-
+console.log(userStore.utilizator)
 const corelatieBucuresti = computed(()=>{
 //console.log('corelatie buc',formData["judet"].substr(0,4))
 //const corelatie = formData["judet"].substr(0,4)=='B - '&&formData["localitate"].substr(0,6)=="SECTOR"
@@ -138,7 +138,7 @@ async function adauga(){
 
 
   let payload=stripNulls(formData);
-  //payload.id_client=userStore.firma.id
+  payload.id_user=userStore.utilizator.id
   let unicitate = 'unic'
   if(props.tip_nomenclator+"_unic" in validari){
    unicitate = validari[props.tip_nomenclator+"_unic"](nomenclatoareStore.baza[props.tip_nomenclator+'_index'],payload)

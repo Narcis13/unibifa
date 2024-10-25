@@ -24,7 +24,7 @@ const  links_administrare= [
   
   const   links_operatiuni= [
     { icon: 'folder', text: 'Buget',ruta:'/bugete' },
-    { icon: 'restore', text: 'Furnizori',ruta:'/neimplementat'  },
+    { icon: 'restore', text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
     { icon: 'watch_later', text: 'Angajamente',ruta:'/neimplementat' },
     { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/neimplementat'  },
     { icon: 'thumb_up_alt', text: 'Ordonantari plata',ruta:'/neimplementat'  },

@@ -136,3 +136,39 @@ model Bugete {
 
   @@unique([idSursa, idArticol])
 }
+
+model furnizori {
+  id          Int       @id @default(autoincrement())
+  id_user     Int?
+  denumire    String    @db.VarChar(120)
+  regcom      String?   @db.VarChar(120)
+  localitate  String?   @db.VarChar(50)
+  judet       String    @db.VarChar(50)
+  codfiscal   String    @db.VarChar(13)
+  banca       String?   @db.VarChar(120)
+  iban        String?   @db.VarChar(24)
+  tara        String    @db.VarChar(50)
+  perscontact String?   @db.VarChar(60)
+  platitortva Boolean   @default(false)
+  adresa      String    @db.VarChar(120)
+  email       String?   @db.VarChar(50)
+  telefon     String?   @db.VarChar(20)
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @updatedAt
+}
+
+model Regviza {
+  id            Int      @id @default(autoincrement())
+  userid        Int
+  nume          String   @db.VarChar(40)
+  nrviza        Int
+  nrvizac       String   @db.VarChar(12)
+  dataviza      DateTime
+  document      String   @db.VarChar(40)
+  explicatii    String   @db.VarChar(80)
+  compartiment  String   @db.VarChar(40)
+  valoare       Decimal  @db.Decimal(13, 2)
+  stare         String   @db.VarChar(12)
+
+  @@map("regviza")
+}

@@ -8,6 +8,7 @@ export default defineEventHandler( async (event)=>{
 const q = getQuery(event)
 const {tip} = event.context.params
 let inc={}
+let w={}
 if(tip=='compartimente'){
     inc.include= {
         responsabil: {
@@ -53,9 +54,17 @@ if(tip=='Bugete'){
     }
   }
 }
+
+if(tip=='furnizori'){
+ // console.log('furnizori',getQuery(event).cid)
+  w.where={
+    id_user:parseInt(getQuery(event).cid)
+}
+}
 //console.log('cruta',q)
     return prisma[tip].findMany({
         ...inc,
+        ...w,
         orderBy:[{id:'desc'}]
     });
 })

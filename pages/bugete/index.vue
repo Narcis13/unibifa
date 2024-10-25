@@ -49,7 +49,7 @@
     <!-- Budget Table -->
     <q-table
       :rows="filteredBugete"
-      :columns="columns"
+      :columns="visibleColumns"
       row-key="id"
       :loading="loading"
       :filter="filter"
@@ -72,7 +72,7 @@
           <td class="text-right text-weight-bold">{{ formatCurrency(summaryTotals.trimIII) }}</td>
           <td class="text-right text-weight-bold">{{ formatCurrency(summaryTotals.trimIV) }}</td>
           <td class="text-right text-weight-bold">{{ formatCurrency(summaryTotals.total) }}</td>
-          <td></td>
+          <td v-if="isCFPPUser"></td>
         </tr>
       </template>
       <!-- Custom Column Slots -->
@@ -249,6 +249,7 @@
 
 <script setup lang="ts">
 //import { ref, computed } from 'vue'
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
 import { useBugete } from '~/composables/useBugete'
 import type { Buget } from '~/types/bugete'
 import { useQuasar } from 'quasar'
@@ -259,12 +260,15 @@ interface FormState {
   trimIII: number
   trimIV: number
 }
-
+const utilizatorStore = useUtilizatorStore();
+//console.log(utilizatorStore.utilizator?.role)
 const { bugete, loading, error, fetchBugete } = useBugete()
 const filter = ref('')
 const selectedSource = ref(null)
 const $q = useQuasar()
-
+const isCFPPUser = computed(() => {
+  return utilizatorStore.utilizator?.role === 'CFPP'
+})
 // Add computed property for summary totals
 const summaryTotals = computed(() => {
   const totals = {
@@ -426,8 +430,8 @@ const handleDelete = async (id: number) => {
   } */
 }
 
-// Table columns definition
-const columns = [
+// Define base columns
+const baseColumns = [
   {
     name: 'sursaFinantare',
     label: 'Sursa Finantare',
@@ -487,14 +491,25 @@ const columns = [
     format: formatCurrency,
     align: 'right',
     sortable: true
-  },
-  {
-    name: 'actions',
-    label: 'Actiuni',
-    field: 'actions',
-    align: 'center',
   }
 ]
+
+// Actions column definition
+const actionsColumn = {
+  name: 'actions',
+  label: 'Actiuni',
+  field: 'actions',
+  align: 'center',
+}
+
+// Computed property for visible columns
+const visibleColumns = computed(() => {
+  if (isCFPPUser.value) {
+    return [...baseColumns, actionsColumn]
+  }
+  return baseColumns
+})
+
 
 // Fetch data on component mount
 onMounted(() => {
