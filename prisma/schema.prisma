@@ -28,6 +28,7 @@ model users {
   updated_at     DateTime?        @updatedAt
   sessions       sessions[]
   compartiment   compartimente?   @relation("ResponsabilCompartiment")
+  modificariAngajamente ModificariAngajamente[]
 }
 
 
@@ -100,6 +101,7 @@ model compartimente {
   created_at  DateTime  @default(now()) @db.DateTime(0)
   updated_at  DateTime? @updatedAt
   categorii Categorii[]
+  angajamente Angajamente[]
 }
 
 model Categorii {
@@ -116,6 +118,7 @@ model Categorii {
   sursaFinantare sursefinantare    @relation(fields: [idsursa], references: [id])
   articolBugetar articolebugetare  @relation(fields: [idarticol], references: [id])
   compartiment   compartimente     @relation(fields: [idcompartiment], references: [id])
+  angajamente Angajamente[]
 }
 
 model Bugete {
@@ -171,4 +174,46 @@ model Regviza {
   stare         String   @db.VarChar(12)
 
   @@map("regviza")
+}
+
+model Angajamente {
+  id                Int                    @id @default(autoincrement())
+  numar             String                 @unique // număr unic pentru angajament
+  data              DateTime               @default(now())
+  idCategorie       Int
+  categorie         Categorii              @relation(fields: [idCategorie], references: [id])
+  idCompartiment    Int
+  compartiment      compartimente          @relation(fields: [idCompartiment], references: [id])
+  descriere         String                 @db.Text
+  exercitiuBugetar  Int
+  created_at        DateTime               @default(now())
+  updated_at        DateTime               @updatedAt
+  modificari        ModificariAngajamente[]
+
+  @@index([exercitiuBugetar, idCompartiment])
+  @@index([idCategorie, exercitiuBugetar])
+}
+
+model ModificariAngajamente {
+  id                  Int           @id @default(autoincrement())
+  idAngajament        Int
+  angajament          Angajamente   @relation(fields: [idAngajament], references: [id])
+  tipModificare      TipModificare
+  suma               Decimal       @db.Decimal(15, 2)
+  motiv              String        @db.Text
+  idUser             Int
+  user               users         @relation(fields: [idUser], references: [id])
+  sumaBuget          Decimal       @db.Decimal(15, 2)  // suma din buget la momentul modificării
+  disponibilBugetar  Decimal       @db.Decimal(15, 2)  // disponibil bugetar la momentul modificării
+  vizaCFPP           Boolean       @default(false)     // status viză CFPP
+  nr_viza            String?                           // numărul vizei CFPP
+  dataCFPP           DateTime?                         // data acordării vizei CFPP
+  created_at         DateTime      @default(now())
+
+  @@index([idAngajament, created_at])
+}
+
+enum TipModificare {
+  MAJORARE
+  DIMINUARE
 }
