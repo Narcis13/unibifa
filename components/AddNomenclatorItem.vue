@@ -138,7 +138,10 @@ async function adauga(){
 
 
   let payload=stripNulls(formData);
-  payload.id_user=userStore.utilizator.id
+  if(props.tip_nomenclator=='furnizori'){
+    payload.id_user=userStore.utilizator.id
+  }
+
   let unicitate = 'unic'
   if(props.tip_nomenclator+"_unic" in validari){
    unicitate = validari[props.tip_nomenclator+"_unic"](nomenclatoareStore.baza[props.tip_nomenclator+'_index'],payload)

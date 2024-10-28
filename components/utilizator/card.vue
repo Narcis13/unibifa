@@ -29,7 +29,7 @@ async function logout(){
 
     <q-card-section>
       <div class="text-subtitle2">
-        Administrator: {{ administrator? administrator:'Nedefinit' }}
+        Compartiment: {{ utilizatorStore.utilizator.role=='RESPONSABIL'? utilizatorStore.utilizator.compartiment.denumire:'TOATE' }}
       </div>
     
     </q-card-section>

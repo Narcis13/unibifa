@@ -8,11 +8,12 @@ export const useUtilizatorStore = defineStore('utilizatorStore',()=>{
     const eAdmin=ref(false)
 
 
-    function autentificare(payload){
+   async function autentificare(payload){
         console.log('payload autentificare',payload)
         utilizator.value=payload
         eAutentificat.value=true
         eAdmin.value = payload.role==='ADMIN'
+        if(payload.role=='RESPONSABIL') utilizator.value.compartiment = await $fetch('/api/compartimente/'+payload.id)
     }
     
     function asigneazaInstitutie(payload){
