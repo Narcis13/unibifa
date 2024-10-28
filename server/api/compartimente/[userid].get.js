@@ -10,6 +10,6 @@ const compartiment=await prisma['compartimente'].findFirst({
         idresponsabil:parseInt(userid)
     }
 });
-console.log(compartiment)
+//console.log(compartiment)
     return compartiment;
 })
