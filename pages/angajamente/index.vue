@@ -283,9 +283,9 @@ const modificare = ref({
 // Calculate total sum from modifications
 const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
   const total = modificari.reduce((sum, mod) => {
-    return sum + (mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
+    return Number(sum) + Number(mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
   }, 0)
-  return total.toLocaleString('ro-RO')
+  return Number(total)//.toLocaleString('ro-RO')
 }
 
 // Handlers
@@ -389,12 +389,13 @@ const showIstoric = (angajament: Angajament) => {
 onMounted(async () => {
   const userStore = useUtilizatorStore()
   newAngajament.value.idCompartiment = userStore.utilizator?.compartiment?.id || 0
-  console.log( userStore.utilizator?.compartiment?.id ,'compartiment id')
+  //console.log( userStore.utilizator?.compartiment?.id ,'compartiment id')
   // Fetch categorii for the user's compartiment
   if (newAngajament.value.idCompartiment) {
     await fetchCategoriiByCompartiment(newAngajament.value.idCompartiment)
   }
   
   await fetchAngajamente(new Date().getFullYear())
+ // console.log(angajamente)
 })
 </script>
