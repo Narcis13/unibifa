@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import type { ModificareAngajamentDTO } from '~/types/angajamente'
-
 const prisma = new PrismaClient()
-
 export default defineEventHandler(async (event) => {
   const id = Number(event.context.params?.id)
   const body = await readBody<ModificareAngajamentDTO>(event)
@@ -61,7 +59,7 @@ export default defineEventHandler(async (event) => {
       tipModificare: body.tipModificare,
       suma: body.suma,
       motiv: body.motiv,
-      idUser: event.context.user.id,
+      idUser: body.idUser, // Use idUser from DTO
       sumaBuget,
       disponibilBugetar
     },

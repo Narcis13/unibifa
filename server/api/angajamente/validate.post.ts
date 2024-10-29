@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -50,11 +49,11 @@ export default defineEventHandler(async (event) => {
     return total + sumaModificari
   }, 0)
 
-  const disponibil = Number(sumaBuget) - sumaAngajata
+  const disponibilBugetar = Number(sumaBuget) - sumaAngajata
 
   return {
-    valid: disponibil >= suma,
-    disponibil,
+    valid: disponibilBugetar >= suma,
+    disponibilBugetar,
     sumaBuget,
     sumaAngajata
   }

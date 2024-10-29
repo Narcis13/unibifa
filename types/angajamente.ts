@@ -49,11 +49,13 @@ export interface CreateAngajamentDTO {
   idCompartiment: number
   descriere: string
   exercitiuBugetar: number
-  sumaInitiala: number
+  suma: number // Initial sum for the first modification
+  idUser: number // Added idUser field
 }
 
 export interface ModificareAngajamentDTO {
   tipModificare: 'MAJORARE' | 'DIMINUARE'
   suma: number
   motiv: string
+  idUser: number // Added idUser field
 }

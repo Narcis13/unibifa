@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   // Format pentru q-select options
   return categorii.map(cat => ({
-    label: `${cat.denumire} (${cat.sursaFinantare.cod} - ${cat.articolBugetar.cod})`,
+    label: `${cat.denumire} (${cat.sursaFinantare.denumire} - ${cat.articolBugetar.cod})`,
     value: cat.id,
     // Include informații adiționale care ar putea fi utile
     categorie: {

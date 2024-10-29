@@ -22,6 +22,11 @@
               :loading="loading"
               :pagination="{ rowsPerPage: 10 }"
             >
+              <template #body-cell-suma="props">
+                <q-td :props="props">
+                  {{ calculateTotalSum(props.row.modificari) }}
+                </q-td>
+              </template>
               <template #body-cell-actiuni="props">
                 <q-td :props="props">
                   <q-btn
@@ -78,7 +83,7 @@
             />
 
             <q-input
-              v-model.number="newAngajament.sumaInitiala"
+              v-model.number="newAngajament.suma"
               label="Suma"
               type="number"
               :rules="[
@@ -173,7 +178,7 @@
 import { useQuasar } from 'quasar'
 import { useAngajamente } from '~/composables/useAngajamente'
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
-import type { Angajament } from '~/types/angajamente'
+import type { Angajament, ModificareAngajament } from '~/types/angajamente'
 
 const $q = useQuasar()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil } = useAngajamente()
@@ -209,6 +214,12 @@ const columns = [
     label: 'Descriere',
     field: 'descriere',
     align: 'left',
+  },
+  {
+    name: 'suma',
+    label: 'Suma Totală',
+    field: 'suma',
+    align: 'right',
   },
   {
     name: 'actiuni',
@@ -258,7 +269,7 @@ const selectedAngajament = ref<Angajament | null>(null)
 const newAngajament = ref({
   idCategorie: null as number | null,
   descriere: '',
-  sumaInitiala: 0,
+  suma: 0,
   exercitiuBugetar: new Date().getFullYear(),
   idCompartiment: 0, // Se va seta din user context
 })
@@ -269,12 +280,20 @@ const modificare = ref({
   motiv: '',
 })
 
+// Calculate total sum from modifications
+const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
+  const total = modificari.reduce((sum, mod) => {
+    return sum + (mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
+  }, 0)
+  return total.toLocaleString('ro-RO')
+}
+
 // Handlers
 const onSubmitAdd = async () => {
   try {
     const isValid = await validateDisponibil(
       newAngajament.value.idCategorie!,
-      newAngajament.value.sumaInitiala
+      newAngajament.value.suma
     )
     
     if (!isValid) {
@@ -291,6 +310,18 @@ const onSubmitAdd = async () => {
       color: 'positive',
       message: 'Angajamentul a fost creat cu succes',
     })
+    
+    // Reset form
+    newAngajament.value = {
+      idCategorie: null,
+      descriere: '',
+      suma: 0,
+      exercitiuBugetar: new Date().getFullYear(),
+      idCompartiment: newAngajament.value.idCompartiment
+    }
+    
+    // Refresh list
+    await fetchAngajamente(new Date().getFullYear())
   } catch (error) {
     console.error(error)
     $q.notify({
@@ -330,6 +361,16 @@ const onSubmitModificare = async () => {
       color: 'positive',
       message: 'Modificarea a fost salvată cu succes',
     })
+    
+    // Reset form
+    modificare.value = {
+      tipModificare: 'MAJORARE',
+      suma: 0,
+      motiv: ''
+    }
+    
+    // Refresh list
+    await fetchAngajamente(new Date().getFullYear())
   } catch (error) {
     console.error(error)
     $q.notify({
@@ -348,7 +389,7 @@ const showIstoric = (angajament: Angajament) => {
 onMounted(async () => {
   const userStore = useUtilizatorStore()
   newAngajament.value.idCompartiment = userStore.utilizator?.compartiment?.id || 0
-  
+  console.log( userStore.utilizator?.compartiment?.id ,'compartiment id')
   // Fetch categorii for the user's compartiment
   if (newAngajament.value.idCompartiment) {
     await fetchCategoriiByCompartiment(newAngajament.value.idCompartiment)

@@ -1,7 +1,9 @@
 import type { Angajament, CreateAngajamentDTO, ModificareAngajament, ModificareAngajamentDTO } from '~/types/angajamente'
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 
 export const useAngajamente = () => {
 
+  const utilizatorStore = useUtilizatorStore()
   
   const angajamente = ref<Angajament[]>([])
   const categoriiOptions = ref<Array<{
@@ -49,12 +51,15 @@ export const useAngajamente = () => {
     }
   }
 
-  const createAngajament = async (data: CreateAngajamentDTO) => {
+  const createAngajament = async (data: Omit<CreateAngajamentDTO, 'idUser'>) => {
     loading.value = true
     try {
       const result = await $fetch('/api/angajamente', {
         method: 'POST',
-        body: data
+        body: {
+          ...data,
+          idUser: utilizatorStore.utilizator?.id
+        }
       })
       angajamente.value.push(result)
       return result
@@ -67,12 +72,15 @@ export const useAngajamente = () => {
     }
   }
 
-  const addModificare = async (idAngajament: number, data: ModificareAngajamentDTO) => {
+  const addModificare = async (idAngajament: number, data: Omit<ModificareAngajamentDTO, 'idUser'>) => {
     loading.value = true
     try {
       const result = await $fetch(`/api/angajamente/${idAngajament}/modificari`, {
         method: 'POST',
-        body: data
+        body: {
+          ...data,
+          idUser: utilizatorStore.utilizator?.id
+        }
       })
       const angajament = angajamente.value.find(a => a.id === idAngajament)
       if (angajament && angajament.modificari) {

@@ -1,10 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-
-
 import type { CreateAngajamentDTO } from '~/types/angajamente'
-
 const prisma = new PrismaClient()
-
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
     const query = getQuery(event)
@@ -47,7 +43,23 @@ export default defineEventHandler(async (event) => {
     const count = await prisma.angajamente.count({
       where: { exercitiuBugetar: body.exercitiuBugetar }
     })
-    const numar = `${body.exercitiuBugetar}-${(count + 1).toString().padStart(4, '0')}`
+    const numar = `A${body.exercitiuBugetar}-${(count + 1).toString().padStart(4, '0')}`
+
+    // Get validation data for initial modification
+    const validationResult = await $fetch('/api/angajamente/validate', {
+      method: 'POST',
+      body: {
+        idCategorie: body.idCategorie,
+        suma: body.suma
+      }
+    })
+
+    if (!validationResult.valid) {
+      throw createError({
+        statusCode: 400,
+        message: 'Fonduri insuficiente pentru suma specificată'
+      })
+    }
 
     // Create angajament and initial modification
     const result = await prisma.$transaction(async (tx) => {
@@ -70,56 +82,16 @@ export default defineEventHandler(async (event) => {
         }
       })
 
-      // Get current budget amount and available funds
-      const categorie = await tx.categorii.findUnique({
-        where: { id: body.idCategorie },
-        include: {
-          sursaFinantare: true,
-          articolBugetar: true
-        }
-      })
-
-      const buget = await tx.bugete.findUnique({
-        where: {
-          idSursa_idArticol: {
-            idSursa: categorie!.idsursa,
-            idArticol: categorie!.idarticol
-          }
-        }
-      })
-
-      const sumaBuget = buget?.total || 0
-      
-      // Calculate available funds by subtracting all existing commitments
-      const angajamenteExistente = await tx.angajamente.findMany({
-        where: {
-          idCategorie: body.idCategorie,
-          exercitiuBugetar: body.exercitiuBugetar
-        },
-        include: {
-          modificari: true
-        }
-      })
-
-      const sumaAngajata = angajamenteExistente.reduce((total, ang) => {
-        const sumaModificari = ang.modificari.reduce((sum, mod) => {
-          return sum + (mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
-        }, 0)
-        return total + Number(sumaModificari)
-      }, 0)
-
-      const disponibilBugetar = Number(sumaBuget) - sumaAngajata
-
       // Create initial modification
       await tx.modificariAngajamente.create({
         data: {
           idAngajament: angajament.id,
           tipModificare: 'MAJORARE',
-          suma: body.sumaInitiala,
+          suma: body.suma,
           motiv: 'Creare angajament',
-          idUser: event.context.user.id,
-          sumaBuget,
-          disponibilBugetar
+          idUser: body.idUser, // Use idUser from DTO
+          sumaBuget: validationResult.sumaBuget,
+          disponibilBugetar: validationResult.disponibilBugetar
         }
       })
 
