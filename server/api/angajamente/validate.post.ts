@@ -18,7 +18,15 @@ export default defineEventHandler(async (event) => {
       message: 'Categorie not found'
     })
   }
-
+  const relatedCategories = await prisma.categorii.findMany({
+    where: {
+      idsursa: categorie.idsursa,
+      idarticol: categorie.idarticol
+    },
+    select: {
+      id: true
+    }
+  });
   // Get current budget amount
   const buget = await prisma.bugete.findUnique({
     where: {
@@ -34,7 +42,9 @@ export default defineEventHandler(async (event) => {
   // Calculate current committed amount
   const angajamente = await prisma.angajamente.findMany({
     where: {
-      idCategorie,
+      idCategorie:{
+        in: relatedCategories.map(cat => cat.id)
+      },
       exercitiuBugetar: new Date().getFullYear()
     },
     include: {

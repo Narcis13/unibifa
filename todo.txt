@@ -36,9 +36,9 @@ export async function register(event: H3Event): Promise<JSONResponse> {
 }
 
 angajamente:
-- sa ma raportez la sursa si articol nu la categorie
-- sa afisez disponibilul bugetar cid adaug angajament dupa c selectez categoria
-- sa afisez doar angajamentele compartimentului
+- sa ma raportez la sursa si articol nu la categorie  IMPLEMENTAT
+- sa afisez disponibilul bugetar cid adaug angajament dupa c selectez categoria IMPLEMENTAT
+
 - sa implementez viza CFPP
-- sa implementez filtrare complexa
+- sa implementez filtrare complexa si diferite viewuri in functie de rolul userului
 - printare angajament

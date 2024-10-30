@@ -72,9 +72,18 @@
               option-value="value"
               emit-value
               map-options
+              @update:model-value="categorieSelectata"
               :rules="[val => !!val || 'Câmpul este obligatoriu']"
             />
-
+           <div v-if="infoVizibil" class="">
+              <div class="row items-center">
+                <div>Buget total:</div><q-space /><div>{{ situatieBuget.sumaBuget }} lei</div>
+              </div>
+              
+              <div class="row items-center">
+                <div>Buget disponibil:</div><q-space /><div>{{ situatieBuget.disponibilBugetar }} lei</div>
+              </div>
+           </div>
             <q-input
               v-model="newAngajament.descriere"
               label="Descriere"
@@ -93,7 +102,7 @@
             />
 
             <div class="row justify-end q-gutter-sm">
-              <q-btn label="Anulează" color="negative" v-close-popup />
+              <q-btn label="Anulează" color="negative" @click="reset" v-close-popup />
               <q-btn label="Salvează" type="submit" color="primary" />
             </div>
           </q-form>
@@ -181,7 +190,7 @@ import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 import type { Angajament, ModificareAngajament } from '~/types/angajamente'
 
 const $q = useQuasar()
-const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil } = useAngajamente()
+const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
 
 const columns = [
   {
@@ -260,6 +269,7 @@ const modificariColumns = [
 ]
 
 // State pentru dialoguri
+
 const showAddDialog = ref(false)
 const showModificareDialog = ref(false)
 const showIstoricDialog = ref(false)
@@ -280,6 +290,10 @@ const modificare = ref({
   motiv: '',
 })
 
+function reset(){
+  newAngajament.value.idCategorie=null
+  infoVizibil.value=false
+}
 // Calculate total sum from modifications
 const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
   const total = modificari.reduce((sum, mod) => {

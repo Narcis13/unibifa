@@ -4,7 +4,11 @@ import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 export const useAngajamente = () => {
 
   const utilizatorStore = useUtilizatorStore()
-  
+  const situatieBuget = ref<{
+    disponibilBugetar:number,
+    sumaBuget:string | number
+  }>({disponibilBugetar:0,sumaBuget:''})
+
   const angajamente = ref<Angajament[]>([])
   const categoriiOptions = ref<Array<{
     label: string
@@ -109,7 +113,25 @@ export const useAngajamente = () => {
       return false
     }
   }
+  const infoVizibil = ref(false)
+  const categorieSelectata = async (idCategorie:number)=>{
+   
+    infoVizibil.value=true
 
+    try {
+      const result = await $fetch(`/api/angajamente/validate`, {
+        method: 'POST',
+        body: { idCategorie, suma:0 }
+      })
+      //console.log('Categorie selectata',idCategorie,result)
+      situatieBuget.value.disponibilBugetar=result.disponibilBugetar
+      situatieBuget.value.sumaBuget=result.sumaBuget
+    } catch (e) {
+      error.value = 'Eroare la validarea disponibilului'
+      console.error(e)
+  
+    }
+  }
   return {
     angajamente,
     categoriiOptions,
@@ -119,6 +141,9 @@ export const useAngajamente = () => {
     fetchCategoriiByCompartiment,
     createAngajament,
     addModificare,
-    validateDisponibil
+    validateDisponibil,
+    categorieSelectata,
+    infoVizibil,
+    situatieBuget
   }
 }
