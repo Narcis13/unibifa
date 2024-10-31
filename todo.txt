@@ -42,3 +42,5 @@ angajamente:
 - sa implementez viza CFPP
 - sa implementez filtrare complexa si diferite viewuri in functie de rolul userului
 - printare angajament
+
+//de pe batrinu mac
