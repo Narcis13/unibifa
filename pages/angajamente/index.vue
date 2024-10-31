@@ -55,6 +55,15 @@
       </div>
     </div>
 
+    <!-- Replace the old visa dialog with this -->
+  <q-dialog v-model="showVizaDialog" persistent>
+    <vizacfpp
+      tip-document="angajament"
+      @cancel="showVizaDialog = false"
+  
+    />
+  </q-dialog>
+
     <!-- Dialog pentru adăugare angajament nou -->
     <q-dialog v-model="showAddDialog" persistent>
       <q-card style="min-width: 350px">
@@ -111,74 +120,49 @@
     </q-dialog>
 
     <!-- Dialog pentru modificare sumă -->
-    <q-dialog v-model="showModificareDialog" persistent>
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Modificare Sumă</div>
-        </q-card-section>
+       <!-- Dialog pentru istoric modificări - Updated -->
+       <q-dialog v-model="showIstoricDialog">
+          <q-card style="min-width: 800px">
+            <q-card-section>
+              <div class="text-h6">Istoric Modificări</div>
+            </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <q-form @submit="onSubmitModificare" class="q-gutter-md">
-            <q-select
-              v-model="modificare.tipModificare"
-              :options="[
-                { label: 'Majorare', value: 'MAJORARE' },
-                { label: 'Diminuare', value: 'DIMINUARE' }
-              ]"
-              label="Tip Modificare"
-              option-label="label"
-              option-value="value"
-              emit-value
-              map-options
-              :rules="[val => !!val || 'Câmpul este obligatoriu']"
-            />
+            <q-card-section>
+              <q-table
+                :rows="selectedAngajament?.modificari || []"
+                :columns="modificariColumns"
+                row-key="id"
+                :pagination="{ rowsPerPage: 5 }"
+              >
+                <template #body-cell-actiuni="props">
+                  <q-td :props="props">
+                    <q-btn
+                      flat
+                      round
+                      color="primary"
+                      icon="verified"
+                      @click="handleVizaCFPP(props.row)"
+                    >
+                      <q-tooltip>Viză CFPP</q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      flat
+                      round
+                      color="info"
+                      icon="print"
+                      @click="handlePrint(props.row)"
+                    >
+                      <q-tooltip>Printează</q-tooltip>
+                    </q-btn>
+                  </q-td>
+                </template>
+              </q-table>
+            </q-card-section>
 
-            <q-input
-              v-model.number="modificare.suma"
-              label="Suma"
-              type="number"
-              :rules="[
-                val => !!val || 'Câmpul este obligatoriu',
-                val => val > 0 || 'Suma trebuie să fie pozitivă'
-              ]"
-            />
-
-            <q-input
-              v-model="modificare.motiv"
-              label="Motiv"
-              type="textarea"
-              :rules="[val => !!val || 'Câmpul este obligatoriu']"
-            />
-
-            <div class="row justify-end q-gutter-sm">
-              <q-btn label="Anulează" color="negative" v-close-popup />
-              <q-btn label="Salvează" type="submit" color="primary" />
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <!-- Dialog pentru istoric modificări -->
-    <q-dialog v-model="showIstoricDialog">
-      <q-card style="min-width: 700px">
-        <q-card-section>
-          <div class="text-h6">Istoric Modificări</div>
-        </q-card-section>
-
-        <q-card-section>
-          <q-table
-            :rows="selectedAngajament?.modificari || []"
-            :columns="modificariColumns"
-            row-key="id"
-            :pagination="{ rowsPerPage: 5 }"
-          />
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Închide" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
+            <q-card-actions align="right">
+              <q-btn flat label="Închide" color="primary" v-close-popup />
+            </q-card-actions>
+          </q-card>
     </q-dialog>
   </q-page>
 </template>
@@ -186,11 +170,13 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
 import { useAngajamente } from '~/composables/useAngajamente'
+import {useVizaCFPP} from '~/composables/useVizaCFPP'
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 import type { Angajament, ModificareAngajament } from '~/types/angajamente'
 
 const $q = useQuasar()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
+const {vizaUrmatoare} = useVizaCFPP()
 
 const columns = [
   {
@@ -266,11 +252,18 @@ const modificariColumns = [
     label: 'Utilizator',
     field: (row: any) => row.user?.name,
   },
+  {
+    name: 'actiuni',
+    label: 'Acțiuni',
+    field: 'actiuni',
+    align: 'center',
+  },
 ]
 
 // State pentru dialoguri
 
 const showAddDialog = ref(false)
+const showVizaDialog = ref(false)
 const showModificareDialog = ref(false)
 const showIstoricDialog = ref(false)
 const selectedAngajament = ref<Angajament | null>(null)
@@ -290,6 +283,22 @@ const modificare = ref({
   motiv: '',
 })
 
+
+const vizaData = ref({
+  userid: 0,
+  nume: '',
+  nrviza: '',
+  nrvizac:'',
+  dataviza:new Date(),
+  document:'',
+  explicatii:'',
+  compartiment:'',
+  codang:'',
+  indicator:'',
+  valoare:0
+})
+
+
 function reset(){
   newAngajament.value.idCategorie=null
   infoVizibil.value=false
@@ -302,6 +311,53 @@ const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
   return Number(total)//.toLocaleString('ro-RO')
 }
 
+// Action handlers
+const handleVizaCFPP = async (modificare: ModificareAngajament) => {
+  const userStore = useUtilizatorStore()
+  const nrviza= await vizaUrmatoare()
+  vizaData.value.document='Ang. legal nr. '+selectedAngajament.value!.numar
+  vizaData.value.explicatii=selectedAngajament.value!.descriere
+  vizaData.value.compartiment = selectedAngajament.value!.compartiment!.denumire + ' ' +modificare.user?.name
+  vizaData.value.valoare=modificare.suma
+  vizaData.value.nume=userStore.utilizator.first_name+' '+userStore.utilizator.last_name
+  vizaData.value.userid=userStore.utilizator.id
+  vizaData.value.nrviza=nrviza as string
+  vizaData.value.nrvizac=userStore.utilizator.first_name.substr(0,1)+userStore.utilizator.last_name.substr(0,1)+'-'+nrviza
+  vizaData.value.codang=selectedAngajament.value?.categorie?.articolBugetar.codang
+  vizaData.value.indicator=selectedAngajament.value?.categorie?.articolBugetar.indicator
+
+  console.log('Modificare',modificare,selectedAngajament.value,vizaData.value)
+  showVizaDialog.value=true
+ // selectedModificare.value = modificare
+ // showVizaDialog.value = true
+}
+
+const handlePrint = async (modificare: ModificareAngajament) => {
+  /*try {
+    // Example implementation - adjust based on your API
+    const response = await fetch(`/api/modificari/${modificare.id}/print`, {
+      method: 'POST',
+    })
+    
+    if (!response.ok) throw new Error('Failed to generate print document')
+    
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `modificare-${modificare.id}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      color: 'negative',
+      message: 'A apărut o eroare la generarea documentului',
+    })
+  }*/
+}
 // Handlers
 const onSubmitAdd = async () => {
   try {
