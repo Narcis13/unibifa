@@ -6,23 +6,21 @@
   
       <q-card-section class="q-pt-none">
         <q-form @submit="onSubmit" class="q-gutter-md">
+           <div>
+               <div class="text-subtitle1">Compartiment: {{ formData.compartiment }}</div>
+               <div class="text-subtitle1">Document: {{ formData.document }}</div>
+               <div class="text-subtitle1">Viza CFPP: {{ formData.nrvizac }}</div>
+           </div>
           <q-input
-            v-model="formData.numar"
-            label="Număr viză"
-            :rules="[val => !!val || 'Câmpul este obligatoriu']"
-          />
-          <q-input
-            v-model="formData.data"
-            label="Data viză"
-            type="date"
-            :rules="[val => !!val || 'Câmpul este obligatoriu']"
-          />
-          <q-input
-            v-model="formData.observatii"
-            label="Observații"
+            v-model="formData.codang"
+            label="Cod angajament"
             type="textarea"
           />
-  
+          <q-input
+            v-model="formData.indicator"
+            label="Indicator angajament"
+    
+          />
           <div class="row justify-end q-gutter-sm">
             <q-btn label="Anulează" color="negative" @click="onCancel" />
             <q-btn label="Salvează" type="submit" color="primary" />
@@ -35,13 +33,22 @@
   <script setup lang="ts">
   //import { defineProps,defineEmits } from 'vue';
   interface VizaFormData {
-    numar: string
-    data: string
-    observatii: string
+    userid: number,
+    nume: string,
+    nrviza: string,
+    nrvizac:string,
+    dataviza:Date,
+    document:string,
+    explicatii:string,
+    compartiment:string,
+    codang:string,
+    indicator:string,
+    valoare:number
   }
   
   interface Props {
-    tipDocument: string
+    tipDocument: string,
+    vizadata: VizaFormData
   }
   
   // Define props
@@ -55,9 +62,7 @@
   
   // Form data
   const formData = ref<VizaFormData>({
-    numar: '',
-    data: '',
-    observatii: ''
+    ...props.vizadata
   })
   
   // Form handlers

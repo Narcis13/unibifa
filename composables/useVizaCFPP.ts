@@ -1,4 +1,4 @@
-
+import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 
 export const useVizaCFPP = ()=>{
     const loading = ref(false)
@@ -19,9 +19,30 @@ export const useVizaCFPP = ()=>{
         }
     }
 
+    const createVizaCFPP = async (data:CreateVizaCFPPDTO) => {
+      loading.value = true
+      try {
+        const result = await $fetch('/api/info/nextviza', {
+          method: 'POST',
+          body: {
+            ...data
+          }
+        })
+      
+        return result
+      } catch (e) {
+        error.value = 'Eroare la aplicarea vizei'
+        console.error(e)
+        throw e
+      } finally {
+        loading.value = false
+      }
+    }
+
     return {
         loading,
         error,
-        vizaUrmatoare
+        vizaUrmatoare,
+        createVizaCFPP
     }
 }

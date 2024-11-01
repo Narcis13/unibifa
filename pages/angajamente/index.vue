@@ -59,7 +59,9 @@
   <q-dialog v-model="showVizaDialog" persistent>
     <vizacfpp
       tip-document="angajament"
+      :vizadata="vizaData"
       @cancel="showVizaDialog = false"
+      @submit="vizeazaCFPP"
   
     />
   </q-dialog>
@@ -173,10 +175,10 @@ import { useAngajamente } from '~/composables/useAngajamente'
 import {useVizaCFPP} from '~/composables/useVizaCFPP'
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 import type { Angajament, ModificareAngajament } from '~/types/angajamente'
-
+import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const $q = useQuasar()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
-const {vizaUrmatoare} = useVizaCFPP()
+const {vizaUrmatoare,createVizaCFPP} = useVizaCFPP()
 
 const columns = [
   {
@@ -298,6 +300,16 @@ const vizaData = ref({
   valoare:0
 })
 
+const vizeazaCFPP = async (dataviza:CreateVizaCFPPDTO)=>{
+ // console.log('Vizez',dataviza)
+
+  try {
+    const viza = await createVizaCFPP(dataviza)
+    showVizaDialog.value=false
+  } catch (e){
+    console.error(e)
+  }
+}
 
 function reset(){
   newAngajament.value.idCategorie=null
@@ -326,7 +338,7 @@ const handleVizaCFPP = async (modificare: ModificareAngajament) => {
   vizaData.value.codang=selectedAngajament.value?.categorie?.articolBugetar.codang
   vizaData.value.indicator=selectedAngajament.value?.categorie?.articolBugetar.indicator
 
-  console.log('Modificare',modificare,selectedAngajament.value,vizaData.value)
+ // console.log('Modificare',modificare,selectedAngajament.value,vizaData.value)
   showVizaDialog.value=true
  // selectedModificare.value = modificare
  // showVizaDialog.value = true
