@@ -178,7 +178,7 @@ import type { Angajament, ModificareAngajament } from '~/types/angajamente'
 import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const $q = useQuasar()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
-const {vizaUrmatoare,createVizaCFPP} = useVizaCFPP()
+const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
 
 const columns = [
   {
@@ -269,6 +269,7 @@ const showVizaDialog = ref(false)
 const showModificareDialog = ref(false)
 const showIstoricDialog = ref(false)
 const selectedAngajament = ref<Angajament | null>(null)
+const selectedModificare = ref<ModificareAngajament | null>(null)
 
 // State pentru formulare
 const newAngajament = ref({
@@ -305,6 +306,7 @@ const vizeazaCFPP = async (dataviza:CreateVizaCFPPDTO)=>{
 
   try {
     const viza = await createVizaCFPP(dataviza)
+    await aplicaVizaCFPPAngajament(selectedModificare.value!.id,dataviza)
     showVizaDialog.value=false
   } catch (e){
     console.error(e)
@@ -325,6 +327,7 @@ const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
 
 // Action handlers
 const handleVizaCFPP = async (modificare: ModificareAngajament) => {
+  selectedModificare.value=modificare
   const userStore = useUtilizatorStore()
   const nrviza= await vizaUrmatoare()
   vizaData.value.document='Ang. legal nr. '+selectedAngajament.value!.numar

@@ -208,6 +208,8 @@ model ModificariAngajamente {
   vizaCFPP           Boolean       @default(false)     // status viză CFPP
   nr_viza            String?                           // numărul vizei CFPP
   dataCFPP           DateTime?                         // data acordării vizei CFPP
+  codang   String?    @db.VarChar(24)
+  indicator   String?    @db.VarChar(24)
   created_at         DateTime      @default(now())
 
   @@index([idAngajament, created_at])

@@ -39,10 +39,32 @@ export const useVizaCFPP = ()=>{
       }
     }
 
+    const aplicaVizaCFPPAngajament = async (idModificareAngajament:number,data:CreateVizaCFPPDTO)=>{
+      loading.value = true
+      try {
+        const result = await $fetch('/api/info/nextviza', {
+          method: 'PATCH',
+          body: {
+            ...data,
+            idModificareAngajament
+          }
+        })
+      
+        return result
+      } catch (e) {
+        error.value = 'Eroare la aplicarea vizei'
+        console.error(e)
+        throw e
+      } finally {
+        loading.value = false
+      }
+    }
+
     return {
         loading,
         error,
         vizaUrmatoare,
-        createVizaCFPP
+        createVizaCFPP,
+        aplicaVizaCFPPAngajament
     }
 }

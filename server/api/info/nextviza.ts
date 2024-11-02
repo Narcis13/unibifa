@@ -31,4 +31,22 @@ export default defineEventHandler(async (event) => {
 
     return {viza}
   }
+
+  if(event.method==='PATCH'){
+    const body= await readBody(event)
+    //console.log(body)
+
+    await prisma.modificariAngajamente.update({
+      where: {
+        id:body.idModificareAngajament
+      },
+      data: {
+        vizaCFPP:true, // Field to update for all matched records
+        nr_viza:body.nrvizac,
+        dataCFPP:body.dataviza,
+        codang:body.codang,
+        indicator:body.indicator
+      },
+    });
+  }
 })
