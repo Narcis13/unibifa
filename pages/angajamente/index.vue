@@ -15,18 +15,37 @@
           </q-card-section>
 
           <q-card-section>
-            <q-table
+           <q-table
               :rows="angajamente"
               :columns="columns"
               row-key="id"
               :loading="loading"
               :pagination="{ rowsPerPage: 10 }"
+              :row-class="row => !checkIfVizatCFPP(row.modificari) ? 'text-negative' : ''"
             >
-              <template #body-cell-suma="props">
+              <!-- <template #body-cell-suma="props">
                 <q-td :props="props">
                   {{ calculateTotalSum(props.row.modificari) }}
                 </q-td>
+              </template> -->
+
+              <template v-slot:body-cell="props">
+                <q-td :props="props">
+                  <span :class="{ 'text-negative': !checkIfVizatCFPP(props.row.modificari) }">
+                    {{ props.value }}
+                  </span>
+                </q-td>
               </template>
+
+  <!-- Keep the special handling for specific columns -->
+              <template #body-cell-suma="props">
+                <q-td :props="props">
+                  <span :class="{ 'text-negative': !checkIfVizatCFPP(props.row.modificari) }">
+                    {{ calculateTotalSum(props.row.modificari) }}
+                  </span>
+                </q-td>
+              </template>
+
               <template #body-cell-actiuni="props">
                 <q-td :props="props">
                   <q-btn
@@ -35,8 +54,11 @@
                     color="primary"
                     icon="edit"
                     @click="openModificareDialog(props.row)"
+                    :disable="!checkIfVizatCFPP(props.row.modificari)"
                   >
-                    <q-tooltip>Modifică suma</q-tooltip>
+                    <q-tooltip>
+                      {{ checkIfVizatCFPP(props.row.modificari) ? 'Modifica angajament' : 'Necesită viză CFPP' }}
+                    </q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -50,6 +72,8 @@
                 </q-td>
               </template>
             </q-table>
+
+           
           </q-card-section>
         </q-card>
       </div>
@@ -121,6 +145,53 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="showModificareDialog" persistent>
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Modificare Sumă</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-form @submit="onSubmitModificare" class="q-gutter-md">
+            <q-select
+              v-model="modificare.tipModificare"
+              :options="[
+                { label: 'Majorare', value: 'MAJORARE' },
+                { label: 'Diminuare', value: 'DIMINUARE' }
+              ]"
+              label="Tip Modificare"
+              option-label="label"
+              option-value="value"
+              emit-value
+              map-options
+              :rules="[val => !!val || 'Câmpul este obligatoriu']"
+            />
+
+            <q-input
+              v-model.number="modificare.suma"
+              label="Suma"
+              type="number"
+              :rules="[
+                val => !!val || 'Câmpul este obligatoriu',
+                val => val > 0 || 'Suma trebuie să fie pozitivă'
+              ]"
+            />
+
+            <q-input
+              v-model="modificare.motiv"
+              label="Motiv"
+              type="textarea"
+              :rules="[val => !!val || 'Câmpul este obligatoriu']"
+            />
+
+            <div class="row justify-end q-gutter-sm">
+              <q-btn label="Anulează" color="negative" v-close-popup />
+              <q-btn label="Salvează" type="submit" color="primary" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
     <!-- Dialog pentru modificare sumă -->
        <!-- Dialog pentru istoric modificări - Updated -->
        <q-dialog v-model="showIstoricDialog">
@@ -213,10 +284,18 @@ const columns = [
     align: 'left',
   },
   {
+    name: 'vizatCFPP',
+    label: 'Vizat CFPP',
+    field: (row: Angajament) => checkIfVizatCFPP(row.modificari),
+    format: (val: boolean) => val ? 'Da' : 'Nu',
+    align: 'center',
+  },
+  {
     name: 'suma',
     label: 'Suma Totală',
     field: 'suma',
     align: 'right',
+
   },
   {
     name: 'actiuni',
@@ -308,6 +387,10 @@ const vizeazaCFPP = async (dataviza:CreateVizaCFPPDTO)=>{
     const viza = await createVizaCFPP(dataviza)
     await aplicaVizaCFPPAngajament(selectedModificare.value!.id,dataviza)
     showVizaDialog.value=false
+    $q.notify({
+      color: 'positive',
+      message: 'Viza a fost aplicata cu succes!',
+    })
   } catch (e){
     console.error(e)
   }
@@ -319,10 +402,22 @@ function reset(){
 }
 // Calculate total sum from modifications
 const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
+  console.log('Calculate total...')
   const total = modificari.reduce((sum, mod) => {
     return Number(sum) + Number(mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
   }, 0)
   return Number(total)//.toLocaleString('ro-RO')
+}
+
+
+const checkIfVizatCFPP = (modificari: ModificareAngajament[] = []): boolean => {
+  // If there are no modifications, return false
+  if (!modificari || modificari.length === 0) {
+    return false
+  }
+  
+  // Return true only if all modifications have vizaCFPP set to true
+  return modificari.every(modificare => modificare.vizaCFPP === true)
 }
 
 // Action handlers
@@ -417,6 +512,7 @@ const onSubmitAdd = async () => {
 }
 
 const openModificareDialog = (angajament: Angajament) => {
+  console.log('opnemodificare')
   selectedAngajament.value = angajament
   showModificareDialog.value = true
 }

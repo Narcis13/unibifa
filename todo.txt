@@ -39,7 +39,7 @@ angajamente:
 - sa ma raportez la sursa si articol nu la categorie  IMPLEMENTAT
 - sa afisez disponibilul bugetar cid adaug angajament dupa c selectez categoria IMPLEMENTAT
 
-- sa implementez viza CFPP
+- sa implementez viza CFPP  IMPLEMENTAT
 - sa implementez filtrare complexa si diferite viewuri in functie de rolul userului
 - printare angajament
 
