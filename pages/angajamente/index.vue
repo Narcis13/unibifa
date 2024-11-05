@@ -4,8 +4,13 @@
       <div class="col-12">
         <q-card>
           <q-card-section class="row items-center">
-            <div class="text-h6">Angajamente Legale</div>
+            <div class="text-h6 q-mr-md">Angajamente Legale</div>
+            <table-filter
+              :columns="columns"
+              @filtersadded="handleFilters"
+            />
             <q-space />
+
             <q-btn
               color="primary"
               icon="add"
@@ -210,6 +215,7 @@
                 <template #body-cell-actiuni="props">
                   <q-td :props="props">
                     <q-btn
+                     v-if="!props.row.vizaCFPP"
                       flat
                       round
                       color="primary"
@@ -252,11 +258,26 @@ const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategorii
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
 
 const columns = [
+ {
+    name: 'compartiment',
+    label: 'Compartiment',
+    field: (row: Angajament) => row.compartiment?.denumire,
+    align: 'left',
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/compartimente')
+    }
+  },
   {
     name: 'numar',
     label: 'Număr',
     field: 'numar',
     align: 'left',
+    filterOptions:{
+      enabled:false,
+     
+    }
   },
   {
     name: 'data',
@@ -264,24 +285,41 @@ const columns = [
     field: 'data',
     format: (val: string) => new Date(val).toLocaleDateString(),
     align: 'left',
+    filterOptions:{
+      enabled:true,
+      type:'interval'
+    }
   },
   {
-    name: 'categorie',
-    label: 'Categorie',
-    field: (row: Angajament) => row.categorie?.denumire,
+    name: 'sursafinantare',
+    label: 'Sursa fin.',
+    field: (row: Angajament) => row.categorie?.sursaFinantare?.scurt,
     align: 'left',
+    filterOptions:{
+      enabled:true,
+      type:'list'
+    }
   },
   {
-    name: 'compartiment',
-    label: 'Compartiment',
-    field: (row: Angajament) => row.compartiment?.denumire,
-    align: 'left',
+    name: 'artbug',
+    label: 'Art. bug.',
+    field: (row: Angajament) => row.categorie?.articolBugetar.cod,
+    align: 'center',
+    filterOptions:{
+      enabled:true,
+      type:'list'
+    }
   },
+
   {
     name: 'descriere',
     label: 'Descriere',
     field: 'descriere',
     align: 'left',
+    filterOptions:{
+      enabled:false,
+     
+    }
   },
   {
     name: 'vizatCFPP',
@@ -289,12 +327,20 @@ const columns = [
     field: (row: Angajament) => checkIfVizatCFPP(row.modificari),
     format: (val: boolean) => val ? 'Da' : 'Nu',
     align: 'center',
+    filterOptions:{
+      enabled:true,
+      type:'check'
+    }
   },
   {
     name: 'suma',
     label: 'Suma Totală',
     field: 'suma',
     align: 'right',
+    filterOptions:{
+      enabled:true,
+      type:'numericvalue'
+    }
 
   },
   {
@@ -420,6 +466,9 @@ const checkIfVizatCFPP = (modificari: ModificareAngajament[] = []): boolean => {
   return modificari.every(modificare => modificare.vizaCFPP === true)
 }
 
+const handleFilters = async (filters: Record<string, any>) => {
+  console.log('filters',filters)
+}
 // Action handlers
 const handleVizaCFPP = async (modificare: ModificareAngajament) => {
   selectedModificare.value=modificare
@@ -443,6 +492,7 @@ const handleVizaCFPP = async (modificare: ModificareAngajament) => {
 }
 
 const handlePrint = async (modificare: ModificareAngajament) => {
+ // console.log(modificare)
   /*try {
     // Example implementation - adjust based on your API
     const response = await fetch(`/api/modificari/${modificare.id}/print`, {
@@ -512,7 +562,7 @@ const onSubmitAdd = async () => {
 }
 
 const openModificareDialog = (angajament: Angajament) => {
-  console.log('opnemodificare')
+  console.log('opnemodificare',angajament)
   selectedAngajament.value = angajament
   showModificareDialog.value = true
 }
