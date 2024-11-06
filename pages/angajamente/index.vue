@@ -257,6 +257,11 @@ const $q = useQuasar()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
 
+interface Compartiment {
+  value:number
+  label:string
+}
+const compartiment = ref<Compartiment | null>({value:0,label:''})
 const columns = [
  {
     name: 'compartiment',
@@ -266,7 +271,7 @@ const columns = [
     filterOptions:{
       enabled:true,
       type:'list',
-      options:await $fetch('/api/info/compartimente')
+      options:compartiment.value? [compartiment.value]:await $fetch('/api/info/compartimente')
     }
   },
   {
@@ -297,7 +302,8 @@ const columns = [
     align: 'left',
     filterOptions:{
       enabled:true,
-      type:'list'
+      type:'list',
+      options:await $fetch('/api/info/surse')
     }
   },
   {
@@ -307,7 +313,8 @@ const columns = [
     align: 'center',
     filterOptions:{
       enabled:true,
-      type:'list'
+      type:'list',
+      options:await $fetch('/api/info/articole')
     }
   },
 
@@ -624,6 +631,8 @@ onMounted(async () => {
   // Fetch categorii for the user's compartiment
   if (newAngajament.value.idCompartiment) {
     await fetchCategoriiByCompartiment(newAngajament.value.idCompartiment)
+    compartiment.value!.value=userStore.utilizator?.compartiment?.id 
+    compartiment.value!.label=userStore.utilizator?.compartiment?.denumire
   }
   
   await fetchAngajamente(new Date().getFullYear())
