@@ -23,24 +23,36 @@
           <!-- Date interval filter type -->
           <div v-else-if="column.filterOptions.type === 'interval'" class="row q-col-gutter-sm">
             <div class="col-6">
-              <q-input
-                v-model="filters[column.name].from"
-                outlined
-                dense
-                type="date"
-                label="De la"
-              
-              />
+              <q-input label="De la data"  v-model="filters[column.name].from" mask="date" :rules="['date']">
+                                        <template v-slot:append>
+                                            <q-icon name="event" class="cursor-pointer">
+                                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                                <q-date v-model="filters[column.name].from">
+                                                <div class="row items-center justify-end">
+                                                    <q-btn v-close-popup label="Inchide" color="primary" flat />
+                                                </div>
+                                                </q-date>
+                                            </q-popup-proxy>
+                                            </q-icon>
+                                        </template>
+                 </q-input>
+
+
             </div>
             <div class="col-6">
-              <q-input
-                v-model="filters[column.name].to"
-                outlined
-                dense
-                type="date"
-                label="Până la"
-             
-              />
+                           <q-input label="La data"  v-model="filters[column.name].to" mask="date" :rules="['date']">
+                                        <template v-slot:append>
+                                            <q-icon name="event" class="cursor-pointer">
+                                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                                <q-date v-model="filters[column.name].to">
+                                                <div class="row items-center justify-end">
+                                                    <q-btn  v-close-popup  label="Inchide" color="primary" flat />
+                                                </div>
+                                                </q-date>
+                                            </q-popup-proxy>
+                                            </q-icon>
+                                        </template>
+                           </q-input>
             </div>
           </div>
   
@@ -90,7 +102,8 @@
   <script setup lang="ts">
   //import { ref, computed } from 'vue'
   //import type { Ref } from 'vue'
-  
+  import { date } from 'quasar'
+
   interface FilterOptions {
     enabled: boolean
     type: 'list' | 'interval' | 'check' | 'numericvalue'
@@ -105,11 +118,12 @@
   
   interface Props {
     columns: Column[]
+    defaults:Record<string,any>
   }
   
   const props = defineProps<Props>()
   const emit = defineEmits(['filtersadded'])
-  
+   console.log('Filtre default',props.defaults)
   // Only show columns that have filtering enabled
   const filterableColumns = computed(() => 
     props.columns.filter(col => col.filterOptions?.enabled)
@@ -121,22 +135,22 @@
   // Initialize empty filters for each filterable column
   filterableColumns.value.forEach(column => {
     if (column.filterOptions.type === 'interval') {
-      filters.value[column.name] = { from: null, to: null }
+      filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
     } else if (column.filterOptions.type === 'numericvalue') {
-      filters.value[column.name] = { operator: 'gt', value: null }
+      filters.value[column.name] = { operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
     } else if (column.filterOptions.type === 'check') {
-      filters.value[column.name] = null
+      filters.value[column.name] = props.defaults[column.name]
     } else {
-      filters.value[column.name] = null
+      filters.value[column.name] = props.defaults[column.name]?props.defaults[column.name][0]:null
     }
   })
   
   const resetFilters = () => {
     filterableColumns.value.forEach(column => {
       if (column.filterOptions.type === 'interval') {
-        filters.value[column.name] = { from: null, to: null }
+        filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
       } else if (column.filterOptions.type === 'numericvalue') {
-        filters.value[column.name] = { operator: 'gt', value: null }
+        filters.value[column.name] = { operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
       } else {
         filters.value[column.name] = null
       }

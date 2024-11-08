@@ -5,9 +5,25 @@ export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
     const query = getQuery(event)
     const exercitiuBugetar = Number(query.an) || new Date().getFullYear()
+    const from=query.from!.toString().replace(/\//g, '-')
+    const to=query.to!.toString().replace(/\//g, '-')
+    let whereClause = {
+      data: {
+        gte: new Date(from),
+        lte: new Date(to)
+      }
+    }
 
+    // Add compartiment filter if 'compartiment' is in the query
+    if ('compartiment' in query) {
+      whereClause.idCompartiment = Number(query.compartiment)
+    } else {
+      // Otherwise, get all angajamente where idCompartiment > 0
+      whereClause.idCompartiment = { gt: 0 }
+    }
+    console.log('from',from,query.to,'compartiment' in query)
     return await prisma.angajamente.findMany({
-      where: { exercitiuBugetar },
+      where: whereClause,
       include: {
         categorie: {
           include: {

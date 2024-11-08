@@ -7,6 +7,7 @@
             <div class="text-h6 q-mr-md">Angajamente Legale</div>
             <table-filter
               :columns="columns"
+              :defaults="filterDefaults"
               @filtersadded="handleFilters"
             />
             <q-space />
@@ -247,7 +248,7 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
+import { useQuasar, date } from 'quasar'
 import { useAngajamente } from '~/composables/useAngajamente'
 import {useVizaCFPP} from '~/composables/useVizaCFPP'
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
@@ -256,12 +257,13 @@ import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const $q = useQuasar()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
-
+const userStore = useUtilizatorStore()
+console.log('setup angajamente')
 interface Compartiment {
   value:number
   label:string
 }
-const compartiment = ref<Compartiment | null>({value:0,label:''})
+//const compartiment = ref<Compartiment>({value:0,label:''})
 const columns = [
  {
     name: 'compartiment',
@@ -271,7 +273,7 @@ const columns = [
     filterOptions:{
       enabled:true,
       type:'list',
-      options:compartiment.value? [compartiment.value]:await $fetch('/api/info/compartimente')
+      options:userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :await $fetch('/api/info/compartimente') 
     }
   },
   {
@@ -418,6 +420,14 @@ const modificare = ref({
   motiv: '',
 })
 
+const filterDefaults:Record<string,any> = {
+  'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
+  'vizatCFPP':false,
+  'artbug':null,
+  'sursafinantare':null,
+  'data':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
+  'suma':0
+}
 
 const vizaData = ref({
   userid: 0,
@@ -625,17 +635,18 @@ const showIstoric = (angajament: Angajament) => {
 
 // Inițializare
 onMounted(async () => {
-  const userStore = useUtilizatorStore()
+ 
   newAngajament.value.idCompartiment = userStore.utilizator?.compartiment?.id || 0
-  //console.log( userStore.utilizator?.compartiment?.id ,'compartiment id')
+  //console.log( userStore.utilizator?.compartiment?.id ,'on mounted angajamente')
   // Fetch categorii for the user's compartiment
+
   if (newAngajament.value.idCompartiment) {
     await fetchCategoriiByCompartiment(newAngajament.value.idCompartiment)
-    compartiment.value!.value=userStore.utilizator?.compartiment?.id 
-    compartiment.value!.label=userStore.utilizator?.compartiment?.denumire
+
+ 
   }
   
-  await fetchAngajamente(new Date().getFullYear())
+  await fetchAngajamente(new Date().getFullYear(),filterDefaults)
  // console.log(angajamente)
 })
 </script>
