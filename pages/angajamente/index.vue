@@ -564,11 +564,11 @@ const onSubmitAdd = async () => {
       descriere: '',
       suma: 0,
       exercitiuBugetar: new Date().getFullYear(),
-      idCompartiment: newAngajament.value.idCompartiment
+      idCompartiment: userStore.utilizator?.compartiment?.id || 0//newAngajament.value.idCompartiment
     }
     
     // Refresh list
-    await fetchAngajamente(new Date().getFullYear())
+    await fetchAngajamente(new Date().getFullYear(),filterDefaults)
   } catch (error) {
     console.error(error)
     $q.notify({
@@ -618,7 +618,7 @@ const onSubmitModificare = async () => {
     }
     
     // Refresh list
-    await fetchAngajamente(new Date().getFullYear())
+    await fetchAngajamente(new Date().getFullYear(),filterDefaults)
   } catch (error) {
     console.error(error)
     $q.notify({
