@@ -7,10 +7,12 @@ export default defineEventHandler(async (event) => {
     const exercitiuBugetar = Number(query.an) || new Date().getFullYear()
     const from=query.from!.toString().replace(/\//g, '-')
     const to=query.to!.toString().replace(/\//g, '-')
+    let todate = new Date(to); // Get the current date
+    todate.setDate(todate.getDate() + 1); // Add one day
     let whereClause = {
       data: {
         gte: new Date(from),
-        lte: new Date(to)
+        lt: todate
       }
     }
 
@@ -21,7 +23,14 @@ export default defineEventHandler(async (event) => {
       // Otherwise, get all angajamente where idCompartiment > 0
       whereClause.idCompartiment = { gt: 0 }
     }
-    console.log('from',from,query.to,'compartiment' in query)
+
+   // TREBUIE REANALIZATA CU TOTUL VIZA !!!!!!!
+   /* if('viza' in query){
+      whereClause.vizatCFPP=query.viza
+    }*/
+
+      
+    console.log('from',from,to,new Date(to))
     return await prisma.angajamente.findMany({
       where: whereClause,
       include: {
