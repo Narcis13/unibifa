@@ -1,8 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient ,Prisma} from '@prisma/client'
 import type { CreateAngajamentDTO } from '~/types/angajamente'
 const prisma = new PrismaClient()
+
+// Type for the angajament with computed vizatCFPP field
+
+
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
+    /*
     const query = getQuery(event)
     const exercitiuBugetar = Number(query.an) || new Date().getFullYear()
     const from=query.from!.toString().replace(/\//g, '-')
@@ -16,18 +21,14 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Add compartiment filter if 'compartiment' is in the query
+  
     if ('compartiment' in query) {
       whereClause.idCompartiment = Number(query.compartiment)
     } else {
-      // Otherwise, get all angajamente where idCompartiment > 0
+     
       whereClause.idCompartiment = { gt: 0 }
     }
 
-   // TREBUIE REANALIZATA CU TOTUL VIZA !!!!!!!
-   /* if('viza' in query){
-      whereClause.vizatCFPP=query.viza
-    }*/
 
       
     console.log('from',from,to,new Date(to))
@@ -57,6 +58,73 @@ export default defineEventHandler(async (event) => {
       },
       orderBy: {
         created_at: 'desc'
+      }
+    })*/
+
+    const query = getQuery(event)
+    const exercitiuBugetar = Number(query.an) || new Date().getFullYear()
+    const from = query.from!.toString().replace(/\//g, '-')
+    const to = query.to!.toString().replace(/\//g, '-')
+    let todate = new Date(to)
+    todate.setDate(todate.getDate() + 1)
+
+    // Use Prisma's aggregation and grouping for better performance
+    const angajamenteWithCounts = await prisma.$queryRaw`
+      SELECT 
+        a.*,
+        COUNT(m.id) as totalModificari,
+        COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END) as totalVizate
+      FROM Angajamente a
+      LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
+      WHERE a.data >= ${new Date(from)}
+        AND a.data < ${todate}
+        ${query.compartiment ? Prisma.sql`AND a.idCompartiment = ${Number(query.compartiment)}` : Prisma.sql`AND a.idCompartiment > 0`}
+      GROUP BY a.id
+      ${query.viza === 'true' ? Prisma.sql`HAVING COUNT(m.id) > 0 AND COUNT(m.id) = COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END)` : 
+       query.viza === 'false' ? Prisma.sql`HAVING COUNT(m.id) > COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END)` : 
+       Prisma.sql``}
+      ORDER BY a.created_at DESC
+    `
+
+    // Fetch related data in a separate efficient query
+    const angajamenteWithRelations = await prisma.angajamente.findMany({
+      where: {
+        id: {
+          in: (angajamenteWithCounts as any[]).map(a => a.id)
+        }
+      },
+      include: {
+        categorie: {
+          include: {
+            sursaFinantare: true,
+            articolBugetar: true
+          }
+        },
+        compartiment: true,
+        modificari: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          },
+          orderBy: {
+            created_at: 'desc'
+          }
+        }
+      }
+    })
+
+    // Merge the raw counts with the relations
+    return angajamenteWithRelations.map(angajament => {
+      const counts = (angajamenteWithCounts as any[]).find(a => a.id === angajament.id)
+      return {
+        ...angajament,
+        vizatCFPP: counts.totalModificari > 0 && counts.totalModificari === counts.totalVizate,
+        totalModificari: Number(counts.totalModificari),
+        totalVizate: Number(counts.totalVizate)
       }
     })
   }

@@ -426,7 +426,7 @@ const filterDefaults:Record<string,any> = {
   'artbug':null,
   'sursafinantare':null,
   'data':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
-  'suma':0
+  'suma':{ operator:  { label: '>', value: 'gt' }, value: 0 }
 }
 
 const vizaData = ref({

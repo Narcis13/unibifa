@@ -60,7 +60,8 @@
           <q-checkbox
             v-else-if="column.filterOptions.type === 'check'"
             v-model="filters[column.name]"
-            :label="column.label"
+            :label="filters[column.name]===null?'TOATE':'Vizat CFPP'"
+            toggle-indeterminate
             
           />
   
@@ -137,7 +138,7 @@
     if (column.filterOptions.type === 'interval') {
       filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
     } else if (column.filterOptions.type === 'numericvalue') {
-      filters.value[column.name] = { operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
+      filters.value[column.name] = props.defaults[column.name]//{ operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
     } else if (column.filterOptions.type === 'check') {
       filters.value[column.name] = props.defaults[column.name]
     } else {

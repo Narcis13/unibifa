@@ -34,10 +34,11 @@ export const useAngajamente = () => {
   const fetchAngajamente = async (exercitiuBugetar: number, filters:Record<string,any>) => {
    //console.log('sunt in useAngajamente fetch angajamente',filters)
    const comp=filters.compartiment==null?'':`&compartiment=${filters.compartiment[0].value}`
-    const viza=filters.vizatCFPP==null?'':`&viza=${filters.vizatCFPP}`
+    const viza='vizatCFPP' in filters?`&viza=${filters.vizatCFPP}`:''
+    
     loading.value = true
     try {
-      angajamente.value = await $fetch(`/api/angajamente?an=${exercitiuBugetar}&from=${filters.data.from}&to=${filters.data.to}${comp}${viza}`)
+      angajamente.value = await $fetch(`/api/angajamente?an=${exercitiuBugetar}&from=${filters.data.from}&to=${filters.data.to}${comp}${viza}&sumaoperator=${filters.suma.operator.value}&sumavalue=${filters.suma.value}`)
     } catch (e) {
       error.value = 'Eroare la încărcarea angajamentelor'
       console.error(e)
