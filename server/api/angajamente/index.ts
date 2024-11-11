@@ -73,19 +73,28 @@ export default defineEventHandler(async (event) => {
       SELECT 
         a.*,
         COUNT(m.id) as totalModificari,
-        COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END) as totalVizate
+        COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END) as totalVizate,
+        SUM(CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - SUM(CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END) as totalsuma
+        
       FROM Angajamente a
       LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
       WHERE a.data >= ${new Date(from)}
         AND a.data < ${todate}
         ${query.compartiment ? Prisma.sql`AND a.idCompartiment = ${Number(query.compartiment)}` : Prisma.sql`AND a.idCompartiment > 0`}
+          ${query.sumaoperator ? Prisma.sql`AND (
+          SELECT 
+            SUM(CASE WHEN m2.tipModificare = 'MAJORARE' THEN m2.suma ELSE 0 END) -
+            SUM(CASE WHEN m2.tipModificare = 'DIMINUARE' THEN m2.suma ELSE 0 END)
+          FROM ModificariAngajamente m2
+          WHERE m2.idAngajament = a.id
+        ) > ${Number(query.sumavalue)}` : Prisma.sql``}
       GROUP BY a.id
       ${query.viza === 'true' ? Prisma.sql`HAVING COUNT(m.id) > 0 AND COUNT(m.id) = COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END)` : 
        query.viza === 'false' ? Prisma.sql`HAVING COUNT(m.id) > COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END)` : 
        Prisma.sql``}
       ORDER BY a.created_at DESC
     `
-
+   //console.log(angajamenteWithCounts)
     // Fetch related data in a separate efficient query
     const angajamenteWithRelations = await prisma.angajamente.findMany({
       where: {
@@ -124,7 +133,8 @@ export default defineEventHandler(async (event) => {
         ...angajament,
         vizatCFPP: counts.totalModificari > 0 && counts.totalModificari === counts.totalVizate,
         totalModificari: Number(counts.totalModificari),
-        totalVizate: Number(counts.totalVizate)
+        totalVizate: Number(counts.totalVizate),
+        totalsuma:Number(counts.totalsuma)
       }
     })
   }
