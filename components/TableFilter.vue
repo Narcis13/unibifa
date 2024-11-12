@@ -148,14 +148,16 @@
   
   const resetFilters = () => {
     filterableColumns.value.forEach(column => {
-      if (column.filterOptions.type === 'interval') {
-        filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
-      } else if (column.filterOptions.type === 'numericvalue') {
-        filters.value[column.name] = { operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
-      } else {
-        filters.value[column.name] = null
-      }
-    })
+    if (column.filterOptions.type === 'interval') {
+      filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
+    } else if (column.filterOptions.type === 'numericvalue') {
+      filters.value[column.name] = props.defaults[column.name]//{ operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
+    } else if (column.filterOptions.type === 'check') {
+      filters.value[column.name] = props.defaults[column.name]
+    } else {
+      filters.value[column.name] = props.defaults[column.name]?props.defaults[column.name][0]:null
+    }
+  })
     emitFilters()
   }
   

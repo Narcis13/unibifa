@@ -485,6 +485,11 @@ const checkIfVizatCFPP = (modificari: ModificareAngajament[] = []): boolean => {
 
 const handleFilters = async (filters: Record<string, any>) => {
   console.log('filters',filters)
+  try {
+    await fetchAngajamente(2024,filters)
+  } catch (e){
+    console.error(e)
+  }
 }
 // Action handlers
 const handleVizaCFPP = async (modificare: ModificareAngajament) => {
