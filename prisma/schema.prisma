@@ -102,6 +102,7 @@ model compartimente {
   updated_at  DateTime? @updatedAt
   categorii Categorii[]
   angajamente Angajamente[]
+  receptii        Receptii[]
 }
 
 model Categorii {
@@ -158,6 +159,8 @@ model furnizori {
   telefon     String?   @db.VarChar(20)
   created_at  DateTime  @default(now()) @db.DateTime(0)
   updated_at  DateTime? @updatedAt
+
+  receptii        Receptii[]
 }
 
 model Regviza {
@@ -192,6 +195,8 @@ model Angajamente {
 
   @@index([exercitiuBugetar, idCompartiment])
   @@index([idCategorie, exercitiuBugetar])
+
+  receptii        Receptii[]
 }
 
 model ModificariAngajamente {
@@ -218,4 +223,24 @@ model ModificariAngajamente {
 enum TipModificare {
   MAJORARE
   DIMINUARE
+}
+
+model Receptii {
+  id             Int           @id @default(autoincrement())
+  idAngajament   Int
+  angajament     Angajamente   @relation(fields: [idAngajament], references: [id])
+  idFurnizor     Int
+  furnizor       furnizori     @relation(fields: [idFurnizor], references: [id])
+  datafact       DateTime
+  valoare        Decimal       @db.Decimal(15, 2)
+  mentiuni       String?       @db.Text
+  stare          String        @default("activ") @db.VarChar(24)
+  idCompartiment Int
+  compartiment   compartimente @relation(fields: [idCompartiment], references: [id])
+  created_at     DateTime      @default(now()) @db.DateTime(0)
+  updated_at     DateTime?     @updatedAt
+
+  @@index([idAngajament, datafact])
+  @@index([idFurnizor, datafact])
+  @@index([idCompartiment, datafact])
 }

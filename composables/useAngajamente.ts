@@ -33,7 +33,7 @@ export const useAngajamente = () => {
 
   const fetchAngajamente = async (exercitiuBugetar: number, filters:Record<string,any>) => {
    //console.log('sunt in useAngajamente fetch angajamente',filters)
-   const comp=filters.compartiment==null?'':`&compartiment=${filters.compartiment}`
+   const comp=filters.compartiment==null?'':Array.isArray(filters.compartiment)?`&compartiment=${filters.compartiment[0].value}`:`&compartiment=${filters.compartiment.value}`
    const sursa=filters.sursafinantare==null?'':`&sursa=${filters.sursafinantare}`
    const artbug=filters.artbug==null?'':`&artbug=${filters.artbug}`
     const viza='vizatCFPP' in filters?`&viza=${filters.vizatCFPP}`:''

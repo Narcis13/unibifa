@@ -69,6 +69,23 @@ export default defineEventHandler(async (event) => {
     todate.setDate(todate.getDate() + 1)
 
     // Use Prisma's aggregation and grouping for better performance
+    let operatorSql;
+    if (query.sumaoperator) {
+      switch (query.sumaoperator) {
+        case 'eq':
+          operatorSql = Prisma.sql`=`;
+          break;
+        case 'lt':
+          operatorSql = Prisma.sql`<`;
+          break;
+        case 'gt':
+          operatorSql = Prisma.sql`>`;
+          break;
+        default:
+          operatorSql = Prisma.sql`>`;
+      }
+    }
+
     const angajamenteWithCounts = await prisma.$queryRaw`
       SELECT 
         a.*,
@@ -90,14 +107,14 @@ export default defineEventHandler(async (event) => {
             SUM(CASE WHEN m2.tipModificare = 'DIMINUARE' THEN m2.suma ELSE 0 END)
           FROM ModificariAngajamente m2
           WHERE m2.idAngajament = a.id
-        ) > ${Number(query.sumavalue)}` : Prisma.sql``}
+        ) ${operatorSql} ${Number(query.sumavalue)}` : Prisma.sql``}
       GROUP BY a.id
       ${query.viza === 'true' ? Prisma.sql`HAVING COUNT(m.id) > 0 AND COUNT(m.id) = COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END)` : 
        query.viza === 'false' ? Prisma.sql`HAVING COUNT(m.id) > COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END)` : 
        Prisma.sql``}
       ORDER BY a.created_at DESC
     `
-   //console.log(angajamenteWithCounts)
+   //console.log(query)
     // Fetch related data in a separate efficient query
     const angajamenteWithRelations = await prisma.angajamente.findMany({
       where: {

@@ -26,7 +26,7 @@ const  links_administrare= [
     { icon: 'folder', text: 'Buget',ruta:'/bugete' },
     { icon: 'restore', text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
     { icon: 'watch_later', text: 'Angajamente',ruta:'/angajamente' },
-    { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/neimplementat'  },
+    { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/receptii'  },
     { icon: 'thumb_up_alt', text: 'Ordonantari plata',ruta:'/neimplementat'  },
     { icon: 'thumb_up_alt', text: 'Plati',ruta:'/neimplementat'  },
     { icon: 'thumb_up_alt', text: 'Registru vize CFPP',ruta:'/neimplementat'  },
