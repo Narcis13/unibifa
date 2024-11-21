@@ -61,6 +61,7 @@
                 <q-td colspan="100%">
                   <!-- <div class="text-left">This is expand slot for row above: {{ props.row }}.</div> -->
                   <receptie-noua :id-comp="utilizatorStore.utilizator?.compartiment.id" :id-ang="props.row.id" :totalreceptii="props.row.totalreceptii" :sumadisponibila="props.row.suma_disponibila" :data-ang="new Date(props.row.data)" @adaugreceptienoua="onReceptieNoua"/>
+                  <receptie-istoric :receptii="props.row.receptii"/>
                 </q-td>
               </q-tr>
             </template>
@@ -107,11 +108,11 @@
   import type { TableColumn,Receptie } from "~/types/receptii"
   import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
   import { useReceptii } from "~/composables/useReceptii"; 
-
+  import { useQuasar } from "quasar";
   const loading = ref(false)
   
   //const angajamenteOptions = ref([])
-
+  const $q = useQuasar()
   const utilizatorStore = useUtilizatorStore()
   const {receptii,fetchReceptiiAngajamente,createReceptie} = useReceptii()
   const activeTab = ref(utilizatorStore.utilizator?.role=='RESPONSABIL'?'adauga':'interzis')
@@ -208,10 +209,25 @@
   
 const onReceptieNoua = async (dateReceptie:Receptie)=>{
   dateReceptie.idFurnizor=dateReceptie.idFurnizor.value
-  const r = await createReceptie(dateReceptie)
-  console.log('receptie noua ....!!',r)
+  try {
+    const r = await createReceptie(dateReceptie)
+ // console.log('receptie noua ....!!',r)
+    $q.notify({
+      color: 'positive',
+      message: 'Lichidarea/receptia a fost adaugata cu succes!',
+    })
 
-  expanded.value=[]
+    angajamente_receptii.value.map(a=>{
+      if(a.id===r.idAngajament){
+        a.totalreceptii+=parseFloat(r.valoare)
+        a.suma_disponibila = a.totalsuma - a.totalreceptii
+      }
+    })
+    expanded.value=[]
+  } catch {
+    console.error('Error onReceptieNoua')
+  }
+
 }
   const onRequest = async (props: any) => {
     try {

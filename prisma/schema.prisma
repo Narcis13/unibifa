@@ -231,6 +231,7 @@ model Receptii {
   angajament     Angajamente   @relation(fields: [idAngajament], references: [id])
   idFurnizor     Int
   furnizor       furnizori     @relation(fields: [idFurnizor], references: [id])
+   nrfact          String        @default("-") @db.VarChar(24)
   datafact       DateTime
   valoare        Decimal       @db.Decimal(15, 2)
   mentiuni       String?       @db.Text

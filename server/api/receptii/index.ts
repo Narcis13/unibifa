@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
           data: {
             idAngajament: Number(body.idAngajament),
             idFurnizor: Number(body.idFurnizor),
+            nrfact:body.nrfact,
             datafact: new Date(body.datafact),
             valoare: Number(body.valoare),
             mentiuni: body.mentiuni,
