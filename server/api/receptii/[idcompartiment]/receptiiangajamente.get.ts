@@ -57,11 +57,11 @@ export default defineEventHandler(async (event) => {
         SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
         SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)
       ) as totalsuma,
-      COALESCE(SUM(r.valoare), 0) as totalreceptii,
+      COALESCE(SUM(DISTINCT r.valoare), 0) as totalreceptii,
       (
         (SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
         SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)) - 
-        COALESCE(SUM(r.valoare), 0)
+        COALESCE(SUM(DISTINCT r.valoare), 0)
       ) as suma_disponibila
     FROM Angajamente a
     LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
