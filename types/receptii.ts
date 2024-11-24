@@ -38,3 +38,44 @@ export interface Receptie {
       // Add other furnizor properties from your Prisma schema if needed
     };
   }
+
+  export interface ReceptionResponse {
+    success: boolean;
+    data: {
+      id: number;
+      nrfact: string;
+      datafact: Date;
+      valoare: number;
+      mentiuni: string | null;
+      stare: string;
+      created_at: Date;
+      furnizor: {
+        denumire: string;
+        codfiscal: string;
+      };
+      compartiment: string;
+      angajament: {
+        id: number;
+        numar: string;
+        descriere: string;
+        exercitiuBugetar: number;
+        categorie: {
+          denumire: string;
+          sursaFinantare: {
+            denumire: string;
+            cod: string;
+          };
+          articolBugetar: {
+            denumire: string;
+            cod: string;
+          };
+        };
+      };
+      ordonantare: {
+        numar: string;
+        data: Date;
+        stare: string;
+        valoare: number;
+      } | null;
+    }[];
+  }

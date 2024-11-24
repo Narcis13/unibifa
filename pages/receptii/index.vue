@@ -70,8 +70,9 @@
           </q-tab-panel>
   
           <q-tab-panel  name="receptii">
-            <div class="text-h6">Lista Receptii si Lichidari</div>
-            <!-- Table for displaying receptii -->
+            <receptie-lista :id-compartiment="utilizatorStore.utilizator?.compartiment.id"/>
+            <!-- <div class="text-h6">Lista Receptii si Lichidari</div>
+           
             <q-table
               :rows="receptii"
               :columns="columns"
@@ -88,7 +89,7 @@
                   </q-btn-group>
                 </q-td>
               </template>
-            </q-table>
+            </q-table> -->
           </q-tab-panel>
   
           <q-tab-panel   name="interzis">
@@ -118,7 +119,8 @@
   const activeTab = ref(utilizatorStore.utilizator?.role=='RESPONSABIL'?'adauga':'interzis')
   const angajamente_disponibile=utilizatorStore.utilizator?.role=='RESPONSABIL'? await fetchReceptiiAngajamente(utilizatorStore.utilizator?.compartiment.id):[]
   const angajamente_receptii = ref(angajamente_disponibile)
-  console.log('Toate receptiile',angajamente_receptii.value)
+  //const toate_receptiile = await fetchReceptions(utilizatorStore.utilizator?.compartiment.id)
+  //console.log('Toate receptiile',toate_receptiile)
   const expanded=ref([])
   
   const pagination = ref({

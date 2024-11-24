@@ -1,4 +1,4 @@
-import type { Receptie } from "~/types/receptii"
+import type { Receptie,ReceptionResponse } from "~/types/receptii"
 
 export const useReceptii = ()=>{
 
@@ -16,6 +16,13 @@ export const useReceptii = ()=>{
        return ang_disponibile
     }
 
+    const fetchReceptions = async (compartimentId: number) => {
+      return await $fetch<ReceptionResponse>('/api/receptii', {
+        query: {
+          compartimentId
+        }
+      })
+    }
     const createReceptie = async (data) => {
         loading.value = true
         try {
@@ -41,6 +48,7 @@ export const useReceptii = ()=>{
         receptii,
         fetchReceptii,
         fetchReceptiiAngajamente,
-        createReceptie
+        createReceptie,
+        fetchReceptions
     }
 }

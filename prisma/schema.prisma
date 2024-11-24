@@ -161,6 +161,7 @@ model furnizori {
   updated_at  DateTime? @updatedAt
 
   receptii        Receptii[]
+  ordonantari OrdonantariPlata[]
 }
 
 model Regviza {
@@ -244,4 +245,38 @@ model Receptii {
   @@index([idAngajament, datafact])
   @@index([idFurnizor, datafact])
   @@index([idCompartiment, datafact])
+
+  ordonantari    ReceptiiOrdonantari[]
+}
+
+model OrdonantariPlata {
+  id            Int       @id @default(autoincrement())
+  numar         String    @unique // Format: O2024-00001
+  dataord       DateTime  @default(now())
+  idFurnizor    Int
+  furnizor      furnizori @relation(fields: [idFurnizor], references: [id])
+  valoare       Decimal   @db.Decimal(15, 2)
+  stare         String    @default("activ") @db.VarChar(24)
+  explicatii    String?   @db.Text
+  created_at    DateTime  @default(now()) @db.DateTime(0)
+  updated_at    DateTime? @updatedAt
+
+  // Relation to track which receptions are included in this payment order
+  receptii      ReceptiiOrdonantari[]
+
+  @@index([idFurnizor, dataord])
+
+}
+
+// Junction table to handle many-to-many relationship between Receptii and OrdonantariPlata
+model ReceptiiOrdonantari {
+  id              Int             @id @default(autoincrement())
+  idOrdonantare   Int
+  ordonantare     OrdonantariPlata @relation(fields: [idOrdonantare], references: [id])
+  idReceptie      Int
+  receptie        Receptii        @relation(fields: [idReceptie], references: [id])
+  created_at      DateTime        @default(now()) @db.DateTime(0)
+
+  @@unique([idOrdonantare, idReceptie])
+  @@index([idReceptie])
 }
