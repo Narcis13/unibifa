@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useReceptii }  from "~/composables/useReceptii"; 
 import { useOrdonantari } from "~/composables/useOrdonantari";
-import { QTableColumn ,useQuasar} from 'quasar'
+import { date ,useQuasar} from 'quasar'
 
 
 interface Props {
@@ -59,27 +59,42 @@ const isValidSelection = computed(() => {
 })
 
 
-const columns: QTableColumn[] = [
+const columns = [
   {
     name: 'sursafinantare',
     label: 'Sursa finantare',
     field: 'sursafinantare',
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/surse')
+    }
   },
   {
     name: 'articolbugetar',
     label: 'Articol bugetar',
     field: 'articolbugetar',
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/articole')
+    }
   },
   {
     name: 'furnizor',
     label: 'Furnizor',
     field: (row: Reception) => row.furnizor.denumire,
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:[]
+    }
   },
   {
     name: 'nrfact',
@@ -94,7 +109,11 @@ const columns: QTableColumn[] = [
     field: 'datafact',
     format: (val: Date) => new Date(val).toLocaleDateString('ro-RO'),
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'interval'
+    }
   },
   {
     name: 'valoare',
@@ -106,7 +125,11 @@ const columns: QTableColumn[] = [
     }).format(val),
     align: 'right',
     sortable: true,
-    style: (row: Reception) => row.valoare < 0 ? 'color: red' : ''
+    style: (row: Reception) => row.valoare < 0 ? 'color: red' : '',
+    filterOptions:{
+      enabled:true,
+      type:'numericvalue'
+    }
   },
   {
     name: 'mentiuni',
@@ -124,10 +147,22 @@ const columns: QTableColumn[] = [
       return `${row.ordonantare.numar} / ${new Date(row.ordonantare.data).toLocaleDateString('ro-RO')}`
     },
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'check'
+    }
   }
 ]
-
+const filterDefaults:Record<string,any> = {
+  
+  'ordonantare':false,
+  'furnizor':null,
+  'artbug':null,
+  'sursafinantare':null,
+  'datafact':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
+  'valoare':{ operator:  { label: '>', value: 'gt' }, value: 0 }
+}
 const totalValoare = computed(() => {
   return receptions.value.reduce((sum, reception) => sum + parseFloat(reception.valoare), 0)
 })
@@ -151,7 +186,14 @@ const fetchReceptionsData = async () => {
     loading.value = false
   }
 }
-
+const handleFilters = async (filters: Record<string, any>) => {
+  console.log('filters',filters)
+  try {
+   // await fetchAngajamente(2024,filters)
+  } catch (e){
+    console.error(e)
+  }
+}
 const ordonantareNoua = async ()=>{
  
   if (!selected.value.length) return
@@ -214,7 +256,13 @@ onMounted(() => {
     }"
   >
   <template v-slot:top>
-        <FiltruReceptii />
+        <FiltruReceptii
+              :columns="columns"
+              :defaults="filterDefaults"
+              @filtersadded="handleFilters"
+        >
+
+        </FiltruReceptii>
         
         <q-space />
         <q-btn color="primary" :disable="!isValidSelection" no-caps icon="payments" label="Ordonanțează la plată" @click="ordonantareNoua" />
