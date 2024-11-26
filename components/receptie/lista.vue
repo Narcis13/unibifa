@@ -2,7 +2,7 @@
 import { useReceptii }  from "~/composables/useReceptii"; 
 import { useOrdonantari } from "~/composables/useOrdonantari";
 import { date ,useQuasar} from 'quasar'
-
+import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 
 interface Props {
   idCompartiment: number
@@ -31,6 +31,8 @@ interface Reception {
 }
 const {fetchReceptions} = useReceptii()
 const {createOrdonantare} = useOrdonantari()
+const nomenclatoareStore=useNomenclatoareStore()
+const furnizoriOptions = ref(nomenclatoareStore.baza.furnizori_index.map(f=>({label:f.denumire,value:f.id})))
 const loading = ref(false)
 const selected = ref<Reception[]>([])
 const receptions = ref<Reception[]>([])
@@ -93,7 +95,7 @@ const columns = [
     filterOptions:{
       enabled:true,
       type:'list',
-      options:[]
+      options:furnizoriOptions.value
     }
   },
   {
@@ -177,7 +179,7 @@ const formattedTotalValoare = computed(() => {
 const fetchReceptionsData = async () => {
   try {
     loading.value = true
-    const response = await fetchReceptions(props.idCompartiment)
+    const response = await fetchReceptions(props.idCompartiment,filterDefaults)
     receptions.value = response
   } catch (error) {
     console.error('Error fetching receptions:', error)

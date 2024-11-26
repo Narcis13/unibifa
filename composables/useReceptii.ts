@@ -16,12 +16,14 @@ export const useReceptii = ()=>{
        return ang_disponibile
     }
 
-    const fetchReceptions = async (compartimentId: number) => {
-      return await $fetch<ReceptionResponse>('/api/receptii', {
-        query: {
-          compartimentId
-        }
-      })
+    const fetchReceptions = async (compartimentId: number,filters:Record<string,any>) => {
+      const furnizor=filters.furnizor==null?'':`&furnizor=${filters.furnizor}`
+      const sursa=filters.sursafinantare==null?'':`&sursa=${filters.sursafinantare}`
+      const artbug=filters.artbug==null?'':`&artbug=${filters.artbug}`
+       const ordon='ordonantare' in filters?`&ordonantare=${filters.ordonantare}`:''
+    console.log(furnizor,sursa,artbug,ordon,filters)
+      return await $fetch<ReceptionResponse>(`/api/receptii?compartimentId=${compartimentId}&from=${filters.datafact.from}&to=${filters.datafact.to}${furnizor}${ordon}&sumaoperator=${filters.valoare.operator.value}&sumavalue=${filters.valoare.value}${sursa}${artbug}`
+      )
     }
     const createReceptie = async (data) => {
         loading.value = true
