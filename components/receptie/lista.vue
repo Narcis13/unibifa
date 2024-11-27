@@ -3,6 +3,7 @@ import { useReceptii }  from "~/composables/useReceptii";
 import { useOrdonantari } from "~/composables/useOrdonantari";
 import { date ,useQuasar} from 'quasar'
 import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
+import { biFilterSquare } from "@quasar/extras/bootstrap-icons";
 
 interface Props {
   idCompartiment: number
@@ -191,9 +192,14 @@ const fetchReceptionsData = async () => {
 const handleFilters = async (filters: Record<string, any>) => {
   console.log('filters',filters)
   try {
-   // await fetchAngajamente(2024,filters)
-  } catch (e){
-    console.error(e)
+    loading.value = true
+    const response = await fetchReceptions(props.idCompartiment,filters)
+    receptions.value = response
+  } catch (error) {
+    console.error('Error fetching receptions:', error)
+    // You might want to use a toast or notification system here
+  } finally {
+    loading.value = false
   }
 }
 const ordonantareNoua = async ()=>{

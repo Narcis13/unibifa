@@ -10,6 +10,14 @@ export default defineEventHandler(async (event) => {
 
     try {
       const query = getQuery(event)
+     
+ 
+  const fromDate = query.from ? new Date(query.from.toString()) : null
+  const toDate = query.to ? new Date(query.to.toString()) : null
+  const ordonantareFilter = query.ordonantare?.toString()
+  const sumaOperator = query.sumaoperator?.toString()
+  const sumaValue = query.sumavalue ? parseFloat(query.sumavalue.toString()) : null
+
       const compartimentId = query.compartimentId
   
       if (!compartimentId) {
@@ -18,17 +26,70 @@ export default defineEventHandler(async (event) => {
           message: 'Compartiment ID is required'
         })
       }
-  
+      const whereClause: any = {
+        idCompartiment: parseInt(compartimentId.toString())
+      }
+    
+      // Add date range filter if both from and to dates are provided
+      if (fromDate && toDate) {
+        whereClause.datafact = {
+          gte: fromDate,
+          lte: toDate
+        }
+      } else if (fromDate) {
+        whereClause.datafact = { gte: fromDate }
+      } else if (toDate) {
+        whereClause.datafact = { lte: toDate }
+      }
+    
+      // Add suma (value) filter
+      if (sumaValue !== null && sumaOperator) {
+        switch (sumaOperator) {
+          case 'gt':
+            whereClause.valoare = { gt: sumaValue }
+            break
+          case 'gte':
+            whereClause.valoare = { gte: sumaValue }
+            break
+          case 'lt':
+            whereClause.valoare = { lt: sumaValue }
+            break
+          case 'lte':
+            whereClause.valoare = { lte: sumaValue }
+            break
+          case 'eq':
+            whereClause.valoare = sumaValue
+            break
+          default:
+            throw createError({
+              statusCode: 400,
+              message: 'Invalid suma operator'
+            })
+        }
+      }
       // Get the start of the current year
       const startOfYear = new Date(new Date().getFullYear(), 0, 1)
-  
+      whereClause.created_at={
+        gte: startOfYear
+      }
+
+      let ordonantareWhere = undefined
+      if (ordonantareFilter === 'true') {
+        // Only receptions with payment orders
+        ordonantareWhere = {
+          some: {} // This ensures at least one payment order exists
+        }
+      } else if (ordonantareFilter === 'false') {
+        // Only receptions without payment orders
+        ordonantareWhere = {
+          none: {} // This ensures no payment orders exist
+        }
+      }
+
       const receptions = await prisma.receptii.findMany({
-        where: {
-          idCompartiment: parseInt(compartimentId.toString()),
-          created_at: {
-            gte: startOfYear
-          }
-        },
+        where: whereClause,
+
+      //ordonantari: ordonantareWhere,
         include: {
           angajament: {
             include: {
