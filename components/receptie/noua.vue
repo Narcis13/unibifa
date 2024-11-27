@@ -47,7 +47,7 @@
     />
 
     <div class="q-ml-xl" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-      <q-btn :disable="!allValid" class="full-width q-pa-sm" color="primary" >
+      <q-btn :disable="!allValid" class="full-width q-pa-sm" color="primary" @click="emitReceptieOrdonantareNoua">
         Salveaza <br> Ordonanteaza plata
       </q-btn>
       <q-btn :disable="!allValid" label="Salveaza" color="secondary" flat class="q-ml-sm" @click="emitReceptieNoua"/>
@@ -68,7 +68,7 @@ interface Props {
   }
   
 const props = defineProps<Props>()
-const emit = defineEmits(['adaugreceptienoua'])
+const emit = defineEmits(['adaugreceptienoua','adaugreceptiesiordonantare'])
 const nomenclatoareStore=useNomenclatoareStore()
 //console.log('Receptie noua setup',props)
 function optionsFn (d) {
@@ -101,5 +101,11 @@ const newReceptie = ref<Receptie>({
  // console.log('emitReceptieNoua',newReceptie.value)
  //newReceptie.value.idFurnizor=newReceptie.value.idFurnizor.value
   emit('adaugreceptienoua',newReceptie.value)
+}
+
+const emitReceptieOrdonantareNoua = ()=>{
+ // console.log('emitReceptieNoua',newReceptie.value)
+ //newReceptie.value.idFurnizor=newReceptie.value.idFurnizor.value
+  emit('adaugreceptiesiordonantare',newReceptie.value)
 }
 </script>

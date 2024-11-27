@@ -17,7 +17,9 @@ export default defineEventHandler(async (event) => {
   const ordonantareFilter = query.ordonantare?.toString()
   const sumaOperator = query.sumaoperator?.toString()
   const sumaValue = query.sumavalue ? parseFloat(query.sumavalue.toString()) : null
-
+  const furnizorId = query.furnizor ? parseInt(query.furnizor.toString()) : null
+  const sursaId = query.sursa ? parseInt(query.sursa.toString()) : null
+  const articolBugetarId = query.artbug ? parseInt(query.artbug.toString()) : null
       const compartimentId = query.compartimentId
   
       if (!compartimentId) {
@@ -86,10 +88,28 @@ export default defineEventHandler(async (event) => {
         }
       }
 
+      if (furnizorId) {
+        whereClause.idFurnizor = furnizorId
+      }
+    
       const receptions = await prisma.receptii.findMany({
-        where: whereClause,
-
-      //ordonantari: ordonantareWhere,
+        where: {
+          ...whereClause,
+          // Sursa and articol bugetar filters
+          angajament: {
+            categorie: {
+              ...(sursaId ? { idsursa: sursaId } : {}),
+              ...(articolBugetarId ? { idarticol: articolBugetarId } : {})
+            }
+          },
+          // Ordonantare filter
+          ordonantari: 
+            ordonantareFilter === 'true' 
+              ? { some: {} } 
+              : ordonantareFilter === 'false' 
+              ? { none: {} } 
+              : undefined
+        },
         include: {
           angajament: {
             include: {
@@ -103,7 +123,7 @@ export default defineEventHandler(async (event) => {
           },
           furnizor: {
             select: {
-              id:true,
+              id: true,
               denumire: true,
               codfiscal: true
             }
@@ -114,7 +134,7 @@ export default defineEventHandler(async (event) => {
             }
           },
           ordonantari: {
-            take: 1, // Since we know there can only be one
+            take: 1,
             include: {
               ordonantare: {
                 select: {

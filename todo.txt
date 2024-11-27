@@ -35,12 +35,6 @@ export async function register(event: H3Event): Promise<JSONResponse> {
   return response;
 }
 
-angajamente:
-- sa ma raportez la sursa si articol nu la categorie  IMPLEMENTAT
-- sa afisez disponibilul bugetar cid adaug angajament dupa c selectez categoria IMPLEMENTAT
-
-- sa implementez viza CFPP  IMPLEMENTAT
-- sa implementez filtrare complexa si diferite viewuri in functie de rolul userului
-- printare angajament
+!!!BUG - nu aduna corect receptiile cu furnizori diferiti la un angajament
 
 //de pe batrinu mac

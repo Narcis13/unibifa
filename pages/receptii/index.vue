@@ -60,7 +60,7 @@
               <q-tr v-if="props.expand" :props="props">
                 <q-td colspan="100%">
                   <!-- <div class="text-left">This is expand slot for row above: {{ props.row }}.</div> -->
-                  <receptie-noua :id-comp="utilizatorStore.utilizator?.compartiment.id" :id-ang="props.row.id" :totalreceptii="props.row.totalreceptii" :sumadisponibila="props.row.suma_disponibila" :data-ang="new Date(props.row.data)" @adaugreceptienoua="onReceptieNoua"/>
+                  <receptie-noua :id-comp="utilizatorStore.utilizator?.compartiment.id" :id-ang="props.row.id" :totalreceptii="props.row.totalreceptii" :sumadisponibila="props.row.suma_disponibila" :data-ang="new Date(props.row.data)" @adaugreceptienoua="onReceptieNoua" @adaugreceptiesiordonantare="onReceptieSiOrdonantareNoua"/>
                   <receptie-istoric :receptii="props.row.receptii"/>
                 </q-td>
               </q-tr>
@@ -109,6 +109,7 @@
   import type { TableColumn,Receptie } from "~/types/receptii"
   import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
   import { useReceptii } from "~/composables/useReceptii"; 
+  import { useOrdonantari } from "~/composables/useOrdonantari";
   import { useQuasar } from "quasar";
   const loading = ref(false)
   
@@ -116,6 +117,7 @@
   const $q = useQuasar()
   const utilizatorStore = useUtilizatorStore()
   const {receptii,fetchReceptiiAngajamente,createReceptie} = useReceptii()
+  const {createOrdonantare} = useOrdonantari()
   const activeTab = ref(utilizatorStore.utilizator?.role=='RESPONSABIL'?'adauga':'interzis')
   const angajamente_disponibile=utilizatorStore.utilizator?.role=='RESPONSABIL'? await fetchReceptiiAngajamente(utilizatorStore.utilizator?.compartiment.id):[]
   const angajamente_receptii = ref(angajamente_disponibile)
@@ -231,17 +233,40 @@ const onReceptieNoua = async (dateReceptie:Receptie)=>{
   }
 
 }
-  const onRequest = async (props: any) => {
-    try {
-      loading.value = true
-      // Add API call to fetch receptii with pagination
-      console.log('Fetching receptii with props:', props)
-    } catch (error) {
-      console.error('Error fetching receptii:', error)
-    } finally {
-      loading.value = false
+
+const onReceptieSiOrdonantareNoua = async (dateReceptie:Receptie) =>{
+
+  dateReceptie.idFurnizor=dateReceptie.idFurnizor.value
+  try {
+    const r = await createReceptie(dateReceptie)
+
+    const OrdPayload= {
+      idFurnizor: dateReceptie.idFurnizor,
+      receptii: [r.id],
+      valoare: parseFloat(r.valoare),
+      explicatii: ''
     }
+ 
+    const ordonantare= await createOrdonantare(OrdPayload)
+
+ // console.log('receptie noua ....!!',r)
+    $q.notify({
+      color: 'positive',
+      message: 'Lichidarea/receptia si Ordonantarea de Plata au fost adaugate cu succes!',
+    })
+
+    angajamente_receptii.value.map(a=>{
+      if(a.id===r.idAngajament){
+        a.totalreceptii+=parseFloat(r.valoare)
+        a.suma_disponibila = a.totalsuma - a.totalreceptii
+      }
+    })
+    expanded.value=[]
+  } catch {
+    console.error('Error onReceptieNoua')
   }
+
+}
   
 
   
