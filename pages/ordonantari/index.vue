@@ -5,6 +5,13 @@ const {fetchOrdonantari} = useOrdonantari()
 
 
 const columns = [
+{
+    name: 'compartiment',
+    label: 'Compartiment',
+    field: 'compartiment',
+    align: 'left',
+    sortable: true
+  },
   {
     name: 'numar',
     label: 'Număr',
@@ -60,6 +67,7 @@ async function toateOrdonantarile() {
   try {
    
     ordonantari.value = await fetchOrdonantari()
+    console.log(ordonantari.value)
   } catch (error) {
     console.error('Error fetching ordonantari:', error)
   } finally {

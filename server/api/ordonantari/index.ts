@@ -13,12 +13,14 @@ export default defineEventHandler(async (event) => {
           op.*,
           f.denumire as furnizor_denumire,
           f.codfiscal as furnizor_codfiscal,
+          comp.denumire as compartiment,
           JSON_ARRAYAGG(
             JSON_OBJECT(
               'id', r.id,
               'nrfact', r.nrfact,
               'datafact', r.datafact,
               'valoare', r.valoare,
+              'compartiment' , comp.denumire,
               'angajament', JSON_OBJECT(
                 'id', a.id,
                 'numar', a.numar,
@@ -45,18 +47,20 @@ export default defineEventHandler(async (event) => {
         LEFT JOIN furnizori f ON op.idFurnizor = f.id
         LEFT JOIN ReceptiiOrdonantari ro ON op.id = ro.idOrdonantare
         LEFT JOIN Receptii r ON ro.idReceptie = r.id
+        LEFT JOIN compartimente comp ON comp.id = r.idCompartiment
         LEFT JOIN Angajamente a ON r.idAngajament = a.id
         LEFT JOIN Categorii c ON a.idCategorie = c.id
         LEFT JOIN sursefinantare sf ON c.idsursa = sf.id
         LEFT JOIN articolebugetare ab ON c.idarticol = ab.id
         WHERE op.stare = 'activ'
-        GROUP BY op.id
+        GROUP BY op.id,r.id
         ORDER BY op.dataord DESC
       `
   
       // Transform the results to parse JSON strings
       const formattedOrdonantari = ordonantari.map((ord: any) => ({
         ...ord,
+   
         receptii: typeof ord.receptii === 'string' 
           ? JSON.parse(ord.receptii) 
           : ord.receptii

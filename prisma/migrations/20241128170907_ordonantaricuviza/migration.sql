@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `OrdonantariPlata` ADD COLUMN `dataCFPP` DATETIME(3) NULL,
+    ADD COLUMN `nr_viza` VARCHAR(191) NULL,
+    ADD COLUMN `vizaCFPP` BOOLEAN NOT NULL DEFAULT false;

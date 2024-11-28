@@ -258,6 +258,9 @@ model OrdonantariPlata {
   valoare       Decimal   @db.Decimal(15, 2)
   stare         String    @default("activ") @db.VarChar(24)
   explicatii    String?   @db.Text
+  vizaCFPP           Boolean       @default(false)     // status viză CFPP
+  nr_viza            String?                           // numărul vizei CFPP
+  dataCFPP           DateTime?                         // data acordării vizei CFPP
   created_at    DateTime  @default(now()) @db.DateTime(0)
   updated_at    DateTime? @updatedAt
 
