@@ -43,9 +43,16 @@ export const useOrdonantari = ()=>{
       }
     }
 
+    const fetchOrdonantari = async ()=>{
+      const { data} = await $fetch('/api/ordonantari')
+
+      return data
+    }
+
  return {
     loading,
     error,
-    createOrdonantare
+    createOrdonantare,
+    fetchOrdonantari
  }
 }
