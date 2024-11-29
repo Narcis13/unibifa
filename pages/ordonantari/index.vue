@@ -41,17 +41,11 @@ const columns = [
     sortable: true
   },
   {
-    name: 'stare',
-    label: 'Stare',
-    field: 'stare',
-    align: 'left',
+    name: 'artbug',
+    label: 'Art. bug.',
+    field:(row)=> row.primareceptie.angajament.categorie?.articol.cod,
+    align: 'center',
     sortable: true
-  },
-  {
-    name: 'receptii',
-    label: 'Recepții',
-    field: 'receptii',
-    align: 'left'
   }
 ]
 
@@ -173,29 +167,6 @@ onMounted(() => {
           </q-td>
         </template>
 
-        <template v-slot:expanded-item="props">
-          <q-tr>
-            <q-td colspan="100%">
-              <div class="text-left">
-                <div class="text-weight-bold q-mb-sm">Recepții:</div>
-                <q-list dense>
-                  <q-item v-for="receptie in props.row.receptii" :key="receptie.id">
-                    <q-item-section>
-                      <q-item-label>
-                        Factură nr. {{ receptie.nrfact }} din {{ formatDate(receptie.datafact) }}
-                        - {{ formatAmount(receptie.valoare) }} lei
-                      </q-item-label>
-                      <q-item-label caption>
-                        Angajament: {{ receptie.angajament.numar }}
-                        - {{ receptie.angajament.categorie.denumire }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </div>
-            </q-td>
-          </q-tr>
-        </template>
       </q-table>
     </div>
   </q-page>

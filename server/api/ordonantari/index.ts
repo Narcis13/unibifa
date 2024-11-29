@@ -63,7 +63,11 @@ export default defineEventHandler(async (event) => {
    
         receptii: typeof ord.receptii === 'string' 
           ? JSON.parse(ord.receptii) 
-          : ord.receptii
+          : ord.receptii,
+          primareceptie:typeof ord.receptii === 'string' 
+          ? JSON.parse(ord.receptii) [0]
+          : ord.receptii[0],
+
       }))
   
       return {
