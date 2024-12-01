@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useQuasar } from 'quasar'
 import { useOrdonantari } from "~/composables/useOrdonantari";
-
+import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
+import {useVizaCFPP} from '~/composables/useVizaCFPP'
+import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const {fetchOrdonantari} = useOrdonantari()
-
-
+const {vizaUrmatoare,createVizaCFPP} = useVizaCFPP()
+const $q = useQuasar()
 const columns = [
 {
     name: 'compartiment',
@@ -41,12 +44,27 @@ const columns = [
     sortable: true
   },
   {
+    name: 'sursa',
+    label: 'Sursa finantare',
+    field:(row)=> row.primareceptie.angajament.categorie?.sursa.scurt,
+    align: 'left',
+    sortable: true
+  },
+  {
     name: 'artbug',
     label: 'Art. bug.',
     field:(row)=> row.primareceptie.angajament.categorie?.articol.cod,
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'vizaCFPP',
+    label: 'Viză CFPP',
+    field: 'vizaCFPP',
     align: 'center',
     sortable: true
   }
+
 ]
 
 // State
@@ -54,7 +72,10 @@ const ordonantari = ref([])
 const loading = ref(false)
 const selected = ref([])
 const selectedRow = computed(() => selected.value[0])
-
+const selectatSiNevizat = computed(()=>{
+  return selected.value[0]&&selected.value[0].vizaCFPP==0
+})
+const showVizaDialog = ref(false)
 // Fetch data
 async function toateOrdonantarile() {
   loading.value = true
@@ -85,6 +106,7 @@ function formatAmount(amount: number) {
 function handleVizaCFPP() {
   if (!selectedRow.value) return
   // Implement CFPP visa logic here
+  showVizaDialog.value=true
   console.log('Applying CFPP visa for:', selectedRow.value)
 }
 
@@ -94,6 +116,34 @@ function handlePrint() {
   console.log('Printing:', selectedRow.value)
 }
 
+const vizeaza = async ()=>{
+  const userStore = useUtilizatorStore()
+  const nrviza= await vizaUrmatoare()
+  const dateviza:CreateVizaCFPPDTO ={
+  document:'Ordonantare plata nr. '+selectedRow.value!.numar,
+  explicatii:selectedRow.value!.primareceptie.angajament.descriere,
+  compartiment : selectedRow.value!.compartiment! ,
+  valoare:selectedRow.value.valoare,
+  dataviza:new Date(),
+  nume:userStore.utilizator.first_name+' '+userStore.utilizator.last_name,
+  userid:userStore.utilizator.id,
+  nrviza:nrviza as string,
+  nrvizac:userStore.utilizator.first_name.substr(0,1)+userStore.utilizator.last_name.substr(0,1)+'-'+nrviza
+  }
+
+  try {
+    const viza = await createVizaCFPP(dateviza)
+   
+    showVizaDialog.value=false
+    $q.notify({
+      color: 'positive',
+      message: 'Viza CFPP a fost aplicata cu succes!',
+    })
+  } catch (e){
+    console.error(e)
+  }
+
+}
 // Lifecycle
 onMounted(() => {
   toateOrdonantarile()
@@ -111,7 +161,7 @@ onMounted(() => {
             color="primary"
             icon="check_circle"
             label="Viză CFPP"
-            :disable="!selectedRow"
+            :disable="!selectatSiNevizat"
             class="q-mr-sm"
             @click="handleVizaCFPP"
           />
@@ -133,7 +183,7 @@ onMounted(() => {
         selection="single"
         v-model:selected="selected"
         :loading="loading"
-        :pagination="{ rowsPerPage: 10 }"
+        :pagination="{ rowsPerPage: 20 }"
       >
         <!-- Custom column formatters -->
         <template v-slot:body-cell-dataord="props">
@@ -153,7 +203,15 @@ onMounted(() => {
             {{ props.row.furnizor_denumire }}
           </q-td>
         </template>
-
+        <template v-slot:body-cell-vizaCFPP="props">
+          <q-td :props="props">
+            <q-checkbox
+              :model-value="props.row.vizaCFPP==0?false:true"
+           
+       
+            />
+          </q-td>
+        </template>
         <!-- Expand slot for showing receptii details -->
         <template v-slot:body-cell-receptii="props">
           <q-td :props="props">
@@ -169,6 +227,21 @@ onMounted(() => {
 
       </q-table>
     </div>
+
+    <q-dialog v-model="showVizaDialog">
+          <q-card style="min-width: 800px">
+            <q-card-section>
+              <div class="text-h6">Viza CFPP</div>
+            </q-card-section>
+
+           
+
+            <q-card-actions class="row justify-between q-gutter-sm">
+              <q-btn flat label="Vizeaza CFPP!" color="primary"  @click="vizeaza"/>
+              <q-btn flat label="Închide" color="primary" v-close-popup />
+            </q-card-actions>
+          </q-card>
+    </q-dialog>
   </q-page>
 </template>
 

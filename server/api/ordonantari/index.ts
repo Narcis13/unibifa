@@ -32,7 +32,8 @@ export default defineEventHandler(async (event) => {
                   'sursa', JSON_OBJECT(
                     'id', sf.id,
                     'denumire', sf.denumire,
-                    'cod', sf.cod
+                    'cod', sf.cod,
+                    'scurt', sf.scurt
                   ),
                   'articol', JSON_OBJECT(
                     'id', ab.id,

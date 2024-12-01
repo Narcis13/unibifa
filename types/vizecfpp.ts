@@ -6,7 +6,7 @@ export interface CreateVizaCFPPDTO {
     document:string,
     explicatii:string,
     compartiment:string,
-    codang:string,
-    indicator:string,
+    codang?:string,
+    indicator?:string,
     valoare:number
   }
