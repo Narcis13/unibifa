@@ -60,11 +60,32 @@ export const useVizaCFPP = ()=>{
       }
     }
 
+    const aplicaVizaCFPPOrdonantare = async (idOrdonantare:number,data:CreateVizaCFPPDTO)=>{
+      loading.value = true
+      try {
+        const result = await $fetch('/api/ordonantari', {
+          method: 'PATCH',
+          body: {
+            ...data,
+            idOrdonantare
+          }
+        })
+      
+        return result
+      } catch (e) {
+        error.value = 'Eroare la aplicarea vizei'
+        console.error(e)
+        throw e
+      } finally {
+        loading.value = false
+      }
+    }
     return {
         loading,
         error,
         vizaUrmatoare,
         createVizaCFPP,
-        aplicaVizaCFPPAngajament
+        aplicaVizaCFPPAngajament,
+        aplicaVizaCFPPOrdonantare
     }
 }

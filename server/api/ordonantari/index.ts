@@ -192,4 +192,20 @@ export default defineEventHandler(async (event) => {
         })
       }
   }
+
+  if(event.method==='PATCH'){
+    const body= await readBody(event)
+   // console.log(body)
+
+ await prisma.ordonantariPlata.update({
+      where: {
+        id:body.idOrdonantare
+      },
+      data: {
+        vizaCFPP:true, 
+        nr_viza:body.nrvizac,
+        dataCFPP:body.dataviza
+      },
+    });
+  }
 })

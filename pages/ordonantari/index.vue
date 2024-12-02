@@ -5,7 +5,7 @@ import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 import {useVizaCFPP} from '~/composables/useVizaCFPP'
 import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const {fetchOrdonantari} = useOrdonantari()
-const {vizaUrmatoare,createVizaCFPP} = useVizaCFPP()
+const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPOrdonantare} = useVizaCFPP()
 const $q = useQuasar()
 const columns = [
 {
@@ -133,8 +133,10 @@ const vizeaza = async ()=>{
 
   try {
     const viza = await createVizaCFPP(dateviza)
-   
+    await aplicaVizaCFPPOrdonantare(selectedRow.value.id,dateviza)
+     console.log('Viza',viza)
     showVizaDialog.value=false
+    selected.value=[]
     $q.notify({
       color: 'positive',
       message: 'Viza CFPP a fost aplicata cu succes!',
@@ -234,7 +236,61 @@ onMounted(() => {
               <div class="text-h6">Viza CFPP</div>
             </q-card-section>
 
-           
+           <q-card-section>
+            <q-list bordered>
+                <q-expansion-item
+                  group="somegroup"
+                  icon="explore"
+                  label="Receptii"
+                  default-opened
+                  header-class="text-primary"
+                >
+                  <q-card>
+                    <q-card-section>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
+                      commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
+                      eveniet doloribus ullam aliquid.
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+
+                <q-separator />
+
+                <q-expansion-item
+                  group="somegroup"
+                  icon="explore"
+                  label="Angajament"
+                  header-class="text-primary"
+                >
+                  <q-card>
+                    <q-card-section>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
+                      commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
+                      eveniet doloribus ullam aliquid.
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+
+                <q-separator />
+
+                <q-expansion-item
+                  group="somegroup"
+                  icon="explore"
+                  label="Ordonantare de plata"
+                  header-class="text-primary"
+                >
+                  <q-card>
+                    <q-card-section>
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
+                      commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
+                      eveniet doloribus ullam aliquid.
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+
+                
+              </q-list>
+           </q-card-section>
 
             <q-card-actions class="row justify-between q-gutter-sm">
               <q-btn flat label="Vizeaza CFPP!" color="primary"  @click="vizeaza"/>
