@@ -69,6 +69,7 @@ const columns = [
 
 // State
 const ordonantari = ref([])
+const strnrviza = ref('')
 const loading = ref(false)
 const selected = ref([])
 const selectedRow = computed(() => selected.value[0])
@@ -107,6 +108,7 @@ function handleVizaCFPP() {
   if (!selectedRow.value) return
   // Implement CFPP visa logic here
   showVizaDialog.value=true
+  strnrviza.value=''
   console.log('Applying CFPP visa for:', selectedRow.value)
 }
 
@@ -133,9 +135,10 @@ const vizeaza = async ()=>{
 
   try {
     const viza = await createVizaCFPP(dateviza)
+    strnrviza.value=dateviza.nrvizac
     await aplicaVizaCFPPOrdonantare(selectedRow.value.id,dateviza)
      console.log('Viza',viza)
-    showVizaDialog.value=false
+   // showVizaDialog.value=false
     selected.value=[]
     $q.notify({
       color: 'positive',
@@ -230,13 +233,15 @@ onMounted(() => {
       </q-table>
     </div>
 
-    <q-dialog v-model="showVizaDialog">
+    <q-dialog v-model="showVizaDialog" persistent>
           <q-card style="min-width: 800px">
             <q-card-section>
               <div class="text-h6">Viza CFPP</div>
             </q-card-section>
-
-           <q-card-section>
+            <q-card-section v-if="strnrviza!==''">
+              <div class="text-h6">{{ strnrviza }}</div>
+            </q-card-section>
+           <q-card-section v-if="strnrviza==''">
             <q-list bordered>
                 <q-expansion-item
                   group="somegroup"
@@ -247,9 +252,7 @@ onMounted(() => {
                 >
                   <q-card>
                     <q-card-section>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
-                      commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
-                      eveniet doloribus ullam aliquid.
+                      <ordonantare-receptie :receptii="selectedRow.receptii" :furnizor="selectedRow.furnizor_denumire"/>
                     </q-card-section>
                   </q-card>
                 </q-expansion-item>
