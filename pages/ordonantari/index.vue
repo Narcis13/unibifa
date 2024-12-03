@@ -74,7 +74,7 @@ const loading = ref(false)
 const selected = ref([])
 const selectedRow = computed(() => selected.value[0])
 const selectatSiNevizat = computed(()=>{
-  return selected.value[0]&&selected.value[0].vizaCFPP==0
+  return selected.value[0]&&true//selected.value[0].vizaCFPP==0
 })
 const showVizaDialog = ref(false)
 // Fetch data
@@ -267,9 +267,7 @@ onMounted(() => {
                 >
                   <q-card>
                     <q-card-section>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
-                      commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
-                      eveniet doloribus ullam aliquid.
+                       <ordonantare-angajament :receptii="selectedRow.receptii"/>     
                     </q-card-section>
                   </q-card>
                 </q-expansion-item>
