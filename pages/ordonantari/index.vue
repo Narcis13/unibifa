@@ -234,7 +234,7 @@ onMounted(() => {
     </div>
 
     <q-dialog v-model="showVizaDialog" persistent>
-          <q-card style="min-width: 800px">
+          <q-card style="min-width: 900px">
             <q-card-section>
               <div class="text-h6">Viza CFPP</div>
             </q-card-section>
@@ -282,13 +282,49 @@ onMounted(() => {
                   label="Ordonantare de plata"
                   header-class="text-primary"
                 >
-                  <q-card>
-                    <q-card-section>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
-                      commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
-                      eveniet doloribus ullam aliquid.
-                    </q-card-section>
+                  <div class="q-pa-md row items-start q-gutter-md">
+                    <q-card class="my-card">
+                      <q-card-section>
+                        <div class="text-subtitle1">{{ selectedRow.compartiment }}</div>
+                        <div class="text-subtitle1">{{ selectedRow.numar }}</div>
+                        <div class="text-subtitle1">{{ formatDate(selectedRow.dataord )}}</div>
+                        <div class="text-subtitle1">{{ selectedRow.valoare }} lei.</div>
+                      </q-card-section>
                   </q-card>
+                        
+                  <q-card class="my-card">
+                      <q-card-section>
+                        <div class="text-subtitle1">{{ selectedRow.furnizor_denumire }}</div>
+                        <div class="text-subtitle1">{{ selectedRow.furnizor_codfiscal }}</div>
+                        <div class="text-subtitle1">{{ selectedRow.furnizor_adresa }}</div>
+                        <div class="text-subtitle1">{{ selectedRow.furnizor_iban }} </div>
+                      </q-card-section>
+                  </q-card>
+
+                  <q-card class="my-card-long">
+                      <q-card-section>
+                        <div class="text-subtitle1 row justify-between items-center">
+                          <span>Clasific.:</span>
+                          <span class="text-right">{{ selectedRow.primareceptie.angajament.categorie?.sursa.cod+' '+selectedRow.primareceptie.angajament.categorie?.articol.cod  }}</span>
+                        </div>
+
+                        <div class="text-subtitle1 row justify-between items-center">
+                          <span>Disponibil înainte:</span>
+                          <span class="text-right">{{ 123456 }}</span>
+                        </div>
+                        <div class="text-subtitle1 row justify-between items-center">
+                          <span>Suma de plata:</span>
+                          <span class="text-right">{{ selectedRow.valoare }}</span>
+                        </div>
+
+                        <div class="text-subtitle1 row justify-between items-center">
+                          <span>Disponibil după:</span>
+                          <span class="text-right">{{ 123456 }}</span>
+                        </div>
+                      </q-card-section>
+                  </q-card>
+                  </div>
+
                 </q-expansion-item>
 
                 
@@ -309,5 +345,13 @@ onMounted(() => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 1px 5px rgb(0 0 0 / 20%);
+}
+.my-card{
+  width: 100%;
+  max-width: 250px;
+}
+.my-card-long{
+  width: 100%;
+  max-width: 270px;
 }
 </style>
