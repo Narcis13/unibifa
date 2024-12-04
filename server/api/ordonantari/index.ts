@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
               SELECT 1 
               FROM ReceptiiOrdonantari ro2
               JOIN OrdonantariPlata op2 ON ro2.idOrdonantare = op2.id
-              WHERE ro2.idReceptie = r2.id
+              WHERE ro2.idReceptie = r2.id and op2.created_at<op.created_at
             )
           ) as total_receptii_ordonantate,
           JSON_ARRAYAGG(
@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
                     SELECT 1 
                     FROM ReceptiiOrdonantari ro2
                     JOIN OrdonantariPlata op2 ON ro2.idOrdonantare = op2.id
-                    WHERE ro2.idReceptie = r2.id
+                    WHERE ro2.idReceptie = r2.id and op2.created_at<op.created_at
                   )
                 ),
                 'categorie', JSON_OBJECT(
