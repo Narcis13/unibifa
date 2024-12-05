@@ -257,7 +257,7 @@ onMounted(() => {
     :columns="columns"
     row-key="id"
     :loading="loading"
-    selection="multiple"
+    selection="single"
     v-model:selected="selected"
     :pagination="{
       rowsPerPage: 20

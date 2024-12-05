@@ -308,7 +308,7 @@ onMounted(() => {
 
                         <div class="text-subtitle1 row justify-between items-center">
                           <span>Disponibil înainte:</span>
-                          <span class="text-right">{{ 123456 }}</span>
+                          <span class="text-right">{{ parseFloat(selectedRow.total_modificari)-parseFloat(selectedRow.total_receptii_ordonantate) }}</span>
                         </div>
                         <div class="text-subtitle1 row justify-between items-center">
                           <span>Suma de plata:</span>
@@ -317,7 +317,7 @@ onMounted(() => {
 
                         <div class="text-subtitle1 row justify-between items-center">
                           <span>Disponibil după:</span>
-                          <span class="text-right">{{ 123456 }}</span>
+                          <span class="text-right">{{  parseFloat(selectedRow.total_modificari)-parseFloat(selectedRow.total_receptii_ordonantate)-parseFloat(selectedRow.valoare) }}</span>
                         </div>
                       </q-card-section>
                   </q-card>
