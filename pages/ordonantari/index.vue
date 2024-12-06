@@ -1,19 +1,28 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
+import { useQuasar ,date} from 'quasar'
 import { useOrdonantari } from "~/composables/useOrdonantari";
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
+import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 import {useVizaCFPP} from '~/composables/useVizaCFPP'
 import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const {fetchOrdonantari} = useOrdonantari()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPOrdonantare} = useVizaCFPP()
 const $q = useQuasar()
+const userStore = useUtilizatorStore()
+const nomenclatoareStore=useNomenclatoareStore()
+const furnizoriOptions = ref(userStore.utilizator.role=='CFPP'?await $fetch('/api/info/totifurnizorii'):nomenclatoareStore.baza.furnizori_index.map(f=>({label:f.denumire,value:f.id})))
 const columns = [
 {
     name: 'compartiment',
     label: 'Compartiment',
     field: 'compartiment',
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :await $fetch('/api/info/compartimente') 
+    }
   },
   {
     name: 'numar',
@@ -27,42 +36,69 @@ const columns = [
     label: 'Data',
     field: 'dataord',
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'interval'
+    }
   },
   {
     name: 'furnizor',
     label: 'Furnizor',
     field: 'furnizor_denumire',
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:furnizoriOptions.value
+    }
   },
   {
     name: 'valoare',
     label: 'Valoare',
     field: 'valoare',
     align: 'right',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'numericvalue'
+    }
   },
   {
     name: 'sursa',
     label: 'Sursa finantare',
     field:(row)=> row.primareceptie.angajament.categorie?.sursa.scurt,
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/surse')
+    }
   },
   {
     name: 'artbug',
     label: 'Art. bug.',
     field:(row)=> row.primareceptie.angajament.categorie?.articol.cod,
     align: 'left',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/articole')
+    }
   },
   {
     name: 'vizaCFPP',
     label: 'Viză CFPP',
     field: 'vizaCFPP',
     align: 'center',
-    sortable: true
+    sortable: true,
+    filterOptions:{
+      enabled:true,
+      type:'check'
+    }
   }
 
 ]
@@ -72,9 +108,28 @@ const ordonantari = ref([])
 const strnrviza = ref('')
 const loading = ref(false)
 const selected = ref([])
+
+const filterDefaults:Record<string,any> = {
+  'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
+  'vizaCFPP':false,
+  'artbug':null,
+  'furnizor':null,
+  'sursa':null,
+  'dataord':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
+  'valoare':{ operator:  { label: '>', value: 'gt' }, value: 0 }
+}
+
+const handleFilters = async (filters: Record<string, any>) => {
+  console.log('filters',filters)
+  try {
+   // await fetchAngajamente(2024,filters)
+  } catch (e){
+    console.error(e)
+  }
+}
 const selectedRow = computed(() => selected.value[0])
 const selectatSiNevizat = computed(()=>{
-  return selected.value[0]&&true//selected.value[0].vizaCFPP==0
+  return selected.value[0]&&selected.value[0].vizaCFPP==0
 })
 const showVizaDialog = ref(false)
 // Fetch data
@@ -117,9 +172,9 @@ function handlePrint() {
   // Implement print logic here
   console.log('Printing:', selectedRow.value)
 }
-
+console.log('Ordonantari',userStore.utilizator.role)
 const vizeaza = async ()=>{
-  const userStore = useUtilizatorStore()
+
   const nrviza= await vizaUrmatoare()
   const dateviza:CreateVizaCFPPDTO ={
   document:'Ordonantare plata nr. '+selectedRow.value!.numar,
@@ -161,8 +216,15 @@ onMounted(() => {
       <!-- Header with buttons -->
       <div class="row q-mb-md justify-between items-center">
         <div class="text-h6">Ordonanțări de Plată</div>
+        <table-filter
+              :columns="columns"
+              :defaults="filterDefaults"
+              @filtersadded="handleFilters"
+            />
         <div>
+          <q-space />
           <q-btn
+           v-show="userStore.utilizator.role=='CFPP'"
             color="primary"
             icon="check_circle"
             label="Viză CFPP"
