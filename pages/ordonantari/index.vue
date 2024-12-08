@@ -8,6 +8,7 @@ import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const {fetchOrdonantari} = useOrdonantari()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPOrdonantare} = useVizaCFPP()
 const $q = useQuasar()
+const filter = ref('')
 const userStore = useUtilizatorStore()
 const nomenclatoareStore=useNomenclatoareStore()
 const furnizoriOptions = ref(userStore.utilizator.role=='CFPP'?await $fetch('/api/info/totifurnizorii'):nomenclatoareStore.baza.furnizori_index.map(f=>({label:f.denumire,value:f.id})))
@@ -108,7 +109,13 @@ const ordonantari = ref([])
 const strnrviza = ref('')
 const loading = ref(false)
 const selected = ref([])
+const route = useRoute()
+const router = useRouter()
 
+const openInNewTab = (path:string) => {
+  const url = router.resolve(path).href
+  window.open(url, '_blank')
+}
 const filterDefaults:Record<string,any> = {
   'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
   'vizaCFPP':false,
@@ -123,6 +130,7 @@ const handleFilters = async (filters: Record<string, any>) => {
   console.log('filters',filters)
   try {
    // await fetchAngajamente(2024,filters)
+   ordonantari.value = await fetchOrdonantari(filters)
   } catch (e){
     console.error(e)
   }
@@ -137,7 +145,7 @@ async function toateOrdonantarile() {
   loading.value = true
   try {
    
-    ordonantari.value = await fetchOrdonantari()
+    ordonantari.value = await fetchOrdonantari(filterDefaults)
     console.log(ordonantari.value)
   } catch (error) {
     console.error('Error fetching ordonantari:', error)
@@ -171,6 +179,7 @@ function handlePrint() {
   if (!selectedRow.value) return
   // Implement print logic here
   console.log('Printing:', selectedRow.value)
+  openInNewTab('/rapoarte/ordonantari/'+selectedRow.value.id)
 }
 console.log('Ordonantari',userStore.utilizator.role)
 const vizeaza = async ()=>{
@@ -223,6 +232,12 @@ onMounted(() => {
             />
         <div>
           <q-space />
+          <div class="row">
+            <q-input  dense debounce="300" v-model="filter" placeholder="Cauta..." class="q-mr-md">
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+           </q-input>
           <q-btn
            v-show="userStore.utilizator.role=='CFPP'"
             color="primary"
@@ -239,6 +254,8 @@ onMounted(() => {
             :disable="!selectedRow"
             @click="handlePrint"
           />
+          </div>
+          
         </div>
       </div>
 
@@ -248,6 +265,7 @@ onMounted(() => {
         :columns="columns"
         row-key="id"
         selection="single"
+        :filter="filter"
         v-model:selected="selected"
         :loading="loading"
         :pagination="{ rowsPerPage: 20 }"

@@ -7,6 +7,31 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
+
+    const query = getQuery(event)
+    
+    const from = query.from!.toString().replace(/\//g, '-')
+    const to = query.to!.toString().replace(/\//g, '-')
+    let todate = new Date(to)
+    todate.setDate(todate.getDate() + 1)
+
+    // Use Prisma's aggregation and grouping for better performance
+    let operatorSql;
+    if (query.sumaoperator) {
+      switch (query.sumaoperator) {
+        case 'eq':
+          operatorSql = Prisma.sql`=`;
+          break;
+        case 'lt':
+          operatorSql = Prisma.sql`<`;
+          break;
+        case 'gt':
+          operatorSql = Prisma.sql`>`;
+          break;
+        default:
+          operatorSql = Prisma.sql`>`;
+      }
+    }
     try {
       const ordonantari = await prisma.$queryRaw`
      SELECT 
@@ -97,9 +122,19 @@ export default defineEventHandler(async (event) => {
         LEFT JOIN Categorii c ON a.idCategorie = c.id
         LEFT JOIN sursefinantare sf ON c.idsursa = sf.id
         LEFT JOIN articolebugetare ab ON c.idarticol = ab.id
-        WHERE op.stare = 'activ'
+        WHERE op.stare = 'activ' AND
+        op.dataord >= ${new Date(from)}
+        AND op.dataord < ${todate}
+        ${query.compartiment ? Prisma.sql`AND r.idCompartiment = ${Number(query.compartiment)}` : Prisma.sql`AND r.idCompartiment > 0`}
+        ${query.sursa ? Prisma.sql`AND c.idsursa = ${Number(query.sursa)}` : Prisma.sql`AND c.idsursa > 0`}
+        ${query.artbug ? Prisma.sql`AND c.idarticol = ${Number(query.artbug)}` : Prisma.sql`AND c.idarticol > 0`}
+         ${query.furnizor ? Prisma.sql`AND op.idFurnizor = ${Number(query.furnizor)}` : Prisma.sql`AND op.idFurnizor > 0`}
+         ${query.sumaoperator ? Prisma.sql`AND op.valoare ${operatorSql} ${Number(query.sumavalue)}` : Prisma.sql``}
+         ${query.viza === 'true' ? Prisma.sql`AND op.vizaCFPP=1` : 
+          query.viza === 'false' ? Prisma.sql`AND op.vizaCFPP=0` : 
+          Prisma.sql``}
         GROUP BY op.id, r.id
-        ORDER BY op.dataord DESC
+        ORDER BY comp.denumire ASC,op.dataord DESC
       `
   
       // Transform the results to parse JSON strings

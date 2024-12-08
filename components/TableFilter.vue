@@ -17,7 +17,7 @@
             clearable
             emit-value
             map-options
-            
+            :readonly="column.filterOptions.options.length==1"
           />
   
           <!-- Date interval filter type -->

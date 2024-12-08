@@ -43,8 +43,15 @@ export const useOrdonantari = ()=>{
       }
     }
 
-    const fetchOrdonantari = async ()=>{
-      const { data} = await $fetch('/api/ordonantari')
+    const fetchOrdonantari = async (filters:Record<string,any>)=>{
+       const comp=filters.compartiment==null?'':typeof filters.compartiment=='number'?`&compartiment=${filters.compartiment}`:Array.isArray(filters.compartiment)?`&compartiment=${filters.compartiment[0].value}`:`&compartiment=${filters.compartiment.value}`
+       const sursa=filters.sursa==null?'':`&sursa=${filters.sursa}`
+       const furnizor=filters.furnizor==null?'':`&furnizor=${filters.furnizor}`
+       const artbug=filters.artbug==null?'':`&artbug=${filters.artbug}`
+        const viza='vizaCFPP' in filters?`&viza=${filters.vizaCFPP}`:''
+      const querystring = `?from=${filters.dataord.from}&to=${filters.dataord.to}${comp}${viza}&sumaoperator=${filters.valoare.operator.value}&sumavalue=${filters.valoare.value}${sursa}${artbug}${furnizor}`
+      console.log('fetch Ordonanhtari',filters,querystring,typeof filters.compartiment)
+      const { data} = await $fetch('/api/ordonantari'+querystring)
 
       return data
     }
