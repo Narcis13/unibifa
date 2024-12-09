@@ -1,11 +1,16 @@
 <script setup >
+
+
+
+const utilizatorStore = useUtilizatorStore();
 definePageMeta({
     layout:'rapoarte'
 })
 
 const {idord}=useRoute().params
 const { data} = await $fetch('/api/ordonantari/'+idord)
-//console.log(data)
+const institutie = await $fetch('/api/info/institutie')
+console.log(institutie)
 const ordonantare = data[0]
 </script>
 <template>
@@ -39,6 +44,8 @@ const ordonantare = data[0]
         <p>Cod ang. bug.: AAAREX3KK87</p>
         <p>Modul de plata: virament</p>
         <p>Suma datorata beneficiarului: 13.090,00 lei</p>
+        <p>Avansuri acordate si retinute beneficiarului: 0 lei</p>
+        <p>Suma de plata (lei) : 13.090,00</p>
     </div>
 
     <table class="table">
@@ -53,9 +60,9 @@ const ordonantare = data[0]
         <tbody>
             <tr>
                 <td>33.10.21.20.01.09</td>
-                <td>26.370,00</td>
-                <td>13.090,00</td>
-                <td>13.280,00</td>
+                <td class="text-dreapta">26.370,00</td>
+                <td class="text-dreapta">13.090,00</td>
+                <td class="text-dreapta">13.280,00</td>
             </tr>
         </tbody>
     </table>
@@ -72,28 +79,37 @@ const ordonantare = data[0]
         <p>RO32TREZ2165069XXX010391</p> 
         </div>
     </div>
-
+    <div class="signature-line"></div>
     <div class="signatures">
         <div class="signature-block">
-            <p>Compartimentul INFO</p>
-            <div class="signature-line"></div>
-            <p>Data: _____________</p>
+            <div class="boldat">Compartimentul</div>
+            <div class="boldat">INFORMATICA</div>
+         
+            <div>Data: _____________</div>
         </div>
         <div class="signature-block">
-            <p>Compartimentul de contabilitate</p>
-            <div class="signature-line"></div>
-            <p>Data: Viza 4-8863</p>
+            <div class="boldat">Compartimentul de contabilitate</div>
+           
+            <div>Data: ______________</div>
+            <div>Semnatura: ________</div>
         </div>
         <div class="signature-block">
-            <p>Ordonator de credite,</p>
-            <p>COMANDANTUL UM 02497 PITESTI</p>
-            <p>Col. Gheorghe TUDOR</p>
-            <div class="signature-line"></div>
-            <p>Data: 21/11/2024</p>
+            <div class="boldat">Compartimentul financiar-contabilitate</div>
+            <div class="boldat">CFPP</div>
+          
+            <div>Viza: 4-8863</div>
+            <div>Semnatura: ________</div>
         </div>
     </div>
+    <div class="signature-line"></div>
+    <div class="semnatura-comandant">
+            <div>Ordonator de credite,</div>
+            <div>COMANDANTUL UM 02497 PITESTI</div>
+            <div>{{ institutie.reprezentant }}</div>
 
 
+        </div>
+        <div class="boldat">Data: 21/11/2024</div>
     </div>
 </template>
 <style>
@@ -145,7 +161,7 @@ body {
     display: flex;
     text-align: center;
     justify-content: space-between;
-    margin-bottom: 10mm;
+  
 }
 
 .title {
@@ -154,14 +170,24 @@ body {
     margin: 10mm 0;
     border: 2px black solid;
 }
+.semnatura-comandant {
+    text-align: center;
+    font-weight: bold;
+    margin: 10mm 0;
 
-.content {
-    margin-bottom: 10mm;
 }
-
+.text-dreapta {
+    text-align: right;
+}
+.content {
+    margin-bottom: 5mm;
+}
+.boldat {
+    font-weight: bold;
+}
 .content p {
     margin: 2mm 0;
-    line-height: 1.4;
+    line-height: 1.1;
 }
 
 .table {
@@ -173,14 +199,15 @@ body {
 .table th, .table td {
     border: 1px solid black;
     padding: 2mm;
-    text-align: left;
+  
 }
 
 .signatures {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10mm;
-    margin-top: 20mm;
+    margin-top: 2mm;
+    margin-bottom: 8mm;
 }
 
 .signature-block {
@@ -189,7 +216,7 @@ body {
 
 .signature-line {
     border-top: 1px solid black;
-    margin-top: 15mm;
+    
 }
 
 .footer {
