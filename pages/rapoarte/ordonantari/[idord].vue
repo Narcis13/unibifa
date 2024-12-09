@@ -10,7 +10,19 @@ definePageMeta({
 const {idord}=useRoute().params
 const { data} = await $fetch('/api/ordonantari/'+idord)
 const institutie = await $fetch('/api/info/institutie')
-console.log(institutie)
+
+// Utility functions
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('ro-RO')
+}
+
+function formatAmount(amount) {
+  return new Intl.NumberFormat('ro-RO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
+//console.log(institutie)
 const ordonantare = data[0]
 </script>
 <template>
@@ -23,12 +35,12 @@ const ordonantare = data[0]
         <div>
             <div>ROMANIA</div>
             <div>MINISTERUL APARARII NATIONALE</div>
-            <div>Unitatea Militara 02497 Pitesti</div>
+            <div>{{ institutie.denumire }}</div>
         </div>
         <div>
-            <div>Compartiment: INFO</div>
+            <div>Compartiment: {{ ordonantare.compartiment }}</div>
             <div>Numar: {{ ordonantare.numar }}</div>
-            <div>Data emiterii: 21/11/2024</div>
+            <div>Data emiterii: {{ formatDate(ordonantare.dataord) }}</div>
         </div>
     </div>
 
@@ -37,15 +49,15 @@ const ordonantare = data[0]
     </div>
 
     <div class="content">
-        <p>Natura cheltuielii: CONTRACT EXTRANET 2024</p>
+        <p>Natura cheltuielii: {{ ordonantare.primareceptie.angajament.descriere }}</p>
         <p>Lista documente justificative:</p>
-        <p>Factura nr. 241100017 din 21/11/2024</p>
-        <p>Nr./data angajamentului legal: 6341 / 2024-03-18</p>
-        <p>Cod ang. bug.: AAAREX3KK87</p>
+        <p>Factura nr. {{ ordonantare.primareceptie.nrfact }} din {{ formatDate(ordonantare.primareceptie.datafact) }}</p>
+        <p>Nr./data angajamentului legal: {{ ordonantare.primareceptie.angajament.numar }} / {{ formatDate(ordonantare.primareceptie.angajament.data) }}</p>
+        <p>Cod ang. legal: {{ ordonantare.codang_indic }}</p>
         <p>Modul de plata: virament</p>
-        <p>Suma datorata beneficiarului: 13.090,00 lei</p>
+        <p>Suma datorata beneficiarului: {{ formatAmount(ordonantare.valoare) }} lei</p>
         <p>Avansuri acordate si retinute beneficiarului: 0 lei</p>
-        <p>Suma de plata (lei) : 13.090,00</p>
+        <p>Suma de plata (lei) : {{ formatAmount(ordonantare.valoare) }} </p>
     </div>
 
     <table class="table">
@@ -104,7 +116,7 @@ const ordonantare = data[0]
     <div class="signature-line"></div>
     <div class="semnatura-comandant">
             <div>Ordonator de credite,</div>
-            <div>COMANDANTUL UM 02497 PITESTI</div>
+            <div>COMANDANTUL {{ institutie.denumire }}</div>
             <div>{{ institutie.reprezentant }}</div>
 
 

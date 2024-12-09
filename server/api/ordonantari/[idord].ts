@@ -29,6 +29,11 @@ export default defineEventHandler(async (event) => {
             WHERE m.idAngajament = a.id
           ) as total_modificari,
           (
+            select concat(m.codang,'-',m.indicator) from ModificariAngajamente m
+            where m.idAngajament = a.id
+            limit 1
+          ) as codang_indic,
+          (
             SELECT COALESCE(SUM(r2.valoare), 0)
             FROM Receptii r2
             WHERE r2.idAngajament = a.id
