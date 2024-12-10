@@ -71,31 +71,31 @@ const ordonantare = data[0]
         </thead>
         <tbody>
             <tr>
-                <td>33.10.21.20.01.09</td>
-                <td class="text-dreapta">26.370,00</td>
-                <td class="text-dreapta">13.090,00</td>
-                <td class="text-dreapta">13.280,00</td>
+                <td>{{ ordonantare.primareceptie.angajament.categorie.sursa.cod+'.'+ordonantare.primareceptie.angajament.categorie.articol.cod }}</td>
+                <td class="text-dreapta">{{ formatAmount(parseFloat(ordonantare.total_modificari)-parseFloat(ordonantare.total_receptii_ordonantate))}}</td>
+                <td class="text-dreapta">{{ formatAmount(ordonantare.valoare) }}</td>
+                <td class="text-dreapta">{{ formatAmount( parseFloat(ordonantare.total_modificari)-parseFloat(ordonantare.total_receptii_ordonantate)-parseFloat(ordonantare.valoare) )}}</td>
             </tr>
         </tbody>
     </table>
     <div class="document-info">
         <div class="content">
             <p><strong>Numele si adresa beneficiarului:</strong></p>
-            <p>EXTRANET SRL</p>
-            <p>STR AVRAM IANCU NR 54</p>
-            <p>CLUJ NAPOCA</p>
+            <p>{{ ordonantare.furnizor_denumire }}</p>
+            <p>{{ ordonantare.furnizor_adresa }}</p>
+            <p>Cod fiscal:{{ ordonantare.furnizor_codfiscal}}</p>
         
         </div>
         <div class="content">
             <p><strong>Numarul de cont:</strong> </p>
-        <p>RO32TREZ2165069XXX010391</p> 
+        <p>{{ ordonantare.furnizor_iban }}</p> 
         </div>
     </div>
     <div class="signature-line"></div>
     <div class="signatures">
         <div class="signature-block">
             <div class="boldat">Compartimentul</div>
-            <div class="boldat">INFORMATICA</div>
+            <div class="boldat">{{ ordonantare.compartiment }}</div>
          
             <div>Data: _____________</div>
         </div>
@@ -109,7 +109,7 @@ const ordonantare = data[0]
             <div class="boldat">Compartimentul financiar-contabilitate</div>
             <div class="boldat">CFPP</div>
           
-            <div>Viza: 4-8863</div>
+            <div>Viza: {{ ordonantare.vizacfpp==0?'':ordonantare.nr_viza }}</div>
             <div>Semnatura: ________</div>
         </div>
     </div>
@@ -121,7 +121,7 @@ const ordonantare = data[0]
 
 
         </div>
-        <div class="boldat">Data: 21/11/2024</div>
+        <div class="boldat">Data: {{ formatDate(ordonantare.dataord) }}</div>
     </div>
 </template>
 <style>

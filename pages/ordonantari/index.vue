@@ -204,6 +204,7 @@ const vizeaza = async ()=>{
      console.log('Viza',viza)
    // showVizaDialog.value=false
     selected.value=[]
+    toateOrdonantarile()
     $q.notify({
       color: 'positive',
       message: 'Viza CFPP a fost aplicata cu succes!',
@@ -410,7 +411,7 @@ onMounted(() => {
            </q-card-section>
 
             <q-card-actions class="row justify-between q-gutter-sm">
-              <q-btn flat label="Vizeaza CFPP!" color="primary"  @click="vizeaza"/>
+              <q-btn v-if="strnrviza==''" flat label="Vizeaza CFPP!" color="primary"  @click="vizeaza"/>
               <q-btn flat label="Închide" color="primary" v-close-popup />
             </q-card-actions>
           </q-card>
