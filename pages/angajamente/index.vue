@@ -255,6 +255,7 @@ import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 import type { Angajament, ModificareAngajament } from '~/types/angajamente'
 import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const $q = useQuasar()
+const router = useRouter()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
 const userStore = useUtilizatorStore()
@@ -262,6 +263,10 @@ console.log('setup angajamente')
 interface Compartiment {
   value:number
   label:string
+}
+const openInNewTab = (path:string) => {
+  const url = router.resolve(path).href
+  window.open(url, '_blank')
 }
 //const compartiment = ref<Compartiment>({value:0,label:''})
 const columns = [
@@ -514,31 +519,8 @@ const handleVizaCFPP = async (modificare: ModificareAngajament) => {
 }
 
 const handlePrint = async (modificare: ModificareAngajament) => {
- // console.log(modificare)
-  /*try {
-    // Example implementation - adjust based on your API
-    const response = await fetch(`/api/modificari/${modificare.id}/print`, {
-      method: 'POST',
-    })
-    
-    if (!response.ok) throw new Error('Failed to generate print document')
-    
-    const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `modificare-${modificare.id}.pdf`
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      color: 'negative',
-      message: 'A apărut o eroare la generarea documentului',
-    })
-  }*/
+  //console.log('modificare ang',modificare)
+  openInNewTab('/rapoarte/angajamente/'+modificare.id)
 }
 // Handlers
 const onSubmitAdd = async () => {
