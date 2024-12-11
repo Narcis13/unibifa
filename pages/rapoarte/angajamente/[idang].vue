@@ -140,6 +140,40 @@ function formatAmount(amount) {
         <div class="title-box">
            ANGAJAMENT BUGETAR INDIVIDUAL/GLOBAL
         </div>
+        <div class="q-mt-sm">Beneficiar: U.M. 02497 Pitești</div>
+        <div class="container-sus">
+            <div class="left-column-sus">
+               <div class="header-cell underline">Înregistrarea bugetară</div>
+               <div class="q-ml-sm">
+                    cap.subcap.titlu.art.alin. 33.10.21.20.01.09
+                </div>
+                <div class="q-mt-md header-cell">Suma totala</div>
+                <div class="q-ml-sm">
+                    Tip angajament:individual(global) 5.700
+                </div>
+            </div>
+            <div class="right-column-sus">
+               <div class="q-ml-sm underline">Suma</div>
+               <div class="header-cell">5.700 lei</div>
+            </div>
+        </div>
+
+        <div class="container-jos">
+            <div class="left-column-jos">
+               <div class="underline">Spatiu rezervat CFPP</div>
+               <div class="q-ml-sm">
+                    cap.subcap.titlu.art.alin. 33.10.21.20.01.09
+                </div>
+                <div class="q-mt-md header-cell">Suma totala</div>
+                <div class="q-ml-sm">
+                    Tip angajament:individual(global) 5.700
+                </div>
+            </div>
+            <div class="right-column-jos">
+               <div class="q-ml-sm underline">Suma</div>
+               <div class="header-cell">5.700 lei</div>
+            </div>
+        </div>
         <!-- Rest of the content follows the same pattern -->
         <!-- Additional sections can be added following the same structure -->
     </div>
@@ -191,7 +225,9 @@ body {
 .header-right {
     text-align: left;
 }
-
+.underline {
+    text-decoration: underline;
+}
 /* Title Box [[4]] */
 .title-box {
     border: 2px solid black;
@@ -311,6 +347,45 @@ tbody td {
 .avans {
     margin-left:45px;
 }
+.margine-sus {
+    margin-top: 10px;
+}
+.container-sus {
+            display: flex;
+            width: 100%;
+           
+            margin-top:10px;
+        }
+        
+        .left-column-sus {
+            width: 70%;
+            border: 1px solid black;
+        }
+        
+        .right-column-sus {
+            width: 30%;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+        }
+        .container-jos {
+            display: flex;
+            width: 100%;
+           
+         
+        }
+        
+        .left-column-jos {
+            width: 70%;
+            border: 1px solid black;
+        }
+        
+        .right-column-jos {
+            width: 30%;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+        }        
 /* Print Styles [[7]] */
 @media print {
     body {
