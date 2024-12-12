@@ -8,8 +8,9 @@ definePageMeta({
 })
 
 const {idang}=useRoute().params
-
-
+const institutie = await $fetch('/api/info/institutie')
+const detalii = await $fetch(`/api/angajamente/${idang}/detalii`)
+//console.log(institutie,detalii)
 // Utility functions
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
@@ -31,12 +32,12 @@ function formatAmount(amount) {
             <div class="header-left">
                 <div>ROMÂNIA</div>
                 <div>MINISTERUL APĂRĂRII NAȚIONALE</div>
-                <div>U.M. 02497 Pitești</div>
+                <div>{{ institutie.denumire }}</div>
             </div>
             <div class="header-right">
-                <div>Data emiterii: 01/11/2024</div>
-                <div>Compartiment: INFO</div>
-                <div>Numar: 7003</div>
+                <div>Data emiterii: {{ formatDate(detalii.angajament.data) }}</div>
+                <div> {{ detalii.compartiment.denumire }}</div>
+                <div>Numar: {{ detalii.angajament.numar }}</div>
             </div>
         </div>
 
@@ -45,8 +46,8 @@ function formatAmount(amount) {
         </div>
 
         <div>
-            <div>Scopul: servicii reparare centrala tel</div>
-            <div>Beneficiar: U.M. 02497 Pitești</div>
+            <div>Scopul: {{ detalii.angajament.descriere }}</div>
+            <div>Beneficiar: {{ institutie.denumire }}</div>
         </div>
 
         <div class="table-wrapper">
@@ -71,17 +72,17 @@ function formatAmount(amount) {
                         <td class="header-cell">5=3-4</td>
                     </tr>
                     <tr>
-                        <td>33.10.21.20.01.09</td>
+                        <td>{{ detalii.sursaFinantare.cod+'.'+detalii.articolBugetar.cod }}</td>
                         <td class="number-cell">2.772.000,0</td>
                         <td class="number-cell">2.724.752,0</td>
                         <td class="number-cell">47.248,00</td>
-                        <td class="number-cell">1.995.700,00</td>
+                        <td class="number-cell">{{ formatAmount(detalii.suma) }}</td>
                         <td class="number-cell">41.548,00</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="text-caption text-simplu">TOTAL: 5.700 lei</div>
+        <div class="text-caption text-simplu">TOTAL: {{ formatAmount(detalii.suma) }} lei</div>
         <div class="financial-section">
             <div class="left-section"></div>
             <div class="middle-section">
@@ -107,11 +108,11 @@ function formatAmount(amount) {
             <div class="">
                 <div class="content">
                 <div class="label">Data:</div>
-                <div class="value">01/11/2024</div>
+                <div class="value">{{detalii.vizaCFPP?formatDate(detalii.dataCFPP) :''}}</div>
                 </div>
                 <div class="content">
                 <div class="label">Semnatura:</div>
-                <div class="value">4-8512</div>
+                <div class="value">{{ detalii.vizaCFPP?detalii.nr_viza:'' }}</div>
                 </div>
             </div>
             </div>
@@ -119,42 +120,42 @@ function formatAmount(amount) {
 
         <div class="semnatura-comandant">
             <div class="avans boldat">Ordonator de credite,</div>
-            <div>COMANDANTUL UM 02497 Pitesti</div>
-            <div> Colonel medic Gheorghe TUDOR </div>
+            <div>COMANDANTUL {{ institutie.denumire }}</div>
+            <div> {{ institutie.reprezentant }} </div>
 
 
         </div>
-        <div class="boldat">Data: 11.09.2022</div>
+        <div class="boldat">Data: {{ formatDate(detalii.angajament.data) }}</div>
 
         <div class="header">
             <div class="header-left">
 
             </div>
             <div class="header-right">
-                <div>Data emiterii: 01/11/2024</div>
-                <div>Compartiment: INFO</div>
-                <div>Numar: 7003</div>
+                <div>Data emiterii: {{ formatDate(detalii.angajament.data) }}</div>
+                <div>{{ detalii.compartiment.denumire }}</div>
+                <div>Numar: {{ detalii.angajament.numar }}</div>
             </div>
         </div>
 
         <div class="title-box">
            ANGAJAMENT BUGETAR INDIVIDUAL/GLOBAL
         </div>
-        <div class="q-mt-sm">Beneficiar: U.M. 02497 Pitești</div>
+        <div class="q-mt-sm">Beneficiar: {{ institutie.denumire }}</div>
         <div class="container-sus">
             <div class="left-column-sus">
                <div class="header-cell underline">Înregistrarea bugetară</div>
                <div class="q-ml-sm">
-                    cap.subcap.titlu.art.alin. 33.10.21.20.01.09
+                    cap.subcap.titlu.art.alin. {{ detalii.sursaFinantare.cod+'.'+detalii.articolBugetar.cod }}
                 </div>
                 <div class="q-mt-md header-cell">Suma totala</div>
                 <div class="q-ml-sm">
-                    Tip angajament:individual(global) 5.700
+                    Tip angajament:individual(global) {{ formatAmount(detalii.suma) }}
                 </div>
             </div>
             <div class="right-column-sus">
                <div class="q-ml-sm underline">Suma</div>
-               <div class="header-cell">5.700 lei</div>
+               <div class="header-cell">{{ formatAmount(detalii.suma) }} lei</div>
             </div>
         </div>
 
@@ -174,18 +175,18 @@ function formatAmount(amount) {
             </div>
             <div class="right-column-jos">
             
-               <div class="header-cell">4-8512 din 01/11/2024</div>
+               <div class="header-cell">{{ detalii.vizaCFPP?detalii.nr_viza+' din '+formatDate(detalii.dataCFPP):'' }}</div>
             </div>
         </div>
 
         <div class="semnatura-comandant">
             <div class="avans boldat">Ordonator de credite,</div>
-            <div>COMANDANTUL UM 02497 Pitesti</div>
-            <div> Colonel medic Gheorghe TUDOR </div>
+            <div>COMANDANTUL {{ institutie.denumire }}</div>
+            <div> {{ institutie.reprezentant }} </div>
 
 
         </div>
-        <div class="boldat">Data: 11.09.2022</div>
+        <div class="boldat">Data: {{ formatDate(detalii.angajament.data) }}</div>
         <!-- Rest of the content follows the same pattern -->
         <!-- Additional sections can be added following the same structure -->
     </div>
