@@ -162,18 +162,30 @@ function formatAmount(amount) {
             <div class="left-column-jos">
                <div class="underline">Spatiu rezervat CFPP</div>
                <div class="q-ml-sm">
-                    cap.subcap.titlu.art.alin. 33.10.21.20.01.09
+                   - Viza
                 </div>
-                <div class="q-mt-md header-cell">Suma totala</div>
                 <div class="q-ml-sm">
-                    Tip angajament:individual(global) 5.700
+                   - Refuz de viza
                 </div>
+                <div class="q-ml-sm">
+                   - Inregistrare individuala
+                </div>
+
             </div>
             <div class="right-column-jos">
-               <div class="q-ml-sm underline">Suma</div>
-               <div class="header-cell">5.700 lei</div>
+            
+               <div class="header-cell">4-8512 din 01/11/2024</div>
             </div>
         </div>
+
+        <div class="semnatura-comandant">
+            <div class="avans boldat">Ordonator de credite,</div>
+            <div>COMANDANTUL UM 02497 Pitesti</div>
+            <div> Colonel medic Gheorghe TUDOR </div>
+
+
+        </div>
+        <div class="boldat">Data: 11.09.2022</div>
         <!-- Rest of the content follows the same pattern -->
         <!-- Additional sections can be added following the same structure -->
     </div>
@@ -215,7 +227,7 @@ body {
 .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .header-left {
