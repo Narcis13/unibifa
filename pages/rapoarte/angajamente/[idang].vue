@@ -10,7 +10,7 @@ definePageMeta({
 const {idang}=useRoute().params
 const institutie = await $fetch('/api/info/institutie')
 const detalii = await $fetch(`/api/angajamente/${idang}/detalii`)
-//console.log(institutie,detalii)
+console.log(detalii)
 // Utility functions
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
@@ -73,11 +73,11 @@ function formatAmount(amount) {
                     </tr>
                     <tr>
                         <td>{{ detalii.sursaFinantare.cod+'.'+detalii.articolBugetar.cod }}</td>
-                        <td class="number-cell">2.772.000,0</td>
-                        <td class="number-cell">2.724.752,0</td>
-                        <td class="number-cell">47.248,00</td>
+                        <td class="number-cell">{{ formatAmount(detalii.sumaBuget) }}</td>
+                        <td class="number-cell">{{ formatAmount(parseFloat(detalii.sumaBuget)-parseFloat(detalii.disponibilBugetar)) }}</td>
+                        <td class="number-cell">{{ formatAmount(detalii.disponibilBugetar) }}</td>
                         <td class="number-cell">{{ formatAmount(detalii.suma) }}</td>
-                        <td class="number-cell">41.548,00</td>
+                        <td class="number-cell">{{ formatAmount(parseFloat(detalii.disponibilBugetar)-parseFloat(detalii.suma)) }}</td>
                     </tr>
                 </tbody>
             </table>

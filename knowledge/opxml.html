@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generare XML Plati Trezorerie</title>
+</head>
+<body>
+    <h1>XML Plati trezorerie</h1>
+    <label for="_zi">Zi:</label>
+    <input type="text" id="_zi" name="zi"><br><br>
+    <label for="_luna">Luna:</label>
+    <input type="text" id="_luna" name="luna"><br><br>
+    <label for="_an">An:</label>
+    <input type="text" id="_an" name="an"><br><br>
+    <button type="button"  onclick="genereaza()"> 
+        Genereaza plati in format XML!
+    </button> 
+    
+    <script>
+            window.onload = function(){
+                const moonLanding = new Date();
+                let an=moonLanding.getFullYear();
+                let luna=("0" + (moonLanding.getMonth() + 1)).slice(-2);
+                let zi=("0" + moonLanding.getDate()).slice(-2)
+                document.getElementById("_an").value=an;
+                document.getElementById("_luna").value=luna;
+                document.getElementById("_zi").value=zi;
+            }
+            const genereaza = ()=>{
+                let ancur = document.getElementById("_an").value+'-'+document.getElementById("_luna").value+'-'+document.getElementById("_zi").value
+               // alert(ancur);
+               window.open("http://192.168.10.254/alop/tpxml.php?ancur="+ancur)
+            }
+    </script>
+</body>
+</html>
