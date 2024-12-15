@@ -10,7 +10,7 @@ definePageMeta({
 const {idang}=useRoute().params
 const institutie = await $fetch('/api/info/institutie')
 const detalii = await $fetch(`/api/angajamente/${idang}/detalii`)
-console.log(detalii)
+//console.log(detalii)
 // Utility functions
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')

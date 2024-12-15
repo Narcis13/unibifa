@@ -29,7 +29,7 @@ const  links_administrare= [
     { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/receptii'  },
     { icon: 'thumb_up_alt', text: 'Ordonantari plata',ruta:'/ordonantari'  },
     { icon: 'thumb_up_alt', text: 'Plati',ruta:'/neimplementat'  },
-    { icon: 'thumb_up_alt', text: 'Registru vize CFPP',ruta:'/neimplementat'  },
+    { icon: 'thumb_up_alt', text: 'Registru vize CFPP',ruta:'/registruvize'  },
 
   ] 
 

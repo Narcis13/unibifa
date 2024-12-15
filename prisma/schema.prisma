@@ -76,6 +76,7 @@ model sursefinantare {
   updated_at  DateTime? @updatedAt
   categorii Categorii[]
   bugete Bugete[]
+  facturiPrimite    FacturiPrimite[]  // Add this line to create a back reference
 }
 
 model articolebugetare {
@@ -90,6 +91,7 @@ model articolebugetare {
   updated_at  DateTime? @updatedAt
   categorii Categorii[]
   bugete Bugete[]
+  facturiPrimite    FacturiPrimite[]  // Add this line to create a back reference
 }
 
 model compartimente {
@@ -103,6 +105,7 @@ model compartimente {
   categorii Categorii[]
   angajamente Angajamente[]
   receptii        Receptii[]
+  facturiPrimite    FacturiPrimite[]  // Add this line to create a back reference
 }
 
 model Categorii {
@@ -162,6 +165,7 @@ model furnizori {
 
   receptii        Receptii[]
   ordonantari OrdonantariPlata[]
+  facturiPrimite    FacturiPrimite[]  // Add this line to create a back reference
 }
 
 model Regviza {
@@ -247,6 +251,7 @@ model Receptii {
   @@index([idCompartiment, datafact])
 
   ordonantari    ReceptiiOrdonantari[]
+  facturiPrimite    FacturiPrimite[]  // Add this line to create a back reference
 }
 
 model OrdonantariPlata {
@@ -266,12 +271,12 @@ model OrdonantariPlata {
 
   // Relation to track which receptions are included in this payment order
   receptii      ReceptiiOrdonantari[]
-
+  facturiPrimite    FacturiPrimite[]  // Add this line to create a back reference
   @@index([idFurnizor, dataord])
 
 }
 
-// Junction table to handle many-to-many relationship between Receptii and OrdonantariPlata
+// Junction table to handle one-to-one relationship between Receptii and OrdonantariPlata
 model ReceptiiOrdonantari {
   id              Int             @id @default(autoincrement())
   idOrdonantare   Int
@@ -282,4 +287,73 @@ model ReceptiiOrdonantari {
 
   @@unique([idOrdonantare, idReceptie])
   @@index([idReceptie])
+}
+
+model FacturiPrimite {
+  id                  Int               @id @default(autoincrement())
+  
+  // Furnizor details
+  idFurnizor         Int
+  furnizor           furnizori          @relation(fields: [idFurnizor], references: [id])
+  
+  // Invoice specific details
+  numarFactura       String             @db.VarChar(50)
+  dataFactura        DateTime
+  detaliiFactura     String?            @db.Text
+  
+  // Financial tracking
+  valoare            Decimal            @db.Decimal(15, 2)
+  
+  // Budget and financing references
+  idArticolBugetar   Int?
+  articolBugetar     articolebugetare?  @relation(fields: [idArticolBugetar], references: [id])
+  
+  idSursaFinantare   Int?
+  sursaFinantare     sursefinantare?    @relation(fields: [idSursaFinantare], references: [id])
+  
+  // Optional payment order reference
+  idOrdonantare      Int?
+  ordonantare        OrdonantariPlata?  @relation(fields: [idOrdonantare], references: [id])
+  
+  // Optional reception reference
+  idReceptie        Int?
+  receptie          Receptii?           @relation(fields: [idReceptie], references: [id])
+  
+  // Compartment tracking
+  idCompartiment    Int?
+  compartiment      compartimente?      @relation(fields: [idCompartiment], references: [id])
+  
+  // Status and tracking
+  stare             String             @default("activ") @db.VarChar(24)
+  
+  // Additional metadata
+  tipDocument       TipDocument        @default(FACTURA)
+  termenPlata       DateTime?
+  statusPlata       StatusPlata        @default(NEPLATITA)
+  
+  // Audit fields
+  created_at        DateTime           @default(now()) @db.DateTime(0)
+  updated_at        DateTime?          @updatedAt
+  
+  // Indexes for performance
+  @@index([idFurnizor, dataFactura])
+  @@index([idArticolBugetar])
+  @@index([idSursaFinantare])
+  @@index([idOrdonantare])
+  @@index([idReceptie])
+}
+
+// Enums to support the model
+enum TipDocument {
+  FACTURA
+  AVIZ
+  CHITANTA
+  ALTE_DOCUMENTE
+}
+
+enum StatusPlata {
+  NEPLATITA
+  PARTIAL_PLATITA
+  PLATITA
+  ANULATA
 }
