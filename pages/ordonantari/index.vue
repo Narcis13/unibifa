@@ -181,7 +181,8 @@ function handlePrint() {
   console.log('Printing:', selectedRow.value)
   openInNewTab('/rapoarte/ordonantari/'+selectedRow.value.id)
 }
-console.log('Ordonantari',userStore.utilizator.role)
+//console.log('Ordonantari',userStore.utilizator.role)
+
 const vizeaza = async ()=>{
 
   const nrviza= await vizaUrmatoare()
