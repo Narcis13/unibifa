@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useQuasar ,date} from 'quasar'
 import { useOrdonantari } from "~/composables/useOrdonantari";
+import { useFacturiPrimite } from "~/composables/useFacturiPrimite";
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 import {useVizaCFPP} from '~/composables/useVizaCFPP'
 import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
+import type { FacturaPrimitaDTO } from "~/types/facturiprimite"
 const {fetchOrdonantari} = useOrdonantari()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPOrdonantare} = useVizaCFPP()
+const {createFacturaPrimita} = useFacturiPrimite()
 const $q = useQuasar()
 const filter = ref('')
 const userStore = useUtilizatorStore()
@@ -109,7 +112,7 @@ const ordonantari = ref([])
 const strnrviza = ref('')
 const loading = ref(false)
 const selected = ref([])
-const route = useRoute()
+//const route = useRoute()
 const router = useRouter()
 
 const openInNewTab = (path:string) => {
@@ -172,7 +175,9 @@ function handleVizaCFPP() {
   // Implement CFPP visa logic here
   showVizaDialog.value=true
   strnrviza.value=''
-  console.log('Applying CFPP visa for:', selectedRow.value)
+
+
+  //console.log('Applying CFPP visa for:', selectedRow.value,fp)
 }
 
 function handlePrint() {
@@ -198,11 +203,33 @@ const vizeaza = async ()=>{
   nrvizac:userStore.utilizator.first_name.substr(0,1)+userStore.utilizator.last_name.substr(0,1)+'-'+nrviza
   }
 
+  let newDate = new Date(selectedRow.value.primareceptie.datafact);
+  newDate.setDate(newDate.getDate() + 60);
+  const fp:FacturaPrimitaDTO = {
+    idFurnizor: Number(selectedRow.value.idFurnizor),
+    numarFactura: selectedRow.value.primareceptie.nrfact,
+    dataFactura: new Date(selectedRow.value.primareceptie.datafact),
+    valoare: Number(selectedRow.value.valoare),
+    detaliiFactura: selectedRow.value.primareceptie.angajament.descriere,
+    idArticolBugetar: selectedRow.value.primareceptie.angajament.categorie.articol.id,
+    idSursaFinantare: selectedRow.value.primareceptie.angajament.categorie.sursa.id,
+    idOrdonantare:  selectedRow.value.id,
+    idReceptie: selectedRow.value.primareceptie.id,
+    idCompartiment: selectedRow.value.idCompartiment,
+
+    termenPlata: newDate,
+
+    stare: 'activ'
+  }
+
+
   try {
     const viza = await createVizaCFPP(dateviza)
     strnrviza.value=dateviza.nrvizac
     await aplicaVizaCFPPOrdonantare(selectedRow.value.id,dateviza)
-     console.log('Viza',viza)
+    
+    const facturaprimita = await createFacturaPrimita(fp)
+     console.log('Viza',viza,facturaprimita)
    // showVizaDialog.value=false
     selected.value=[]
     toateOrdonantarile()

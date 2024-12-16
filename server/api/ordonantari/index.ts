@@ -40,6 +40,7 @@ export default defineEventHandler(async (event) => {
           f.codfiscal as furnizor_codfiscal,
           f.adresa as furnizor_adresa,
           f.iban as furnizor_iban,
+          comp.id as idCompartiment,
           comp.denumire as compartiment,
           (
             SELECT COALESCE(SUM(
