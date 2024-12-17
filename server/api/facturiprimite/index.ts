@@ -7,7 +7,85 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
-
+    try {
+      // Extract optional query parameters for filtering
+      const { 
+        startDate, 
+        endDate, 
+        compartimentId, 
+        furnizorId, 
+        statusPlata 
+      } = getQuery(event)
+  
+      // Build where clause for filtering
+      const whereCondition: any = {}
+  
+      // Add date range filter if provided
+      if (startDate && endDate) {
+        whereCondition.dataFactura = {
+          gte: new Date(startDate as string),
+          lte: new Date(endDate as string)
+        }
+      }
+  
+      // Add compartiment filter if provided
+      if (compartimentId) {
+        whereCondition.idCompartiment = Number(compartimentId)
+      }
+  
+      // Add furnizor filter if provided
+      if (furnizorId) {
+        whereCondition.idFurnizor = Number(furnizorId)
+      }
+  
+      // Add status plata filter if provided
+      if (statusPlata) {
+        whereCondition.statusPlata = statusPlata
+      }
+  
+      // Retrieve facturi primite with all requested relations
+      const facturiPrimite = await prisma.facturiPrimite.findMany({
+        where: whereCondition,
+        include: {
+          furnizor: {
+            select: {
+              denumire: true,
+              codfiscal: true,
+              iban: true
+            }
+          },
+          articolBugetar: true,
+          sursaFinantare: true,
+          compartiment: {
+            select: {
+              denumire: true
+            }
+          }
+        },
+        orderBy: {
+          dataFactura: 'desc'
+        }
+      })
+  
+      return facturiPrimite
+    } catch (error) {
+      console.error('Error retrieving facturi primite:', error)
+      
+      // Handle different types of errors
+      if (error instanceof Error) {
+        throw createError({
+          statusCode: 500,
+          statusMessage: 'Internal Server Error',
+          message: error.message
+        })
+      }
+  
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Unknown Error',
+        message: 'An unexpected error occurred'
+      })
+    }
 
   }
 
