@@ -59,43 +59,43 @@
                 </q-td>
                 <q-td  class="flex items-center text-weight-bold">
                   <q-btn
-                    :icon="expandedGroups[props.row.gender] ? 'remove' : 'add'"
+                    :icon="expandedGroups[props.row.furnizor] ? 'remove' : 'add'"
                     flat
                     round
                     dense
                     size="sm"
-                    @click="toggleGroup(props.row.gender)"
+                    @click="toggleGroup(props.row.furnizor)"
                   />
-                  {{ props.row.gender.charAt(0).toUpperCase() + props.row.gender.slice(1) }}
-                  ({{ filterByGender(props.row.gender).length }})
+                  {{ props.row.furnizor.charAt(0).toUpperCase() + props.row.furnizor.slice(1) }}
+                  ({{ filterByFurnizor(props.row.furnizor).length }})
                 </q-td>
               </q-tr>
             </template>
       
             <!-- Regular Data Row -->
             <template v-if="props.row.type === 'data'">
-              <q-tr v-if="expandedGroups[props.row.sex]" :props="props">
+              <q-tr v-if="expandedGroups[props.row.numefurnizor]" :props="props">
                 <q-td auto-width>
                   <q-checkbox 
                     v-model="props.selected" 
                     :disable="props.row.type !== 'data'"
                   />
                 </q-td>
-                <q-td key="name">{{ props.row.name }}</q-td>
-                <q-td key="age">{{ props.row.age }}</q-td>
-                <q-td key="sex">{{ props.row.sex }}</q-td>
-                <q-td class="text-centrat" key="profesie">{{ props.row.profesie }}</q-td>
+                <q-td key="numefurnizor">{{ props.row.numefurnizor }}</q-td>
+                <q-td key="nrfact">{{ props.row.nrfact }}</q-td>
+                <q-td key="datafact">{{ props.row.dataFactura }}</q-td>
+                <q-td class="text-centrat" key="valoare">{{ props.row.valoare }}</q-td>
               </q-tr>
             </template>
       
             <!-- Summary Row -->
             <template v-if="props.row.type === 'summary'">
-              <q-tr v-if="expandedGroups[props.row.gender]" class="bg-grey-1">
+              <q-tr v-if="expandedGroups[props.row.furnizor]" class="bg-grey-1">
                 <q-td colspan="2" class="text-right">
-                  <strong>Average Age</strong>
+                  <strong>Total:</strong>
                 </q-td>
                 <q-td>
-                  {{ calculateAverageAge(props.row.gender).toFixed(1) }}
+                  {{ calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(1) }}
                 </q-td>
               </q-tr>
             </template>
@@ -106,17 +106,18 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue'
+
   
   const pagination = ref({
     rowsPerPage: 0
   })
-  
+
+  function formatDate(date) {
+  return new Date(date).toLocaleDateString('ro-RO')
+}
   // Add unique identifier to original rows
   const originalRows = ref([
-    { id: 1, name: 'Ion', age: 23, sex: 'male' ,profesie:'inginer'},
-    { id: 2, name: 'Gigina', age: 44, sex: 'female',profesie:'avocat' },
-    { id: 3, name: 'Popa', age: 34, sex: 'male' ,profesie:'inginer'}
+   
   ])
   
   const columns = [
@@ -143,13 +144,41 @@
       align:'center'
     }
   ]
-  const facturi = await $fetch('/api/facturiprimite')
-  console.log(facturi)
+
   // Initialize expandedGroups with all groups closed
   const expandedGroups = ref({
-    male: true,
-    female: true
+
   })
+  const processedRows  = ref([])
+  let categorii = []
+  const prelucrareFacturi = async ()=>{
+    const facturi = await $fetch('/api/facturiprimite')
+    categorii=[]
+    originalRows.value=[]
+
+    facturi.map(factura=>{
+      if(!categorii.includes(factura.furnizor.denumire)) categorii.push(factura.furnizor.denumire)
+      originalRows.value.push({
+          id:factura.id,
+          numefurnizor:factura.furnizor.denumire,
+          nrfact:factura.numarFactura,
+          datafact:formatDate(factura.dataFactura),
+          valoare:factura.valoare,
+          ramasplata:factura.valoare,
+          artbug:factura.articolBugetar.cod
+      })
+    })
+    expandedGroups.value=categorii.reduce((acc, key) => {
+          acc[key] = true; // Set the value to true for each key
+          return acc; // Return the accumulator for the next iteration
+      }, {});
+
+
+    console.log(facturi,categorii,originalRows.value,expandedGroups.value)
+  } 
+
+ 
+
   
   // Selected rows
   const selectedRows = ref([])
@@ -160,23 +189,25 @@
   })
   
   // Processed rows include group headers, data rows, and summary rows
-  const processedRows = computed(() => {
+
+  const processRows= () => {
+   
     let rows = []
     
     // Iterate through each gender
-    let categorii = ['male', 'female']
-    categorii.forEach(gender => {
+
+    categorii.forEach(furnizor => {
       // Add group header row
       rows.push({
         type: 'header',
-        gender: gender
+        furnizor: furnizor
       })
   
       // Add data rows if group is expanded
-      if (expandedGroups.value[gender]) {
+      if (expandedGroups.value[furnizor]) {
         // Add individual person rows
-        const genderRows = filterByGender(gender)
-        rows.push(...genderRows.map(row => ({
+        const furnizorRows = filterByFurnizor(furnizor)
+        rows.push(...furnizorRows.map(row => ({
           ...row,
           type: 'data'
         })))
@@ -184,28 +215,28 @@
         // Add summary row
         rows.push({
           type: 'summary',
-          gender: gender
+          furnizor: furnizor
         })
       }
     })
   
     return rows
-  })
-  
-  const filterByGender = (gender) => {
-    return originalRows.value.filter(person => person.sex === gender)
   }
   
-  const calculateAverageAge = (gender) => {
-    const groupRows = filterByGender(gender)
+  const filterByFurnizor = (furnizor) => {
+    return originalRows.value.filter(factura => factura.numefurnizor === furnizor)
+  }
+  
+  const calculateValoareTotalaFurnizor = (furnizor) => {
+    const groupRows = filterByFurnizor(furnizor)
     if (groupRows.length === 0) return 0
     
-    const totalAge = groupRows.reduce((sum, person) => sum + person.age, 0)
-    return totalAge / groupRows.length
+    const total = groupRows.reduce((sum, factura) => sum + parseFloat(factura.valoare), 0)
+    return total
   }
   
-  const toggleGroup = (gender) => {
-    expandedGroups.value[gender] = !expandedGroups.value[gender]
+  const toggleGroup = (furnizor) => {
+    expandedGroups.value[furnizor] = !expandedGroups.value[furnizor]
   }
   
   // Toggle all rows selection
@@ -225,6 +256,14 @@
     console.log('Second Action clicked')
     console.log('Selected Rows:', selectedRows.value)
   }
+
+ onMounted(async ()=>{
+  await prelucrareFacturi()
+  processedRows.value=processRows()
+  console.log('processed rows',processedRows.value)
+ })
+
+
   </script>
   
   <style scoped>
