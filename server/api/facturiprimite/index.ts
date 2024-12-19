@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       if (statusPlata) {
         whereCondition.statusPlata = statusPlata
       }
-  
+      whereCondition.statusPlata = 'NEPLATITA' || 'PARTIAL_PLATITA'
       // Retrieve facturi primite with all requested relations
       const facturiPrimite = await prisma.facturiPrimite.findMany({
         where: whereCondition,
@@ -63,7 +63,9 @@ export default defineEventHandler(async (event) => {
           }
         },
         orderBy: {
-          dataFactura: 'desc'
+         furnizor:{
+          denumire: 'asc'
+         }
         }
       })
   

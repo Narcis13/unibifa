@@ -83,22 +83,37 @@
                 </q-td>
                 <q-td key="numefurnizor">{{ props.row.numefurnizor }}</q-td>
                 <q-td key="nrfact">{{ props.row.nrfact }}</q-td>
-                <q-td key="datafact">{{ props.row.dataFactura }}</q-td>
-                <q-td class="text-centrat" key="valoare">{{ props.row.valoare }}</q-td>
+                <q-td  class="text-centrat" key="datafact">{{ props.row.datafact }}</q-td>
+                <q-td class="text-right" key="valoare">{{ formatAmount(props.row.valoare) }}</q-td>
+                <q-td class="text-right" key="ramasplata">{{ formatAmount(props.row.ramasplata) }}</q-td>
+                <q-td key="sursafin">{{ props.row.sursafin }}</q-td>
+                <q-td class="text-centrat" key="artbug">{{ props.row.artbug }}</q-td>
               </q-tr>
             </template>
       
             <!-- Summary Row -->
             <template v-if="props.row.type === 'summary'">
               <q-tr v-if="expandedGroups[props.row.furnizor]" class="bg-grey-1">
-                <q-td colspan="2" class="text-right">
+                <q-td colspan="4" class="text-right">
                   <strong>Total:</strong>
                 </q-td>
-                <q-td>
-                  {{ calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(1) }}
+                <q-td class="text-right">
+                  {{ formatAmount(calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(1)) }}
                 </q-td>
               </q-tr>
             </template>
+            <template v-if="props.row.type === 'total'">
+              <q-tr  class="bg-grey-1">
+                <q-td colspan="4" class="text-right">
+                  <strong>Total general:</strong>
+                </q-td>
+                <q-td class="text-right">
+                  {{ formatAmount(props.row.total) }}
+                </q-td>
+              </q-tr>
+            </template>
+              <!-- Bottom Slot for Summary Row -->
+
           </template>
         </q-table>
       </q-card>
@@ -115,6 +130,12 @@
   function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
 }
+function formatAmount(amount) {
+  return new Intl.NumberFormat('ro-RO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
   // Add unique identifier to original rows
   const originalRows = ref([
    
@@ -122,25 +143,44 @@
   
   const columns = [
     { 
-      name: 'name', 
+      name: 'numefurnizor', 
       required: true, 
-      label: 'Name', 
+      label: 'Furnizor', 
       align: 'left', 
-      field: 'name' 
+      field: 'numefurnizor' 
     },
     { 
-      name: 'age', 
-      label: 'Age', 
-      field: 'age' 
+      name: 'nrfact', 
+      label: 'Nr. fact.', 
+      field: 'nrfact' ,
+      align:'left'
     },
     { 
-      name: 'sex', 
-      label: 'Gender', 
-      field: 'sex' 
+      name: 'datafact', 
+      label: 'Data fact.', 
+      field: 'dataFactura' ,
+      align:'center'
     },{
-      name:'profesie',
-      label:'Profesie',
-      field:'profesie',
+      name:'valoare',
+      label:'Valoare',
+      field:'valoare',
+      align:'right'
+    },{
+      name:'ramasplata',
+      label:'Ramas de plata',
+      field:'ramasplata',
+      align:'right'
+    },
+    { 
+      name: 'sursafin', 
+      label: 'Sursa fin.', 
+      field: 'sursafin' ,
+      align:'left'
+    },
+    { 
+      name: 'artbug', 
+      label: 'Art. bug.', 
+      field: 'artbug' ,
       align:'center'
     }
   ]
@@ -165,6 +205,7 @@
           datafact:formatDate(factura.dataFactura),
           valoare:factura.valoare,
           ramasplata:factura.valoare,
+          sursafin:factura.sursaFinantare.denumire,
           artbug:factura.articolBugetar.cod
       })
     })
@@ -219,7 +260,10 @@
         })
       }
     })
-  
+    rows.push({
+          type: 'total',
+          total: calculateTotalValoare()
+        })
     return rows
   }
   
@@ -227,6 +271,9 @@
     return originalRows.value.filter(factura => factura.numefurnizor === furnizor)
   }
   
+  const calculateTotalValoare = ()=>{
+    return originalRows.value.reduce((sum,factura)=> sum + parseFloat(factura.valoare),0)
+  }
   const calculateValoareTotalaFurnizor = (furnizor) => {
     const groupRows = filterByFurnizor(furnizor)
     if (groupRows.length === 0) return 0
@@ -249,7 +296,7 @@
   // Action handlers for new buttons
   const handleFirstAction = () => {
     console.log('First Action clicked')
-    console.log('Selected Rows:', selectedRows.value)
+    console.log('Selected Rows:', selectedRows.value[0])
   }
   
   const handleSecondAction = () => {
