@@ -60,6 +60,26 @@ export default defineEventHandler(async (event) => {
             select: {
               denumire: true
             }
+          },
+          receptie: {
+            include: {
+              angajament: {
+                include: {
+                  modificari: {
+                    include: {
+                      user: {
+                        select: {
+                          name: true
+                        }
+                      }
+                    },
+                    orderBy: {
+                      created_at: 'desc'
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         orderBy: {

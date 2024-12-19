@@ -206,7 +206,13 @@ function formatAmount(amount) {
           valoare:factura.valoare,
           ramasplata:factura.valoare,
           sursafin:factura.sursaFinantare.denumire,
-          artbug:factura.articolBugetar.cod
+          artbug:factura.articolBugetar.cod,
+          codfiscalfurnizor:factura.furnizor.codfiscal,
+          ibanfurnizor:factura.furnizor.iban,
+          ibanplatitor:factura.articolBugetar.iban,
+          explicatii:factura.articolBugetar.denumire,
+          indicator:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].indicator,
+          codang:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].codang,
       })
     })
     expandedGroups.value=categorii.reduce((acc, key) => {
