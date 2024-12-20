@@ -6,8 +6,9 @@
             <span>Plata facturi</span>
             <div class="row q-gutter-sm">
               <q-btn 
+              :disable="selectedRows.length===0"
                 color="primary" 
-                label="First Action" 
+                label="Plata" 
                 @click="handleFirstAction"
               />
               <q-btn 
@@ -117,6 +118,10 @@
           </template>
         </q-table>
       </q-card>
+
+      <q-dialog v-model="showPlataDialog" >
+         <plata />
+    </q-dialog>
     </div>
   </template>
   
@@ -127,7 +132,7 @@
     rowsPerPage: 0
   })
 
-  function formatDate(date) {
+function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
 }
 function formatAmount(amount) {
@@ -189,6 +194,7 @@ function formatAmount(amount) {
   const expandedGroups = ref({
 
   })
+  const showPlataDialog=ref(false)
   const processedRows  = ref([])
   let categorii = []
   const prelucrareFacturi = async ()=>{
@@ -221,7 +227,7 @@ function formatAmount(amount) {
       }, {});
 
 
-    console.log(facturi,categorii,originalRows.value,expandedGroups.value)
+  //  console.log(facturi,categorii,originalRows.value,expandedGroups.value)
   } 
 
  
@@ -302,12 +308,13 @@ function formatAmount(amount) {
   // Action handlers for new buttons
   const handleFirstAction = () => {
     console.log('First Action clicked')
-    console.log('Selected Rows:', selectedRows.value[0])
+    console.log('Selected Rows:',  selectedRows.value[0])
+    showPlataDialog.value=true;
   }
   
   const handleSecondAction = () => {
     console.log('Second Action clicked')
-    console.log('Selected Rows:', selectedRows.value)
+    console.log('Selected Rows:', selectedRows.value.length)
   }
 
  onMounted(async ()=>{

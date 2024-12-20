@@ -18,7 +18,11 @@ export default defineEventHandler(async (event) => {
       } = getQuery(event)
   
       // Build where clause for filtering
-      const whereCondition: any = {}
+      const whereCondition: any = {
+        statusPlata: {
+          in: ['NEPLATITA', 'PARTIAL_PLATITA']
+        }
+      }
   
       // Add date range filter if provided
       if (startDate && endDate) {
@@ -42,7 +46,7 @@ export default defineEventHandler(async (event) => {
       if (statusPlata) {
         whereCondition.statusPlata = statusPlata
       }
-      whereCondition.statusPlata = 'NEPLATITA' || 'PARTIAL_PLATITA'
+     // whereCondition.statusPlata = 'NEPLATITA' || 'PARTIAL_PLATITA'
       // Retrieve facturi primite with all requested relations
       const facturiPrimite = await prisma.facturiPrimite.findMany({
         where: whereCondition,
