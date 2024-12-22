@@ -6,7 +6,7 @@
             <span>Plata facturi</span>
             <div class="row q-gutter-sm">
               <q-btn 
-              :disable="selectedRows.length===0"
+              :disable="!canGroupForPayment"
                 color="primary" 
                 label="Plata" 
                 @click="handleFirstAction"
@@ -120,18 +120,22 @@
       </q-card>
 
       <q-dialog v-model="showPlataDialog" >
-         <plata />
+         <plata 
+           @plati-montat="handleMounted"
+           @plata-efectuata="handlePlataEfectuata"
+           :facturi="selectedRows"
+         />
     </q-dialog>
     </div>
   </template>
   
   <script setup>
-
+import { useQuasar } from 'quasar'
   
   const pagination = ref({
     rowsPerPage: 0
   })
-
+const $q = useQuasar()
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
 }
@@ -305,16 +309,51 @@ function formatAmount(amount) {
       : []
   }
   
+  const canGroupForPayment = computed(() => {
+    if (!selectedRows.value.length) return false
+    
+    const firstRow = selectedRows.value[0]
+    return selectedRows.value.every(row => 
+      row.artbug === firstRow.artbug && 
+      row.numefurnizor === firstRow.numefurnizor
+    )
+  })
   // Action handlers for new buttons
   const handleFirstAction = () => {
     console.log('First Action clicked')
-    console.log('Selected Rows:',  selectedRows.value[0])
+  //  console.log('Selected Rows:',  selectedRows.value[0])
     showPlataDialog.value=true;
+   //selectedRows.value=[]
   }
   
   const handleSecondAction = () => {
     console.log('Second Action clicked')
-    console.log('Selected Rows:', selectedRows.value.length)
+    console.log('Selected Rows:', selectedRows.value)
+  }
+
+  const handleMounted = () => {
+    console.log('Plati montat')
+   // showPlataDialog.value=false
+    selectedRows.value=[]
+
+  }
+  const handlePlataEfectuata = (result) => {
+    console.log('Plata efectuata:', result)
+    if(result.success){
+      console.log('Plata efectuata cu succes')
+    $q.notify({
+      color: 'positive',
+      message: result.message
+    })
+    showPlataDialog.value=false
+    result.facturi.map(f=>{
+      const index = processedRows.value.findIndex(obj => obj.id === f.id);
+      if (index !== -1) {
+        processedRows.value.splice(index, 1);
+      }
+    })
+    }
+   // selectedRows.value=[]
   }
 
  onMounted(async ()=>{

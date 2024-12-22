@@ -4,8 +4,10 @@ import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
 
 const utilizatorStore = useUtilizatorStore();
 
-
-
+console.log('utilizatorStore',utilizatorStore.utilizator)
+function rolCorespunzator(roles){
+  return roles.includes(utilizatorStore.utilizator.role)
+}
 
 function executa(link){
  // console.log('executa',link)
@@ -23,13 +25,13 @@ const  links_administrare= [
 
   
   const   links_operatiuni= [
-    { icon: 'folder', text: 'Buget',ruta:'/bugete' },
-    { icon: 'restore', text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
-    { icon: 'watch_later', text: 'Angajamente',ruta:'/angajamente' },
-    { icon: 'thumb_up_alt', text: 'Lichidari/receptii',ruta:'/receptii'  },
-    { icon: 'thumb_up_alt', text: 'Ordonantari plata',ruta:'/ordonantari'  },
-    { icon: 'thumb_up_alt', text: 'Plati',ruta:'/facturiplati'  },
-    { icon: 'thumb_up_alt', text: 'Registru vize CFPP',ruta:'/registruvize'  },
+    { icon: 'folder', roles:['CFPP','RESPONSABIL'],text: 'Buget',ruta:'/bugete' },
+    { icon: 'restore', roles:['CFPP','RESPONSABIL'],text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
+    { icon: 'watch_later', roles:['CFPP','RESPONSABIL'],text: 'Angajamente',ruta:'/angajamente' },
+    { icon: 'thumb_up_alt',roles:['CFPP','RESPONSABIL'], text: 'Lichidari/receptii',ruta:'/receptii'  },
+    { icon: 'thumb_up_alt',roles:['CFPP','RESPONSABIL'], text: 'Ordonantari plata',ruta:'/ordonantari'  },
+    { icon: 'thumb_up_alt', roles:['ECONOMIST'],text: 'Plati',ruta:'/facturiplati'  },
+    { icon: 'thumb_up_alt', roles:['CFPP'],text: 'Registru vize CFPP',ruta:'/registruvize'  },
 
   ] 
 
@@ -80,7 +82,7 @@ const    buttons1=[
             <q-card>
               <q-card-section>
 
-                <q-item class="text-weight-bold text-uppercase" v-for="link in links_operatiuni" :key="link.text" v-ripple clickable  @click="executa(link)">
+                <q-item v-show="rolCorespunzator(link.roles)" class="text-weight-bold text-uppercase" v-for="link in links_operatiuni" :key="link.text" v-ripple clickable  @click="executa(link)">
                     <q-item-section avatar>
                       <q-icon color="grey" :name="link.icon" />
                     </q-item-section>

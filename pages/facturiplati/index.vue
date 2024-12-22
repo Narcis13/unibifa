@@ -24,8 +24,8 @@
           </q-tab-panel>
 
           <q-tab-panel name="plati">
-            <div class="text-h6">Registru plati</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <div class="q-ml-md text-h6">Registru plati</div>
+           <PlatiTabel />
           </q-tab-panel>
 
 
