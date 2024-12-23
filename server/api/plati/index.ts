@@ -80,7 +80,7 @@ export default defineEventHandler(async (event) => {
             where: { idFactura: factura.id },
             _sum: { sumaAchitata: true }
           })
-  
+       //  console.log('plata partiala',totalPlatit._sum.sumaAchitata,factura.valoare)
           // Update invoice status
           await tx.facturiPrimite.update({
             where: { id: factura.id },
@@ -100,6 +100,127 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 500,
         message: 'Error saving payment'
+      })
+    }
+  }
+
+  if (event.method === 'PATCH') {
+    try {
+      // Get payment ID from request body
+      const { idPlata } = await readBody(event)
+  
+      if (!idPlata) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Bad Request',
+          message: 'Payment ID is required'
+        })
+      }
+  
+      // Use a transaction to ensure all updates are performed atomically
+      const result = await prisma.$transaction(async (tx) => {
+        // 1. Get all affected invoice IDs first
+        const affectedPaymentLinks = await tx.facturiPlati.findMany({
+          where: {
+            idPlata: idPlata
+          },
+          select: {
+            idFactura: true
+          }
+        })
+  
+        const affectedInvoiceIds = affectedPaymentLinks.map(link => link.idFactura)
+  
+        // 2. Update the payment status to 'anulat'
+        await tx.plati.update({
+          where: {
+            id: idPlata
+          },
+          data: {
+            stare: 'anulat'
+          }
+        })
+  
+        // 3. Set sumaAchitata to 0 for all related FacturiPlati entries
+        await tx.facturiPlati.updateMany({
+          where: {
+            idPlata: idPlata
+          },
+          data: {
+            sumaAchitata: 0
+          }
+        })
+  
+        // 4. For each affected invoice, we need to:
+        // a) Calculate total remaining payments from other active payments
+        // b) Update status based on remaining payment amount
+        for (const invoiceId of affectedInvoiceIds) {
+          // Get invoice total amount and sum of other active payments
+          const invoice = await tx.facturiPrimite.findUnique({
+            where: { id: invoiceId },
+            include: {
+              plati: {
+                include: {
+                  plata: true
+                }
+              }
+            }
+          })
+  
+          if (invoice) {
+            // Calculate total of remaining active payments
+            const totalPaid = invoice.plati.reduce((sum, payment) => {
+              if (payment.plata.stare === 'activ') {
+                return sum + Number(payment.sumaAchitata)
+              }
+              return sum
+            }, 0)
+  
+            // Determine new payment status
+            let newStatus = 'NEPLATITA'
+            if (totalPaid >= Number(invoice.valoare)) {
+              newStatus = 'PLATITA'
+            } else if (totalPaid > 0) {
+              newStatus = 'PARTIAL_PLATITA'
+            }
+  
+            // Update invoice status
+            await tx.facturiPrimite.update({
+              where: { id: invoiceId },
+              data: {
+                statusPlata: newStatus
+              }
+            })
+          }
+        }
+  
+        return {
+          success: true,
+          affectedInvoices: affectedInvoiceIds.length
+        }
+      })
+  
+      return {
+        success: true,
+        message: 'Payment cancelled successfully',
+        affectedInvoices: result.affectedInvoices
+      }
+  
+    } catch (error) {
+      console.error('Error cancelling payment:', error)
+      
+      if (error instanceof Error) {
+        throw createError({
+          statusCode: 500,
+          statusMessage: 'Internal Server Error',
+          message: error.message
+        })
+      }
+  
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Unknown Error',
+        message: 'An unexpected error occurred'
       })
     }
   }

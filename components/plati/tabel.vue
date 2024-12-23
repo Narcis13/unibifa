@@ -30,7 +30,7 @@
         row-key="id"
         :loading="loading"
         v-model:selected="selectedRows"
-        selection="multiple"
+        selection="single"
         :filter="search"
         :rows-per-page-options="[10, 25, 50, 100]"
         @request="onRequest"
@@ -171,19 +171,20 @@
       persistent: true
     }).onOk(async () => {
       try {
-        const ids = selectedRows.value.map(row => row.id)
-        const response = await fetch('/api/plati/anulare', {
-          method: 'POST',
+    
+     
+       const response = await $fetch('/api/plati', {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ ids })
+          body: {idPlata:selectedRows.value[0].id}
         })
-        
-        if (response.ok) {
+       console.log(response)
+        if (response.success) {
           $q.notify({
             type: 'positive',
-            message: 'Plățile au fost anulate cu succes'
+            message: 'Plata a fost anulate cu succes'
           })
           await fetchData()
           selectedRows.value = []

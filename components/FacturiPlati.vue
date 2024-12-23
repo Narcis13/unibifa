@@ -214,7 +214,7 @@ function formatAmount(amount) {
           nrfact:factura.numarFactura,
           datafact:formatDate(factura.dataFactura),
           valoare:factura.valoare,
-          ramasplata:factura.valoare,
+          ramasplata:factura.ramasplata,
           sursafin:factura.sursaFinantare.denumire,
           artbug:factura.articolBugetar.cod,
           codfiscalfurnizor:factura.furnizor.codfiscal,
@@ -231,7 +231,7 @@ function formatAmount(amount) {
       }, {});
 
 
-  //  console.log(facturi,categorii,originalRows.value,expandedGroups.value)
+    console.log(facturi,categorii,originalRows.value,expandedGroups.value)
   } 
 
  

@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
       if (statusPlata) {
         whereCondition.statusPlata = statusPlata
       }
-     // whereCondition.statusPlata = 'NEPLATITA' || 'PARTIAL_PLATITA'
+  
       // Retrieve facturi primite with all requested relations
       const facturiPrimite = await prisma.facturiPrimite.findMany({
         where: whereCondition,
@@ -84,16 +84,39 @@ export default defineEventHandler(async (event) => {
                 }
               }
             }
+          },
+          plati: {
+            include: {
+              plata: true
+            }
           }
         },
         orderBy: {
-         furnizor:{
-          denumire: 'asc'
-         }
+          furnizor: {
+            denumire: 'asc'
+          }
         }
       })
   
-      return facturiPrimite
+      // Calculate ramasplata for each factura
+      const facturiWithRamasPlata = facturiPrimite.map(factura => {
+        // Calculate total paid amount
+        const totalPlatit = factura.plati.reduce((sum, plataEntry) => {
+          return sum + Number(plataEntry.sumaAchitata)
+        }, 0)
+  
+        // Calculate remaining amount
+        const ramasplata = Number(factura.valoare) - totalPlatit
+  
+        // Return factura with calculated ramasplata
+        return {
+          ...factura,
+          ramasplata: Number(ramasplata.toFixed(2)), // Round to 2 decimal places
+          totalPlatit: Number(totalPlatit.toFixed(2))
+        }
+      })
+  
+      return facturiWithRamasPlata
     } catch (error) {
       console.error('Error retrieving facturi primite:', error)
       
@@ -112,7 +135,6 @@ export default defineEventHandler(async (event) => {
         message: 'An unexpected error occurred'
       })
     }
-
   }
 
   if (event.method === 'POST') {
