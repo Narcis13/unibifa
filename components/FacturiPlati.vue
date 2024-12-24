@@ -163,7 +163,12 @@ function formatAmount(amount) {
       required: true, 
       label: 'Furnizor', 
       align: 'left', 
-      field: 'numefurnizor' 
+      field: 'numefurnizor',
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/totifurnizorii')
+    } 
     },
     { 
       name: 'nrfact', 
@@ -175,29 +180,51 @@ function formatAmount(amount) {
       name: 'datafact', 
       label: 'Data fact.', 
       field: 'dataFactura' ,
-      align:'center'
+      align:'center',
+      filterOptions:{
+        enabled:true,
+        type:'interval'
+      }
     },{
       name:'valoare',
       label:'Valoare',
       field:'valoare',
-      align:'right'
+      align:'right',
+    filterOptions:{
+      enabled:true,
+      type:'numericvalue'
+    }
     },{
       name:'ramasplata',
       label:'Ramas de plata',
       field:'ramasplata',
-      align:'right'
+      align:'right',
+    filterOptions:{
+      enabled:true,
+      type:'checkif'
+    }
     },
     { 
       name: 'sursafin', 
       label: 'Sursa fin.', 
       field: 'sursafin' ,
-      align:'left'
+      align:'left',
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/surse')
+    }
     },
     { 
       name: 'artbug', 
       label: 'Art. bug.', 
       field: 'artbug' ,
-      align:'center'
+      align:'center',
+    filterOptions:{
+      enabled:true,
+      type:'list',
+      options:await $fetch('/api/info/articole')
+    }
     }
   ]
 
@@ -244,11 +271,11 @@ function formatAmount(amount) {
  
   const filterDefaults = {
  // 'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
-  'vizaCFPP':false,
+  'ramasplata':false,  //psihologie inversa
   'artbug':null,
-  'furnizor':null,
-  'sursa':null,
-  'dataord':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
+  'numefurnizor':null,
+  'sursafin':null,
+  'datafact':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
   'valoare':{ operator:  { label: '>', value: 'gt' }, value: 0 }
 }
 

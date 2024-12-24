@@ -64,7 +64,13 @@
             toggle-indeterminate
             
           />
-  
+          <q-checkbox
+            v-else-if="column.filterOptions.type === 'checkif'"
+            v-model="filters[column.name]"
+            :label="filters[column.name]===null?'TOATE':'Platite'"
+            toggle-indeterminate
+            
+          />
           <!-- Numeric value filter type -->
           <div v-else-if="column.filterOptions.type === 'numericvalue'" class="row q-col-gutter-sm">
             <div class="col-4">
@@ -139,7 +145,7 @@
       filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
     } else if (column.filterOptions.type === 'numericvalue') {
       filters.value[column.name] = props.defaults[column.name]//{ operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
-    } else if (column.filterOptions.type === 'check') {
+    } else if (column.filterOptions.type === 'check'||column.filterOptions.type === 'checkif') {
       filters.value[column.name] = props.defaults[column.name]
     } else {
       filters.value[column.name] = props.defaults[column.name]?props.defaults[column.name][0]:null
@@ -152,7 +158,7 @@
       filters.value[column.name] = { from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') }
     } else if (column.filterOptions.type === 'numericvalue') {
       filters.value[column.name] = props.defaults[column.name]//{ operator:  { label: '>', value: 'gt' }, value: props.defaults[column.name] }
-    } else if (column.filterOptions.type === 'check') {
+    } else if (column.filterOptions.type === 'check'||column.filterOptions.type === 'checkif') {
       filters.value[column.name] = props.defaults[column.name]
     } else {
       filters.value[column.name] = props.defaults[column.name]?props.defaults[column.name][0]:null

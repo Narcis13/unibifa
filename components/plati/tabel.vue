@@ -2,6 +2,26 @@
 <template>
     <div class="q-pa-md">
       <div class="row q-mb-md items-center justify-between">
+      <div class="row items-center">
+        <q-btn-dropdown square icon="tune" class="q-mr-sm">
+          <div class="q-pa-md" style="min-width: 100px">
+              <q-input dense outlined v-model="selectedDate">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                      <q-date v-model="selectedDate" :default-year-month="defaultYearMonth" >
+                        <div class="row items-center justify-end">
+                                                    <q-btn v-close-popup label="Inchide" color="primary" flat />
+                                                </div>
+                        </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+          <q-btn label="Genereaza OPXML" color="primary" class="q-mt-sm" @click="generateOPXML" />
+          </div>
+        </q-btn-dropdown>
+
         <q-input
           v-model="search"
           dense
@@ -14,15 +34,16 @@
             <q-icon name="search" />
           </template>
         </q-input>
-        
-        <q-btn
-          color="negative"
-          icon="cancel"
-          label="Anulare"
-          @click="handleAnulare"
-          :disable="!selectedRows.length||eDejaAnulat"
-        />
       </div>
+
+      <q-btn
+        color="negative"
+        icon="cancel"
+        label="Anulare"
+        @click="handleAnulare"
+        :disable="!selectedRows.length||eDejaAnulat"
+      />
+    </div>
   
       <q-table
         :rows="platiData"
@@ -126,12 +147,16 @@
       sortable: true
     }
   ]
-  
+  const selectedDate= ref(date.formatDate(Date.now(), 'YYYY/MM/DD'))
+  const defaultYearMonth= ref(date.formatDate(Date.now(), 'YYYY/MM'))
   const platiData = ref([])
   const loading = ref(false)
   const search = ref('')
   const selectedRows = ref([])
   
+  const generateOPXML=()=>{
+    console.log('generateOPXML')
+  }
   const formatDate = (dateString) => {
     return date.formatDate(dateString, 'DD.MM.YYYY')
   }
