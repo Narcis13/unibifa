@@ -124,7 +124,11 @@
   //const toate_receptiile = await fetchReceptions(utilizatorStore.utilizator?.compartiment.id)
   //console.log('Toate receptiile',toate_receptiile)
   const expanded=ref([])
-  
+  const router = useRouter()
+  const openInNewTab = (path:string) => {
+  const url = router.resolve(path).href
+  window.open(url, '_blank')
+}
   const pagination = ref({
     sortBy: 'datafact',
     descending: true,
@@ -249,7 +253,8 @@ const onReceptieSiOrdonantareNoua = async (dateReceptie:Receptie) =>{
  
     const ordonantare= await createOrdonantare(OrdPayload)
 
- // console.log('receptie noua ....!!',r)
+   // console.log('receptie si ordonantare noua ....!!',ordonantare)
+    openInNewTab('/rapoarte/ordonantari/'+ordonantare.data.id)
     $q.notify({
       color: 'positive',
       message: 'Lichidarea/receptia si Ordonantarea de Plata au fost adaugate cu succes!',

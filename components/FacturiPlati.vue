@@ -3,7 +3,14 @@
       <q-card class="my-card">
         <q-card-section>
           <div class="text-h6 row items-center justify-between">
-            <span>Plata facturi</span>
+            <div class="row q-gutter-sm">
+              <span>Plata facturi</span>
+              <table-filter
+              :columns="columns"
+              :defaults="filterDefaults"
+              @filtersadded="handleFilters"
+            />
+            </div>
             <div class="row q-gutter-sm">
               <q-btn 
               :disable="!canGroupForPayment"
@@ -13,7 +20,7 @@
               />
               <q-btn 
                 color="secondary" 
-                label="Second Action" 
+                label="Tiparire" 
                 @click="handleSecondAction"
               />
             </div>
@@ -130,7 +137,7 @@
   </template>
   
   <script setup>
-import { useQuasar } from 'quasar'
+import { useQuasar,date} from 'quasar'
   
   const pagination = ref({
     rowsPerPage: 0
@@ -235,7 +242,25 @@ function formatAmount(amount) {
   } 
 
  
+  const filterDefaults = {
+ // 'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
+  'vizaCFPP':false,
+  'artbug':null,
+  'furnizor':null,
+  'sursa':null,
+  'dataord':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
+  'valoare':{ operator:  { label: '>', value: 'gt' }, value: 0 }
+}
 
+const handleFilters = async (filters) => {
+  console.log('filters',filters)
+  try {
+   // await fetchAngajamente(2024,filters)
+ //  ordonantari.value = await fetchOrdonantari(filters)
+  } catch (e){
+    console.error(e)
+  }
+}
   
   // Selected rows
   const selectedRows = ref([])

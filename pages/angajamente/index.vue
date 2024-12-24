@@ -55,6 +55,7 @@
               <template #body-cell-actiuni="props">
                 <q-td :props="props">
                   <q-btn
+                    v-if="userStore.utilizator.role=='RESPONSABIL'"
                     flat
                     round
                     color="primary"
@@ -216,7 +217,7 @@
                 <template #body-cell-actiuni="props">
                   <q-td :props="props">
                     <q-btn
-                     v-if="!props.row.vizaCFPP"
+                     v-if="!props.row.vizaCFPP&&userStore.utilizator.role=='CFPP'"
                       flat
                       round
                       color="primary"

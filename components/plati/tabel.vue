@@ -20,7 +20,7 @@
           icon="cancel"
           label="Anulare"
           @click="handleAnulare"
-          :disable="!selectedRows.length"
+          :disable="!selectedRows.length||eDejaAnulat"
         />
       </div>
   
@@ -160,7 +160,10 @@
       loading.value = false
     }
   }
-  
+  const eDejaAnulat=computed(()=>{
+    if (!selectedRows.value.length) return true
+    return selectedRows.value[0].stare==='anulat'
+  })
   const handleAnulare = async () => {
     if (!selectedRows.value.length) return
   
