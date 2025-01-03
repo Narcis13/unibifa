@@ -126,7 +126,7 @@ const filterDefaults:Record<string,any> = {
   'furnizor':null,
   'sursa':null,
   'dataord':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
-  'valoare':{ operator:  { label: '>', value: 'gt' }, value: 0 }
+  'valoare':{ operator:  { label: '>', value: 'gt' }, value: -999999999 }
 }
 
 const handleFilters = async (filters: Record<string, any>) => {

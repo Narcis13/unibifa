@@ -456,6 +456,8 @@ const vizeazaCFPP = async (dataviza:CreateVizaCFPPDTO)=>{
     const viza = await createVizaCFPP(dataviza)
     await aplicaVizaCFPPAngajament(selectedModificare.value!.id,dataviza)
     showVizaDialog.value=false
+    showIstoricDialog.value=false
+    await fetchAngajamente(new Date().getFullYear(),filterDefaults)
     $q.notify({
       color: 'positive',
       message: 'Viza a fost aplicata cu succes!',
