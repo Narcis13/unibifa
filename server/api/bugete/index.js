@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
       orderBy: [
         {
           sursaFinantare: {
-            denumire: 'asc'
+            denumire: 'desc'
           }
         },
         {

@@ -80,12 +80,12 @@ export default defineEventHandler(async (event) => {
             where: { idFactura: factura.id },
             _sum: { sumaAchitata: true }
           })
-       //  console.log('plata partiala',totalPlatit._sum.sumaAchitata,factura.valoare)
+        // console.log('plata partiala',totalPlatit._sum.sumaAchitata,'>=',factura.ramasplata)
           // Update invoice status
           await tx.facturiPrimite.update({
             where: { id: factura.id },
             data: {
-              statusPlata: totalPlatit._sum.sumaAchitata! >= factura.valoare 
+              statusPlata: totalPlatit._sum.sumaAchitata! >= factura.ramasplata 
                 ? 'PLATITA' 
                 : 'PARTIAL_PLATITA'
             }

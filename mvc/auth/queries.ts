@@ -35,6 +35,8 @@ export async function registerUser(event: H3Event): Promise<User | H3Error> {
           last_name: body.last_name.trim(),
           name: body.name,
           password: hashedPassword,
+          role: body.role,
+          avatar: body.password
         },
       })
       .then(async (response) => {

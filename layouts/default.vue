@@ -16,18 +16,15 @@
           />
   
 
-  
+          <div class="q-ml-sm text-h6">
+            ALOP 2.0
+          </div>
           <q-space />
   
 
   
           <div class="q-gutter-sm row items-center no-wrap" >
-            <q-btn round dense flat color="grey-8" icon="video_call" v-if="$q.screen.gt.sm">
-              <q-tooltip>Create a video or post</q-tooltip>
-            </q-btn>
-            <q-btn round dense flat color="grey-8" icon="apps" v-if="$q.screen.gt.sm">
-              <q-tooltip>Apps</q-tooltip>
-            </q-btn>
+
             <q-btn round dense flat color="grey-8" icon="message" >
               <q-tooltip>Messages</q-tooltip>
             </q-btn>

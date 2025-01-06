@@ -51,9 +51,10 @@
       :rows="filteredBugete"
       :columns="visibleColumns"
       row-key="id"
+      dense
       :loading="loading"
       :filter="filter"
-      :pagination="{ rowsPerPage: 10 }"
+      :pagination="{ rowsPerPage: 15 }"
     >
       <!-- Loading Slot -->
       <template v-slot:loading>

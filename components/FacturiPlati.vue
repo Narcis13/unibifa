@@ -276,7 +276,7 @@ function formatAmount(amount) {
   'numefurnizor':null,
   'sursafin':null,
   'datafact':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
-  'valoare':{ operator:  { label: '>', value: 'gt' }, value: 0 }
+  'valoare':{ operator:  { label: '>', value: 'gt' }, value: -9999999 }
 }
 
 const handleFilters = async (filters) => {
@@ -365,10 +365,11 @@ const handleFilters = async (filters) => {
     if (!selectedRows.value.length) return false
     
     const firstRow = selectedRows.value[0]
+    const totaldeplata = selectedRows.value.reduce((sum, factura) => sum + parseFloat(factura.ramasplata), 0)
     return selectedRows.value.every(row => 
       row.artbug === firstRow.artbug && 
       row.numefurnizor === firstRow.numefurnizor
-    )
+    ) && totaldeplata>0
   })
   // Action handlers for new buttons
   const handleFirstAction = () => {
