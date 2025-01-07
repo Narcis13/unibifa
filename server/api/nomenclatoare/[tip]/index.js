@@ -54,17 +54,18 @@ if(tip=='Bugete'){
     }
   }
 }
-
+let order=[{id:'desc'}]
 if(tip=='furnizori'){
  // console.log('furnizori',getQuery(event).cid)
   w.where={
     id_user:parseInt(getQuery(event).cid)
 }
+order=[{denumire:'asc'}]
 }
 //console.log('cruta',q)
     return prisma[tip].findMany({
         ...inc,
         ...w,
-        orderBy:[{id:'desc'}]
+        orderBy:order
     });
 })

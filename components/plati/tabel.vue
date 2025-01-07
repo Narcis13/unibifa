@@ -18,7 +18,7 @@
                   </q-icon>
                 </template>
               </q-input>
-          <q-btn label="Genereaza OPXML" color="primary" class="q-mt-sm" @click="generateOPXML" />
+          <q-btn v-close-popup label="Genereaza OPXML" color="primary" class="q-mt-sm" @click="generateOPXML" />
           </div>
         </q-btn-dropdown>
 
@@ -154,9 +154,52 @@
   const search = ref('')
   const selectedRows = ref([])
   
-  const generateOPXML=()=>{
-    console.log('generateOPXML')
+  const generateOPXML=async ()=>{
+    console.log('generateOPXML',selectedDate.value.replace(/\//g, '-'))
+    downloadXML(selectedDate.value.replace(/\//g, '-'))
+    /*const response = await $fetch('/api/plati/genxml', {
+      method: 'POST',
+      body: JSON.stringify({
+        date: selectedDate.value.replace(/\//g, '-') 
+      })
+})*/
+
   }
+
+
+  const downloadXML = async (date) => {
+  try {
+    const response = await $fetch('/api/plati/genxml', {
+      method: 'POST',
+      body: { date },
+      responseType: 'blob'  // Important! This tells fetch to handle the response as a blob
+    })
+
+    // Create a blob from the response
+    const blob = new Blob([response], { type: 'application/xml' })
+    
+    // Create a temporary URL for the blob
+    const url = window.URL.createObjectURL(blob)
+    
+    // Create a temporary link element
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Plati-${selectedDate.value.replace(/\//g, '-')}.xml`
+    
+    // Append to document, click it, and remove it
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    // Clean up the temporary URL
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Error downloading XML:', error)
+    // Handle error appropriately (show notification, etc.)
+  }
+}
+
+
   const formatDate = (dateString) => {
     return date.formatDate(dateString, 'DD.MM.YYYY')
   }

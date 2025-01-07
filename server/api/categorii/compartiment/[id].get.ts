@@ -22,7 +22,9 @@ export default defineEventHandler(async (event) => {
       articolBugetar: true
     },
     orderBy: {
-      denumire: 'asc'
+      articolBugetar: {
+        cod: 'asc'
+      }
     }
   })
 
