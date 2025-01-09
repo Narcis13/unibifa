@@ -293,11 +293,12 @@ onMounted(() => {
         :rows="ordonantari"
         :columns="columns"
         row-key="id"
+        dense
         selection="single"
         :filter="filter"
         v-model:selected="selected"
         :loading="loading"
-        :pagination="{ rowsPerPage: 20 }"
+        :pagination="{ rowsPerPage: 15 }"
       >
         <!-- Custom column formatters -->
         <template v-slot:body-cell-dataord="props">

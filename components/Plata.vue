@@ -16,11 +16,11 @@
           />
   
           <!-- Data OP -->
-          <q-input label="La data"  v-model="azi" mask="date" :rules="['date']">
+          <q-input label="La data"  v-model="formData.dataOP" mask="date" :rules="['date']">
                                         <template v-slot:append>
                                             <q-icon name="event" class="cursor-pointer">
                                             <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                                <q-date v-model="azi">
+                                                <q-date v-model="formData.dataOP">
                                                 <div class="row items-center justify-end">
                                                     <q-btn  v-close-popup  label="Inchide" color="primary" flat />
                                                 </div>
@@ -117,11 +117,11 @@ const emit = defineEmits([
 
 const nextop = await $fetch('api/plati/nextop')  
 //console.log('max value: '+props.facturi.reduce((acc, curr) => acc + parseFloat(curr.valoare) , 0))
-const azi = date.formatDate(new Date(), 'YYYY/MM/DD')
+const azi = ref(date.formatDate(new Date(), 'YYYY/MM/DD'))
 const facturi=[...props.facturi]
   const formData = ref({
     numarOP: nextop.nextop,
-    dataOP: new Date(),
+    dataOP: azi.value,
     valoarePlata: facturi.reduce((acc, curr) => acc + parseFloat(curr.ramasplata) , 0),
     detalii: 'c/v fact. '+facturi.reduce((acc, curr) => acc + curr.nrfact + ', ', '')+' '+facturi[0].explicatii,
     artBug: facturi[0].artbug,

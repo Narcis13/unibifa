@@ -370,7 +370,7 @@ model Plati {
   id              Int           @id @default(autoincrement())
   numarop         Int        
   anfiscal        Int
-  dataop          DateTime
+  dataop          DateTime      @db.Date
   numefurnizor    String        @db.VarChar(255)
   ibanplatitor    String        @db.VarChar(34)
   ibanbeneficiar  String        @db.VarChar(34)

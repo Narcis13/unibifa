@@ -2,7 +2,7 @@
     <div class="row justify-center items-center q-pa-md">
   <div class=" q-gutter-md" style="display: flex; flex-direction: row;  justify-content: center; align-items: center;">
     <q-select
-      style="width: 200px"
+      style="width: 275px"
       v-model="newReceptie.idFurnizor"
       :options="furnizoriOptions"
       label="Furnizor *"

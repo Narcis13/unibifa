@@ -18,8 +18,9 @@ export default defineEventHandler(async (event: H3Event) => {
     const payments = await prisma.plati.findMany({
       where: {
         dataop: {
-          gte: filterDate,
-          lt: new Date(filterDate.getTime() + 24 * 60 * 60 * 1000) 
+         // gte: filterDate,
+         // lt: new Date(filterDate.getTime() + 24 * 60 * 60 * 1000) 
+         equals: filterDate
         },
         stare: 'activ'
       },

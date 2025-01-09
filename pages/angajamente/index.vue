@@ -457,6 +457,7 @@ const vizeazaCFPP = async (dataviza:CreateVizaCFPPDTO)=>{
     await aplicaVizaCFPPAngajament(selectedModificare.value!.id,dataviza)
     showVizaDialog.value=false
     showIstoricDialog.value=false
+    openInNewTab('/rapoarte/angajamente/'+selectedModificare.value!.id)
     await fetchAngajamente(new Date().getFullYear(),filterDefaults)
     $q.notify({
       color: 'positive',

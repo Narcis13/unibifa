@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
          // stare: 'activ'
         },
         orderBy: {
-          dataop: 'desc'
+          id: 'desc'
         },
         select: {
           id: true,
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
 
   if (event.method === 'POST') {
     const body = await readBody(event)
-  
+    //console.log('body',body)
     try {
       return await prisma.$transaction(async (tx) => {
         // 1. Create payment record
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
           data: {
             numarop: body.numarOP,
             anfiscal: new Date().getFullYear(),
-            dataop: new Date(body.dataOP),
+            dataop: new Date(body.dataOP.replace(/\//g, '-')),
             numefurnizor: body.facturi[0].numefurnizor,
             ibanplatitor: body.facturi[0].ibanplatitor,
             ibanbeneficiar: body.facturi[0].ibanfurnizor,

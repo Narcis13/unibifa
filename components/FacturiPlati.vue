@@ -33,6 +33,7 @@
           bordered
           separator="cell"
           :rows="processedRows"
+           :row-class="row => row.paid ? 'paid-invoice' : ''"
           :columns="columns"
           row-key="id"
           virtual-scroll
@@ -82,7 +83,7 @@
       
             <!-- Regular Data Row -->
             <template v-if="props.row.type === 'data'">
-              <q-tr v-if="expandedGroups[props.row.numefurnizor]" :props="props">
+              <q-tr :class="{ 'paid-invoice': props.row.paid }" v-if="expandedGroups[props.row.numefurnizor]" :props="props">
                 <q-td auto-width>
                   <q-checkbox 
                     v-model="props.selected" 
@@ -106,7 +107,7 @@
                   <strong>Total:</strong>
                 </q-td>
                 <q-td class="text-right">
-                  {{ formatAmount(calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(1)) }}
+                  {{ formatAmount(calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(2)) }}
                 </q-td>
               </q-tr>
             </template>
@@ -390,7 +391,7 @@ const handleFilters = async (filters) => {
     selectedRows.value=[]
 
   }
-  const handlePlataEfectuata = (result) => {
+  const handlePlataEfectuata = async (result) => {
     console.log('Plata efectuata:', result)
     if(result.success){
       console.log('Plata efectuata cu succes')
@@ -399,12 +400,22 @@ const handleFilters = async (filters) => {
       message: result.message
     })
     showPlataDialog.value=false
-    result.facturi.map(f=>{
+
+    /*result.facturi.map(f=>{
       const index = processedRows.value.findIndex(obj => obj.id === f.id);
       if (index !== -1) {
         processedRows.value.splice(index, 1);
       }
     })
+*/
+    result.facturi.forEach(f => {
+      const index = processedRows.value.findIndex(obj => obj.id === f.id);
+      if (index !== -1) {
+        processedRows.value[index].paid = true;
+      }
+    })
+
+
     }
    // selectedRows.value=[]
   }
@@ -412,7 +423,7 @@ const handleFilters = async (filters) => {
  onMounted(async ()=>{
   await prelucrareFacturi()
   processedRows.value=processRows()
-  console.log('processed rows',processedRows.value)
+  //console.log('processed rows',processedRows.value)
  })
 
 
@@ -435,4 +446,8 @@ const handleFilters = async (filters) => {
     max-width: 1400px;
     margin: 0 auto;
   }
+  .paid-invoice {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
   </style>
