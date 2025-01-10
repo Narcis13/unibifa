@@ -369,7 +369,8 @@ const handleFilters = async (filters) => {
     const totaldeplata = selectedRows.value.reduce((sum, factura) => sum + parseFloat(factura.ramasplata), 0)
     return selectedRows.value.every(row => 
       row.artbug === firstRow.artbug && 
-      row.numefurnizor === firstRow.numefurnizor
+      row.numefurnizor === firstRow.numefurnizor &&
+      !row.paid
     ) && totaldeplata>0
   })
   // Action handlers for new buttons

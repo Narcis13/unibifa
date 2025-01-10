@@ -178,11 +178,11 @@ export default defineEventHandler(async (event) => {
   
             // Determine new payment status
             let newStatus = 'NEPLATITA'
-            if (totalPaid >= Number(invoice.valoare)) {
+           /* if (totalPaid >= Number(invoice.valoare)) {
               newStatus = 'PLATITA'
             } else if (totalPaid > 0) {
               newStatus = 'PARTIAL_PLATITA'
-            }
+            }*/
   
             // Update invoice status
             await tx.facturiPrimite.update({
