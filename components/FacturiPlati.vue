@@ -95,6 +95,7 @@
                 <q-td  class="text-centrat" key="datafact">{{ props.row.datafact }}</q-td>
                 <q-td class="text-right" key="valoare">{{ formatAmount(props.row.valoare) }}</q-td>
                 <q-td class="text-right" key="ramasplata">{{ formatAmount(props.row.ramasplata) }}</q-td>
+                <q-td key="expl">{{ props.row.explicatii }}</q-td>
                 <q-td key="sursafin">{{ props.row.sursafin }}</q-td>
                 <q-td class="text-centrat" key="artbug">{{ props.row.artbug }}</q-td>
               </q-tr>
@@ -205,6 +206,13 @@ function formatAmount(amount) {
       type:'checkif'
     }
     },
+    
+    { 
+      name: 'explicatii', 
+      label: 'Expl.', 
+      field: 'explicatii' ,
+      align:'left'
+    },
     { 
       name: 'sursafin', 
       label: 'Sursa fin.', 
@@ -255,7 +263,7 @@ function formatAmount(amount) {
           codfiscalfurnizor:factura.furnizor.codfiscal,
           ibanfurnizor:factura.furnizor.iban,
           ibanplatitor:factura.articolBugetar.iban,
-          explicatii:factura.articolBugetar.denumire,
+          explicatii:factura.receptie.mentiuni,
           indicator:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].indicator,
           codang:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].codang,
       })

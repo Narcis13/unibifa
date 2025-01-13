@@ -11,7 +11,7 @@
 
                         <q-separator />
                         <q-item clickable v-close-popup>
-                        <q-item-section>Help &amp; Feedback v.2.0.alpha2.09012025</q-item-section>
+                        <q-item-section>Help &amp; Feedback v.2.0.alpha2.13012025</q-item-section>
                         </q-item>
                     </q-list>
         </q-menu>

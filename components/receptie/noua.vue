@@ -43,7 +43,11 @@
       style="width: 150px;"
       v-model="newReceptie.mentiuni"
       type="textarea"
-      label="Mentiuni"
+      label="Mentiuni*"
+      bottom-slots
+      hint="Un text scurt care sa defineasca receptia"
+      error-message="Camp obligatoriu"
+      :error="!mentiuniValid"
     />
 
     <div class="q-ml-xl" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
@@ -80,8 +84,11 @@ const furnizoriOptions = ref(nomenclatoareStore.baza.furnizori_index.map(f=>({la
 const sumaValida = computed(()=>{
   return newReceptie.value.valoare>=(0-props.totalreceptii) && newReceptie.value.valoare<=props.sumadisponibila
 })
+const mentiuniValid = computed(()=>{
+  return newReceptie.value.mentiuni.length>3&&newReceptie.value.mentiuni.length<20
+})
 const allValid = computed(()=>{
-  return newReceptie.value.valoare>=(0-props.totalreceptii) && newReceptie.value.valoare<=props.sumadisponibila && newReceptie.value.idFurnizor!==null && newReceptie.value.nrfact.length>1
+  return newReceptie.value.valoare>=(0-props.totalreceptii) && newReceptie.value.valoare<=props.sumadisponibila && newReceptie.value.idFurnizor!==null && newReceptie.value.nrfact.length>1 && newReceptie.value.mentiuni.length>3&&newReceptie.value.mentiuni.length<20
 })
 
 

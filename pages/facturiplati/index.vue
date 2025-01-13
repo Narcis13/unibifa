@@ -1,7 +1,7 @@
 <template>
 <q-page padding class=" column items-center justify-start q-gutter-md ">
 
-  <div class=" q-gutter-y-md" style="width: 1280px">
+  <div class=" q-gutter-y-md" style="width: 1400px">
     <q-tabs
           v-model="tab"
           dense
