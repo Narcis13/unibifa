@@ -86,7 +86,7 @@ function formatAmount(amount) {
         <div class="financial-section">
             <div class="left-section"></div>
             <div class="middle-section">
-            <div class="header">
+            <div class="header1">
                 <div class="">Compartimentul de contabilitate</div>
             </div>
             
@@ -101,11 +101,11 @@ function formatAmount(amount) {
            
             </div>
             <div class="right-section">
-            <div class="header">
+            <div class="header1">
                 <div>Control financiar preventiv <br>CFPP</div>
               
             </div>
-            <div class="">
+          
                 <div class="content">
                 <div class="label">Data:</div>
                 <div class="value">{{detalii.vizaCFPP?formatDate(detalii.dataCFPP) :''}}</div>
@@ -114,7 +114,7 @@ function formatAmount(amount) {
                 <div class="label">Semnatura:</div>
                 <div class="value">{{ detalii.vizaCFPP?detalii.nr_viza:'' }}</div>
                 </div>
-            </div>
+           
             </div>
         </div>
 
