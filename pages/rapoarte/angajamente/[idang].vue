@@ -10,7 +10,7 @@ definePageMeta({
 const {idang}=useRoute().params
 const institutie = await $fetch('/api/info/institutie')
 const detalii = await $fetch(`/api/angajamente/${idang}/detalii`)
-//console.log(detalii)
+console.log('Detalii',detalii)
 // Utility functions
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
@@ -35,9 +35,9 @@ function formatAmount(amount) {
                 <div>{{ institutie.denumire }}</div>
             </div>
             <div class="header-right">
-                <div>Data emiterii: {{ formatDate(detalii.angajament.data) }}</div>
+                <div>Data emiterii: {{ formatDate(detalii.created_at) }}</div>
                 <div> {{ detalii.compartiment.denumire }}</div>
-                <div>Numar: {{ detalii.angajament.numar }}</div>
+                <div>Numar: {{ detalii.angajament.numar }}{{ detalii.motiv!=='Creare angajament'?'/'+detalii.id :''}}</div>
             </div>
         </div>
 
@@ -46,7 +46,7 @@ function formatAmount(amount) {
         </div>
 
         <div>
-            <div>Scopul: {{ detalii.angajament.descriere }}</div>
+            <div>Scopul: {{detalii.motiv}} / {{ detalii.angajament.descriere }} ({{ detalii.angajament.numar }} din {{ formatDate(detalii.angajament.data) }})</div>
             <div>Beneficiar: {{ institutie.denumire }}</div>
         </div>
 
@@ -76,13 +76,13 @@ function formatAmount(amount) {
                         <td class="number-cell">{{ formatAmount(detalii.sumaBuget) }}</td>
                         <td class="number-cell">{{ formatAmount(parseFloat(detalii.sumaBuget)-parseFloat(detalii.disponibilBugetar)) }}</td>
                         <td class="number-cell">{{ formatAmount(detalii.disponibilBugetar) }}</td>
-                        <td class="number-cell">{{ formatAmount(detalii.suma) }}</td>
-                        <td class="number-cell">{{ formatAmount(parseFloat(detalii.disponibilBugetar)-parseFloat(detalii.suma)) }}</td>
+                        <td class="number-cell">{{detalii.tipModificare=='MAJORARE'? formatAmount(detalii.suma) :formatAmount(0-detalii.suma)}}</td>
+                        <td class="number-cell">{{detalii.tipModificare=='MAJORARE'? formatAmount(parseFloat(detalii.disponibilBugetar)-parseFloat(detalii.suma)) :formatAmount(parseFloat(detalii.disponibilBugetar)+parseFloat(detalii.suma)) }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="text-caption text-simplu">TOTAL: {{ formatAmount(detalii.suma) }} lei</div>
+        <div class="text-caption text-simplu">TOTAL: {{detalii.tipModificare=='MAJORARE'? formatAmount(detalii.suma) :formatAmount(0-detalii.suma) }} lei</div>
         <div class="financial-section">
             <div class="left-section"></div>
             <div class="middle-section">
@@ -125,14 +125,14 @@ function formatAmount(amount) {
 
 
         </div>
-        <div class="boldat">Data: {{ formatDate(detalii.angajament.data) }}</div>
+        <div class="boldat">Data: {{ formatDate(detalii.created_at) }}</div>
 
         <div class="header">
             <div class="header-left">
 
             </div>
             <div class="header-right">
-                <div>Data emiterii: {{ formatDate(detalii.angajament.data) }}</div>
+                <div>Data emiterii: {{ formatDate(detalii.created_at) }}</div>
                 <div>{{ detalii.compartiment.denumire }}</div>
                 <div>Numar: {{ detalii.angajament.numar }}</div>
             </div>
@@ -150,12 +150,12 @@ function formatAmount(amount) {
                 </div>
                 <div class="q-mt-md header-cell">Suma totala</div>
                 <div class="q-ml-sm">
-                    Tip angajament:individual(global) {{ formatAmount(detalii.suma) }}
+                    Tip angajament:individual(global) {{ detalii.tipModificare=='MAJORARE'? formatAmount(detalii.suma) :formatAmount(0-detalii.suma) }}
                 </div>
             </div>
             <div class="right-column-sus">
                <div class="q-ml-sm underline">Suma</div>
-               <div class="header-cell">{{ formatAmount(detalii.suma) }} lei</div>
+               <div class="header-cell">{{ detalii.tipModificare=='MAJORARE'? formatAmount(detalii.suma) :formatAmount(0-detalii.suma) }} lei</div>
             </div>
         </div>
 
@@ -186,7 +186,7 @@ function formatAmount(amount) {
 
 
         </div>
-        <div class="boldat">Data: {{ formatDate(detalii.angajament.data) }}</div>
+        <div class="boldat">Data: {{ formatDate(detalii.created_at) }}</div>
         <!-- Rest of the content follows the same pattern -->
         <!-- Additional sections can be added following the same structure -->
     </div>
