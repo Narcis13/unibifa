@@ -4,6 +4,12 @@ const prisma = new PrismaClient()
 
 // Type for the angajament with computed vizatCFPP field
 
+function formatAmount(amount: number) {
+  return new Intl.NumberFormat('ro-RO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
 
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
@@ -154,7 +160,7 @@ export default defineEventHandler(async (event) => {
         vizatCFPP: counts.totalModificari > 0 && counts.totalModificari === counts.totalVizate,
         totalModificari: Number(counts.totalModificari),
         totalVizate: Number(counts.totalVizate),
-        totalsuma:Number(counts.totalsuma)
+        totalsuma:formatAmount(Number(counts.totalsuma))
       }
     })
   }

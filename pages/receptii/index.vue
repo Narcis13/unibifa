@@ -136,6 +136,14 @@
     rowsPerPage: 20,
     rowsNumber: 0
   })
+
+  function formatAmount(amount: number) {
+  return new Intl.NumberFormat('ro-RO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
+
   function expansion(){
    // console.log('Expansion',expanded.value)
     if(expanded.value.length==2) expanded.value.shift()
@@ -193,6 +201,7 @@
     name: 'totalsuma',
     label: 'Suma Totală',
     field: 'totalsuma',
+    format: (val: string) => formatAmount(Number(val)),
     align: 'right'
 
 
@@ -201,6 +210,7 @@
     name: 'sumareceptii',
     label: 'Suma Receptii',
     field: 'totalreceptii',
+    format: (val: string) => formatAmount(Number(val)),
     align: 'right'
 
 
@@ -209,6 +219,7 @@
     name: 'sumadisponibila',
     label: 'Suma Disponibila',
     field: 'suma_disponibila',
+    format: (val: string) => formatAmount(Number(val)),
     align: 'right'
 
 

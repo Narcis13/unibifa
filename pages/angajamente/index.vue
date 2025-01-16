@@ -260,7 +260,7 @@ const router = useRouter()
 const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
 const userStore = useUtilizatorStore()
-console.log('setup angajamente')
+console.log('setup angajamente',angajamente)
 interface Compartiment {
   value:number
   label:string
@@ -268,6 +268,13 @@ interface Compartiment {
 const openInNewTab = (path:string) => {
   const url = router.resolve(path).href
   window.open(url, '_blank')
+}
+
+function formatAmount(amount: number) {
+  return new Intl.NumberFormat('ro-RO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
 }
 //const compartiment = ref<Compartiment>({value:0,label:''})
 const columns = [
@@ -349,9 +356,10 @@ const columns = [
   },
   {
     name: 'suma',
-    label: 'Suma Totală',
-    field: 'suma',
+    label: 'Suma Totala',
+    field: (row)=>row.totalsuma,
     align: 'right',
+   
     filterOptions:{
       enabled:true,
       type:'numericvalue'
@@ -478,7 +486,7 @@ const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
   const total = modificari.reduce((sum, mod) => {
     return Number(sum) + Number(mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
   }, 0)
-  return Number(total)//.toLocaleString('ro-RO')
+  return formatAmount(Number(total))//.toLocaleString('ro-RO')
 }
 
 
@@ -496,6 +504,7 @@ const handleFilters = async (filters: Record<string, any>) => {
   console.log('filters',filters)
   try {
     await fetchAngajamente(2024,filters)
+    console.log('angajamente',angajamente)
   } catch (e){
     console.error(e)
   }
