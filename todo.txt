@@ -1,40 +1,8 @@
-// model actiune in controller
 
-router.post('/register',defineEventHandler(async (event)=>{
-
-  return await register(event)
-}))
-
-
-//model model
-
-/**
- * @desc Registers (creates) a new user in database
- * @param event H3 Event passed from api
- * @returns {Promise<JSONResponse>} Object mentioning success or failure of registering user or error
- */
-export async function register(event: H3Event): Promise<JSONResponse> {  
-  let response = {} as JSONResponse;
-  const userOrError = await registerUser(event);
-
-  // If error is returned
-  if (userOrError instanceof H3Error) {
-    response.status = "fail";
-    response.error = userOrError;
-    return response;
-  }
-
-  // Otherwise return user email
-  const user = userOrError as User;
-  response.status = "success";
-  response.data = {
-    id: user.id,
-    name:user.name
-  };
-
-  return response;
-}
-
-!!!BUG - nu aduna corect receptiile cu furnizori diferiti la un angajament
-
-//de pe batrinu mac
+- categorii sa pot modifica...
+- diminuare sume angajament pina la limita receptiilor
+- Facturi primite ordonate dupa articol bugetar
+- Modificare angajament nevizat
+- Stergere receptie neordonantata
+- stergere ordonantare nevizata
+  
