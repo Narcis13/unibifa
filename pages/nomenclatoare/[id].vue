@@ -1,4 +1,5 @@
 <script setup>
+
 import { useArhitecturaStore } from '~/stores/useArhitecturaStore';
 import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
@@ -24,7 +25,7 @@ const  initialPagination = {
 const selected = ref([])
 const filtru=ref('')
 const adaugmodificItem = ref(false)
-
+const modificaItem = ref(false)
 let optiuni = {}
 const hidrateaza = async (url)=>{
 
@@ -42,7 +43,16 @@ arhitectura.proprietati.map(async item=>{
 let alert = ref(false)
 let mesajAlerta = ref('')
 let actiune = ref('adaug')
-
+async function categorii(){
+      const categorii =  await $fetch(`/api/nomenclatoare/Categorii`);
+        nomenclatoareStore.baza.Categorii_index=[]
+        categorii.map(c=>{
+            c.compartiment=c.compartiment.denumire;
+            c.articolBugetar=c.articolBugetar.cod;
+            c.sursaFinantare=c.sursaFinantare.scurt;
+            nomenclatoareStore.baza.Categorii_index.push(c)
+        })
+    }
 if(utilizatorStore.eAdmin){
     const surse =  await $fetch(`/api/nomenclatoare/sursefinantare`);
     nomenclatoareStore.baza.sursefinantare_index=[]
@@ -63,15 +73,8 @@ if(utilizatorStore.eAdmin){
         nomenclatoareStore.baza.compartimente_index.push(c)
     })
 
-    const categorii =  await $fetch(`/api/nomenclatoare/Categorii`);
-    nomenclatoareStore.baza.Categorii_index=[]
-    categorii.map(c=>{
-        c.compartiment=c.compartiment.denumire;
-        c.articolBugetar=c.articolBugetar.cod;
-        c.sursaFinantare=c.sursaFinantare.scurt;
-        nomenclatoareStore.baza.Categorii_index.push(c)
-    })
 
+    categorii()
     const bugete =  await $fetch(`/api/nomenclatoare/Bugete`);
     nomenclatoareStore.baza.Bugete_index=[]
     bugete.map(b=>{
@@ -92,10 +95,19 @@ function adaug(){
   actiune.value='adaug'
 }
 function modific(){
-  //console.log('selected',selected)
+  console.log('selected',selected.value[0],id)
   nomenclatoareStore.mod_item(selected.value[0],id+'_demodificat')
-  adaugmodificItem.value=true
+  modificaItem.value=true
   actiune.value='modific'
+ // selected.value=[]
+}
+function onCancel(){
+  modificaItem.value=false
+}
+async function onSave(item){
+  //console.log('item',item)
+  await categorii()
+  modificaItem.value=false
   selected.value=[]
 }
 </script>
@@ -156,6 +168,15 @@ function modific(){
                </q-card-section>
                </q-card>
        </q-dialog>
+
+       <q-dialog v-model="modificaItem">
+          <ModificCategorie 
+            :categoria="selected[0]"
+            @save="onSave" 
+            @cancel="onCancel"
+          />
+       </q-dialog>
+
        <q-dialog v-model="alert">
           <q-card>
             <q-card-section>

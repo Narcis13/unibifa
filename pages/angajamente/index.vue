@@ -429,7 +429,7 @@ const newAngajament = ref({
 })
 
 const modificare = ref({
-  tipModificare: 'MAJORARE' as 'MAJORARE' | 'DIMINUARE',
+  tipModificare: 'DIMINUARE' as 'MAJORARE' | 'DIMINUARE',
   suma: 0,
   motiv: '',
 })
@@ -578,8 +578,11 @@ const onSubmitAdd = async () => {
   }
 }
 
-const openModificareDialog = (angajament: Angajament) => {
-  console.log('opnemodificare',angajament)
+const openModificareDialog = async (angajament: Angajament) => {
+  const totalReceptii= await $fetch(`/api/angajamente/${angajament.id}/totalreceptii`)
+  const sumaMaximaDeDiminuat = parseFloat(angajament.totalsuma)-Number(totalReceptii.total)
+  console.log('opnemodificare',angajament,sumaMaximaDeDiminuat)
+  modificare.value.suma = sumaMaximaDeDiminuat
   selectedAngajament.value = angajament
   showModificareDialog.value = true
 }
@@ -599,6 +602,18 @@ const onSubmitModificare = async () => {
           color: 'negative',
           message: 'Nu există fonduri disponibile suficiente pentru această sumă',
         })
+        return
+      }
+    }else {
+      const totalReceptii= await $fetch(`/api/angajamente/${ selectedAngajament.value.id}/totalreceptii`)
+      const sumaMaximaDeDiminuat = parseFloat( selectedAngajament.value.totalsuma)-Number(totalReceptii.total)
+      const diminuareValida=modificare.value.suma<=sumaMaximaDeDiminuat
+      if (!diminuareValida) {
+        $q.notify({
+          color: 'negative',
+          message: 'Suma de diminuat este mai mare decât suma ramasa nereceptionata a angajamentului',
+        })
+      
         return
       }
     }

@@ -1,7 +1,10 @@
 
-- categorii sa pot modifica...
-- diminuare sume angajament pina la limita receptiilor
+- categorii sa pot modifica... DONE!
+- diminuare sume angajament pina la limita receptiilor DONE!
+- strip caractere speciale din explicatii la OP
 - Facturi primite ordonate dupa articol bugetar
+= Raport situatie facturi
+- Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol 
 - Modificare angajament nevizat
 - Stergere receptie neordonantata
 - stergere ordonantare nevizata

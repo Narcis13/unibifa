@@ -114,7 +114,12 @@ const emit = defineEmits([
   'plati-montat',
   'plata-efectuata'
 ])
+const stripSpecialChars = (str) => {
+  const specialChars = /[,&;.]/g;
 
+    // Replace the special characters with an empty string
+    return str.replace(specialChars, '');
+  }
 const nextop = await $fetch('api/plati/nextop')  
 //console.log('max value: '+props.facturi.reduce((acc, curr) => acc + parseFloat(curr.valoare) , 0))
 const azi = ref(date.formatDate(new Date(), 'YYYY/MM/DD'))
@@ -123,7 +128,7 @@ const facturi=[...props.facturi]
     numarOP: nextop.nextop,
     dataOP: azi.value,
     valoarePlata: facturi.reduce((acc, curr) => acc + parseFloat(curr.ramasplata) , 0),
-    detalii: facturi.reduce((acc, curr) => acc + curr.nrfact + ' ', '')+' '+facturi[0].explicatii,
+    detalii: stripSpecialChars(facturi.reduce((acc, curr) => acc + curr.nrfact + ' ', '')+' '+facturi[0].explicatii),
     artBug: facturi[0].artbug,
     codAngajament: facturi[0].codang,
     indicator: facturi[0].indicator,

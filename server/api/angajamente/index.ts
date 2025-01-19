@@ -160,7 +160,7 @@ export default defineEventHandler(async (event) => {
         vizatCFPP: counts.totalModificari > 0 && counts.totalModificari === counts.totalVizate,
         totalModificari: Number(counts.totalModificari),
         totalVizate: Number(counts.totalVizate),
-        totalsuma:formatAmount(Number(counts.totalsuma))
+        totalsuma:Number(counts.totalsuma)
       }
     })
   }
