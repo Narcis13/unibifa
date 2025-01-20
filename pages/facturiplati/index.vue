@@ -11,7 +11,8 @@
           align="justify"
           narrow-indicator
         >
-          <q-tab name="facturi" label="Facturi primite" />
+          <q-tab name="facturi" label="Facturi primite (Furnizori)" />
+          <q-tab name="facturiab" label="Facturi primite (Articol bugetar)" />
           <q-tab name="plati" label="Registru plati" />
        
         </q-tabs>
@@ -22,7 +23,9 @@
           <q-tab-panel name="facturi">
             <FacturiPlati />
           </q-tab-panel>
-
+          <q-tab-panel name="facturiab">
+            <FacturiPlatiAB />
+          </q-tab-panel>
           <q-tab-panel name="plati">
             <div class="q-ml-md text-h6">Registru plati</div>
            <PlatiTabel />
@@ -39,5 +42,5 @@
 <script setup>
 
 
-const tab =ref('facturi')
+const tab =ref('facturiab')
 </script>

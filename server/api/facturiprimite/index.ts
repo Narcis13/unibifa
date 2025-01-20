@@ -12,12 +12,38 @@ export default defineEventHandler(async (event) => {
       const { 
         startDate, 
         endDate, 
+        sortby,
         compartimentId, 
         furnizorId, 
         statusPlata 
       } = getQuery(event)
-  
+     // console.log('sortby', sortby)
       // Build where clause for filtering
+
+      let orderByCondition;
+      if (sortby === 'articolbugetar') {
+        orderByCondition = [
+          {
+            articolBugetar: {
+              cod: 'asc'
+            }
+          },
+          {
+            furnizor: {
+              denumire: 'asc'
+            }
+          }
+        ];
+      } else {
+        orderByCondition = [
+          {
+            furnizor: {
+              denumire: 'asc'
+            }
+          }
+        ];
+      }
+
       const whereCondition: any = {
         statusPlata: {
           in: ['NEPLATITA', 'PARTIAL_PLATITA']
@@ -91,11 +117,7 @@ export default defineEventHandler(async (event) => {
             }
           }
         },
-        orderBy: {
-          furnizor: {
-            denumire: 'asc'
-          }
-        }
+        orderBy: orderByCondition
       })
   
       // Calculate ramasplata for each factura
