@@ -76,7 +76,7 @@
                     @click="toggleGroup(props.row.furnizor)"
                   />
                   {{ props.row.furnizor.charAt(0).toUpperCase() + props.row.furnizor.slice(1) }}
-                  ({{ filterByFurnizor(props.row.furnizor).length }})
+                  ({{ filterByFurnizor(props.row.furnizor).length }}) Subtotal: {{ formatAmount(calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(2)) }} lei
                 </q-td>
               </q-tr>
             </template>

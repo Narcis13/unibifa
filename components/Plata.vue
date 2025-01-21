@@ -11,7 +11,7 @@
             v-model="formData.numarOP"
             label="Număr OP"
             filled
-            readonly
+            
           
           />
   
@@ -87,7 +87,7 @@
           />
   
           <div class="row justify-end q-mt-md">
-            <q-btn label="Anulează" flat class="q-mr-sm" @click="resetForm" />
+            <!-- <q-btn label="Anulează" flat class="q-mr-sm" @click="resetForm" /> -->
             <q-btn label="Salvează" type="submit" color="primary" />
           </div>
         </q-form>
@@ -137,6 +137,7 @@ const facturi=[...props.facturi]
   
   const onSubmit = async () => {
     try {
+      formData.value.numarOP= parseInt(formData.value.numarOP)
     const response = await $fetch('/api/plati', {
       method: 'POST',
       body: {

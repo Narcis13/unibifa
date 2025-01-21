@@ -5,11 +5,17 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   const currentYear = new Date().getFullYear()
   
-  const count = await prisma.plati.count({
+  const lastPayment = await prisma.plati.findFirst({
     where: {
       anfiscal: currentYear
+    },
+    orderBy: {
+      numarop: 'desc'
+    },
+    select: {
+      numarop: true
     }
   })
 
-  return { nextop: count + 1 }
+  return { nextop: (lastPayment?.numarop || 0) + 1 }
 })

@@ -3,7 +3,10 @@
 - diminuare sume angajament pina la limita receptiilor DONE!
 - strip caractere speciale din explicatii la OP DONE!
 - Facturi primite ordonate dupa articol bugetar DONE!
+- OP numar editabil DONE!
 - Raport situatie facturi
+- Subtotal / total la angajamente .... pentru CAB
+- Furnizori max 30 caractere iar CFPP sa poata schimba datele furnizorului
 - Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol 
 - Modificare angajament nevizat
 - Stergere receptie neordonantata
