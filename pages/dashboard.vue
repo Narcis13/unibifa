@@ -7,7 +7,8 @@ const nomenclatoareStore=useNomenclatoareStore()
 
 
  //cred ca mut codul asta in [id]
- const furnizori =  await $fetch(`/api/nomenclatoare/furnizori?cid=${utilizatorStore.utilizator.id}`);
+ console.log('dashboard id:', utilizatorStore.utilizator.role)
+ const furnizori =  await $fetch(`/api/nomenclatoare/furnizori?cid=${utilizatorStore.utilizator.role=='CFPP'?4:utilizatorStore.utilizator.id}`);
     nomenclatoareStore.baza.furnizori_index=[]
     furnizori.map(f=>{
         nomenclatoareStore.baza.furnizori_index.push(f)

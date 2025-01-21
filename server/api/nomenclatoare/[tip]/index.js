@@ -57,9 +57,9 @@ if(tip=='Bugete'){
 let order=[{id:'desc'}]
 if(tip=='furnizori'){
  // console.log('furnizori',getQuery(event).cid)
-  w.where={
-    id_user:parseInt(getQuery(event).cid)
-}
+  const cid=parseInt(getQuery(event).cid)
+  w.where=cid===0?{}:{id_user:cid}
+    
 order=[{denumire:'asc'}]
 }
 //console.log('cruta',q)

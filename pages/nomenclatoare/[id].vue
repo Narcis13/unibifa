@@ -110,6 +110,12 @@ async function onSave(item){
   modificaItem.value=false
   selected.value=[]
 }
+async function onSaveFurnizor(item){
+  //console.log('item',item)
+ // await furnizori()
+  modificaItem.value=false
+  selected.value=[]
+}
 </script>
 <template>
    <q-page class=" column items-center justify-start q-gutter-md " >
@@ -171,8 +177,15 @@ async function onSave(item){
 
        <q-dialog v-model="modificaItem">
           <ModificCategorie 
+            v-if="id=='Categorii'"
             :categoria="selected[0]"
             @save="onSave" 
+            @cancel="onCancel"
+          />
+          <ModificFurnizor 
+            v-else-if="id=='furnizori'"
+            :furnizor="selected[0]"
+            @save="onSaveFurnizor" 
             @cancel="onCancel"
           />
        </q-dialog>

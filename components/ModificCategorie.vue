@@ -61,7 +61,7 @@
   
           <div class="row justify-end q-gutter-sm">
             <q-btn
-              label="Abnadon"
+              label="Abandon"
               color="grey"
               @click="$emit('cancel')"
               flat
