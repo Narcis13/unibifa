@@ -1,14 +1,16 @@
 <script setup>
 
 import { useArhitecturaStore } from '~/stores/useArhitecturaStore';
-import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
+//import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
+import { useValidare } from '~/composables/useValidare';
 const arhitecturaStore = useArhitecturaStore()
-const nomenclatoareStore=useNomenclatoareStore()
+//const nomenclatoareStore=useNomenclatoareStore()
 const utilizatorStore = useUtilizatorStore();
-const {id} = useRoute().params
+//const {id} = useRoute().params
 
-const arhitectura = arhitecturaStore.arhitectura[id]
+
+const arhitectura = arhitecturaStore.arhitectura['furnizori']
 const columns = [
 ...arhitectura.proprietati.filter(obj=>obj.displayed_in_table)
 ]
@@ -18,16 +20,17 @@ const  initialPagination = {
        // sortBy: 'desc',
        // descending: false,
         page: 1,
-        rowsPerPage: 10
+        rowsPerPage: 15
 
       }
-
+const {ibanValid, codfiscalValid} = useValidare()
 const selected = ref([])
 const filtru=ref('')
 const adaugmodificItem = ref(false)
 const modificaItem = ref(false)
 let optiuni = {}
-const furnizori =  await $fetch(`/api/nomenclatoare/furnizori?cid=${utilizatorStore.utilizator.role=='CFPP'?4:utilizatorStore.utilizator.id}`);
+const furnizori=ref([])
+furnizori.value =  await $fetch(`/api/nomenclatoare/furnizori?cid=${utilizatorStore.utilizator.role=='CFPP'?0:utilizatorStore.utilizator.id}`);
 const hidrateaza = async (url)=>{
 
  return await $fetch(`/${url}`,{
@@ -44,60 +47,13 @@ arhitectura.proprietati.map(async item=>{
 let alert = ref(false)
 let mesajAlerta = ref('')
 let actiune = ref('adaug')
-async function categorii(){
-      const categorii =  await $fetch(`/api/nomenclatoare/Categorii`);
-        nomenclatoareStore.baza.Categorii_index=[]
-        categorii.map(c=>{
-            c.compartiment=c.compartiment.denumire;
-            c.articolBugetar=c.articolBugetar.cod;
-            c.sursaFinantare=c.sursaFinantare.scurt;
-            nomenclatoareStore.baza.Categorii_index.push(c)
-        })
-    }
-if(utilizatorStore.eAdmin){
-    const surse =  await $fetch(`/api/nomenclatoare/sursefinantare`);
-    nomenclatoareStore.baza.sursefinantare_index=[]
-    surse.map(s=>{
-        nomenclatoareStore.baza.sursefinantare_index.push(s)
-    })
-
-    const articole =  await $fetch(`/api/nomenclatoare/articolebugetare`);
-    nomenclatoareStore.baza.articolebugetare_index=[]
-    articole.map(a=>{
-        nomenclatoareStore.baza.articolebugetare_index.push(a)
-    })
-
-    const compartimente =  await $fetch(`/api/nomenclatoare/compartimente`);
-    nomenclatoareStore.baza.compartimente_index=[]
-    compartimente.map(c=>{
-        c.responsabil=c.responsabil.name;
-        nomenclatoareStore.baza.compartimente_index.push(c)
-    })
 
 
-    categorii()
-    const bugete =  await $fetch(`/api/nomenclatoare/Bugete`);
-    nomenclatoareStore.baza.Bugete_index=[]
-    bugete.map(b=>{
- 
-        b.articolBugetar=b.articolBugetar.cod;
-        b.sursaFinantare=b.sursaFinantare.scurt;
-        nomenclatoareStore.baza.Bugete_index.push(b)
-    })
-} 
 
-function afiseazaAlerta(mesaj){
-   alert.value=true
-   mesajAlerta.value=mesaj
-}
 
-function adaug(){
-  adaugmodificItem.value=true
-  actiune.value='adaug'
-}
 function modific(){
   console.log('selected',selected.value[0],id)
-  nomenclatoareStore.mod_item(selected.value[0],id+'_demodificat')
+  //nomenclatoareStore.mod_item(selected.value[0],id+'_demodificat')
   modificaItem.value=true
   actiune.value='modific'
  // selected.value=[]
@@ -105,20 +61,10 @@ function modific(){
 function onCancel(){
   modificaItem.value=false
 }
-async function onSave(item){
-  //console.log('item',item)
-  await categorii()
-  modificaItem.value=false
-  selected.value=[]
-}
+
 async function onSaveFurnizor(item){
   //console.log('item',item)
  // await furnizori()
- const furnizori =  await $fetch(`/api/nomenclatoare/furnizori?cid=${utilizatorStore.utilizator.role=='CFPP'?4:utilizatorStore.utilizator.id}`);
-    nomenclatoareStore.baza.furnizori_index=[]
-    furnizori.map(f=>{
-        nomenclatoareStore.baza.furnizori_index.push(f)
-    })
   modificaItem.value=false
   selected.value=[]
 }
@@ -130,7 +76,7 @@ async function onSaveFurnizor(item){
             <q-table
                 flat bordered
                 :filter="filtru"
-                :rows="nomenclatoareStore.baza[id+'_index']"
+                :rows="furnizori"
                 :columns="columns"
                 :pagination="initialPagination"
                 row-key="id"
@@ -144,7 +90,7 @@ async function onSaveFurnizor(item){
                                 <div class="flex" style="min-width:200px;max-height:100px;">
 
 
-                                    <q-btn  class="q-ma-sm" label="Adauga"   icon="add" @click="adaug">
+                                    <q-btn disable class="q-ma-sm" label="Adauga"   icon="add" >
 
                                     </q-btn>
                                 
@@ -170,26 +116,21 @@ async function onSaveFurnizor(item){
         <q-dialog v-model="adaugmodificItem">
                <q-card style="min-width: 350px;">
                <q-card-section class="row items-center q-pb-none">
-                  <div class="text-h6">Adaug {{ id }}</div>
+                  <div class="text-h6">Adaug furnizor</div>
                   <q-space />
                   <q-btn icon="close" flat round dense v-close-popup />
                </q-card-section>
 
                <q-card-section >
-                   <add-nomenclator-item :mod="actiune" :optiuni="optiuni" :context="arhitectura" :tip_nomenclator="id" @nonunic="afiseazaAlerta"/>
+                   <!-- <add-nomenclator-item :mod="actiune" :optiuni="optiuni" :context="arhitectura" :tip_nomenclator="id" @nonunic="afiseazaAlerta"/> -->
                </q-card-section>
                </q-card>
        </q-dialog>
 
        <q-dialog v-model="modificaItem">
-          <ModificCategorie 
-            v-if="id=='Categorii'"
-            :categoria="selected[0]"
-            @save="onSave" 
-            @cancel="onCancel"
-          />
+
           <ModificFurnizor 
-            v-else-if="id=='furnizori'"
+         
             :furnizor="selected[0]"
             @save="onSaveFurnizor" 
             @cancel="onCancel"

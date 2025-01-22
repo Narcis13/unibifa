@@ -26,7 +26,8 @@ const  links_administrare= [
   
   const   links_operatiuni= [
     { icon: 'folder', roles:['CFPP','RESPONSABIL'],text: 'Buget',ruta:'/bugete' },
-    { icon: 'restore', roles:['CFPP','RESPONSABIL'],text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
+    { icon: 'restore', roles:['RESPONSABIL'],text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
+    { icon: 'watch_later', roles:['CFPP'],text: 'Furnizori',ruta:'/furnizori'  },
     { icon: 'watch_later', roles:['CFPP','RESPONSABIL'],text: 'Angajamente',ruta:'/angajamente' },
     { icon: 'thumb_up_alt',roles:['CFPP','RESPONSABIL'], text: 'Lichidari/receptii',ruta:'/receptii'  },
     { icon: 'thumb_up_alt',roles:['CFPP','RESPONSABIL'], text: 'Ordonantari plata',ruta:'/ordonantari'  },

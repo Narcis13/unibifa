@@ -128,7 +128,7 @@ const facturi=[...props.facturi]
     numarOP: nextop.nextop,
     dataOP: azi.value,
     valoarePlata: facturi.reduce((acc, curr) => acc + parseFloat(curr.ramasplata) , 0),
-    detalii: stripSpecialChars(facturi.reduce((acc, curr) => acc + curr.nrfact + ' ', '')+' '+facturi[0].explicatii),
+    detalii: stripSpecialChars(facturi.reduce((acc, curr) => acc + curr.nrfact + ' ', 'fact ')+' '+facturi[0].explicatii),
     artBug: facturi[0].artbug,
     codAngajament: facturi[0].codang,
     indicator: facturi[0].indicator,
