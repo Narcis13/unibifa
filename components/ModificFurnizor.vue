@@ -17,13 +17,17 @@
           <q-input
             v-model="form.codfiscal"
             label="Cod fiscal"
-           
+            error-message="Cod fiscal invalid"
+            :error="!cuiValid"
+            bottom-slots
             outlined
           />
           <q-input
             v-model="form.iban"
             label="Cont IBAN"
-           
+            error-message="Cont IBAN invalid"
+            :error="!ibanCorect"
+            bottom-slots
             outlined
           />
 
@@ -44,6 +48,7 @@
               flat
             />
             <q-btn
+             :disable="!cuiValid || !ibanCorect"
               type="submit"
               label="Modifica"
               color="primary"
@@ -56,7 +61,7 @@
   
   <script setup>
   import { useQuasar } from 'quasar'
-  
+  import useValidare  from '~/composables/useValidare';
   const $q = useQuasar()
   
   const props = defineProps({
@@ -78,10 +83,14 @@
   })
   
  
+  const {ibanValid, codfiscalValid} = useValidare()
+  const cuiValid = computed(() => {
+    return codfiscalValid(form.value.codfiscal)
+  })
 
-  
-
-
+  const ibanCorect = computed(() => {
+    return ibanValid(form.value.iban)
+  })
   
 
   const onSubmit = async () => {

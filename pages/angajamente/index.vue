@@ -665,3 +665,8 @@ onMounted(async () => {
  // console.log(angajamente)
 })
 </script>
+<style >
+.q-table tbody td:before {
+    background: rgba(255, 0, 0, 0.13);
+}
+</style>

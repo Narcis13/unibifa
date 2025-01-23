@@ -3,7 +3,7 @@
 import { useArhitecturaStore } from '~/stores/useArhitecturaStore';
 //import { useNomenclatoareStore } from '~/stores/useNomenclatoareStore';
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
-import { useValidare } from '~/composables/useValidare';
+
 const arhitecturaStore = useArhitecturaStore()
 //const nomenclatoareStore=useNomenclatoareStore()
 const utilizatorStore = useUtilizatorStore();
@@ -23,14 +23,14 @@ const  initialPagination = {
         rowsPerPage: 15
 
       }
-const {ibanValid, codfiscalValid} = useValidare()
+
 const selected = ref([])
 const filtru=ref('')
 const adaugmodificItem = ref(false)
 const modificaItem = ref(false)
 let optiuni = {}
 const furnizori=ref([])
-furnizori.value =  await $fetch(`/api/nomenclatoare/furnizori?cid=${utilizatorStore.utilizator.role=='CFPP'?0:utilizatorStore.utilizator.id}`);
+furnizori.value =  [...await $fetch(`/api/nomenclatoare/furnizori?cid=0`)];
 const hidrateaza = async (url)=>{
 
  return await $fetch(`/${url}`,{
@@ -52,7 +52,7 @@ let actiune = ref('adaug')
 
 
 function modific(){
-  console.log('selected',selected.value[0],id)
+  console.log('selected',selected.value[0])
   //nomenclatoareStore.mod_item(selected.value[0],id+'_demodificat')
   modificaItem.value=true
   actiune.value='modific'
@@ -65,6 +65,8 @@ function onCancel(){
 async function onSaveFurnizor(item){
   //console.log('item',item)
  // await furnizori()
+  furnizori.value =  await $fetch(`/api/nomenclatoare/furnizori?cid=0`);
+
   modificaItem.value=false
   selected.value=[]
 }
