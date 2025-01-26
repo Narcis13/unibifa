@@ -9,11 +9,16 @@ export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
     try {
       // Extract optional query parameters for filtering
+      console.log('try to get facturi primite')
       const { 
-        startDate, 
-        endDate, 
+        dela, 
+        panala, 
+        platitedela,
+        platitepanala,
         sortby,
-        compartimentId, 
+        platite,
+        artbug,
+        sursafin,
         furnizorId, 
         statusPlata 
       } = getQuery(event)
@@ -43,42 +48,72 @@ export default defineEventHandler(async (event) => {
           }
         ];
       }
+     // console.log('platite',typeof  platite)
 
-      const whereCondition: any = {
-        statusPlata: {
-          in: ['NEPLATITA', 'PARTIAL_PLATITA']
-        }
+      let whereCondition: any = {
+       
       }
-  
+      /*statusPlata: {
+        in: ['NEPLATITA', 'PARTIAL_PLATITA']
+      }*/
+
+        if(platite!=='toate'){  
+          whereCondition.statusPlata= {
+            in: platite==='false'?['NEPLATITA', 'PARTIAL_PLATITA']:['PLATITA', 'PARTIAL_PLATITA']
+          }
+          if(platite==='true'){
+            const startDate = new Date(platitedela.replace(/\//g, '-')); // Convert 2025/01/25 to 2025-01-25
+            const endDate = new Date(platitepanala.replace(/\//g, '-'));
+            whereCondition.plati = {
+              some: {
+                plata: {
+                  dataop: {
+                    gte: startDate,
+                    lte: endDate
+                  }
+              }
+              }
+            }
+        }}
       // Add date range filter if provided
-      if (startDate && endDate) {
+      if (dela && panala) {
         whereCondition.dataFactura = {
-          gte: new Date(startDate as string),
-          lte: new Date(endDate as string)
+          gte: new Date(dela.replace(/\//g, '-')),
+          lte: new Date(panala.replace(/\//g, '-'))
         }
       }
   
       // Add compartiment filter if provided
-      if (compartimentId) {
-        whereCondition.idCompartiment = Number(compartimentId)
-      }
+
   
       // Add furnizor filter if provided
-      if (furnizorId) {
-        whereCondition.idFurnizor = Number(furnizorId)
+       if (furnizorId) {
+         whereCondition.idFurnizor = Number(furnizorId)
+       }
+
+      if (artbug) {
+        whereCondition.articolBugetar = {
+          id: Number(artbug)
+        }
       }
-  
+
+      if (sursafin) {
+        whereCondition.sursaFinantare = {
+          id: Number(sursafin)
+        }
+      }
       // Add status plata filter if provided
       if (statusPlata) {
         whereCondition.statusPlata = statusPlata
       }
-  
+    // console.log('whereCondition',whereCondition)
       // Retrieve facturi primite with all requested relations
       const facturiPrimite = await prisma.facturiPrimite.findMany({
         where: whereCondition,
         include: {
           furnizor: {
             select: {
+              id: true,
               denumire: true,
               codfiscal: true,
               iban: true

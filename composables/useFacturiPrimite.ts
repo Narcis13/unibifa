@@ -20,11 +20,44 @@ export const useFacturiPrimite = ()=>{
             loading.value = false
           }
     }
-
-
+    function hasKey(obj:any, key:string) {
+      return Object.prototype.hasOwnProperty.call(obj, key);
+    }
+   const toateFacturilePrimite = async (sortateAB:boolean, filters:Record<string,any>)=>{
+        try {
+            loading.value = true
+            error.value = null
+            
+            const sufix = sortateAB ? '&sortby=articolbugetar' : ''
+            let prefix= `?dela=${filters.datafact.from}&panala=${filters.datafact.to}`
+            if(hasKey(filters,'ramasplata')){
+                prefix+=(filters.ramasplata?`&platite=true&platitedela=${filters.platiteDeLaData}&platitepanala=${filters.platitePanaLaData}`:`&platite=false&neachiatela=${filters.neachitateLaData}`)
+            }
+            else{
+                prefix+=('&platite=toate')
+            }
+            if(hasKey(filters,'numefurnizor')&&filters.numefurnizor!==null){
+                prefix+=`&furnizorId=${filters.numefurnizor}`
+            }
+            if(hasKey(filters,'artbug')&&filters.artbug!==null){
+                prefix+=`&artbug=${filters.artbug}`
+            }
+            if(hasKey(filters,'sursafin')&&filters.sursafin!==null){
+              prefix+=`&sursafin=${filters.sursafin}`
+          }
+            console.log('sunt in useFacturiPrimite fetch facturi primite',filters,prefix)
+            return await $fetch('/api/facturiprimite'+prefix+sufix)
+        } catch (e) {
+            error.value = e instanceof Error ? e.message : 'An error occurred'
+            throw e
+        } finally {
+            loading.value = false
+        }
+    }
     return {
         loading,
         error,
-        createFacturaPrimita
+        createFacturaPrimita,
+        toateFacturilePrimite
     }
 }
