@@ -15,6 +15,8 @@ export default defineEventHandler(async (event) => {
         panala, 
         platitedela,
         platitepanala,
+        sumaoperator,
+        sumavalue,
         sortby,
         platite,
         artbug,
@@ -24,6 +26,8 @@ export default defineEventHandler(async (event) => {
       } = getQuery(event)
      // console.log('sortby', sortby)
       // Build where clause for filtering
+      const sumaOperator = sumaoperator?.toString()
+      const sumaValue = sumavalue ? parseFloat(sumavalue.toString()) : null
 
       let orderByCondition;
       if (sortby === 'articolbugetar') {
@@ -84,7 +88,31 @@ export default defineEventHandler(async (event) => {
       }
   
       // Add compartiment filter if provided
-
+    if (sumaValue !== null && sumaOperator) {
+        switch (sumaOperator) {
+          case 'gt':
+            whereCondition.valoare = { gt: sumaValue }
+            break
+          case 'gte':
+            whereCondition.valoare = { gte: sumaValue }
+            break
+          case 'lt':
+            whereCondition.valoare = { lt: sumaValue }
+            break
+          case 'lte':
+            whereCondition.valoare = { lte: sumaValue }
+            break
+          case 'eq':
+            const tolerance = 0.01;
+            whereCondition.valoare = { gt: sumaValue - tolerance , lt: sumaValue + tolerance}
+            break
+          default:
+            throw createError({
+              statusCode: 400,
+              message: 'Invalid suma operator'
+            })
+        }
+      }
   
       // Add furnizor filter if provided
        if (furnizorId) {
@@ -106,7 +134,7 @@ export default defineEventHandler(async (event) => {
       if (statusPlata) {
         whereCondition.statusPlata = statusPlata
       }
-    // console.log('whereCondition',whereCondition)
+   //  console.log('whereCondition',whereCondition)
       // Retrieve facturi primite with all requested relations
       const facturiPrimite = await prisma.facturiPrimite.findMany({
         where: whereCondition,

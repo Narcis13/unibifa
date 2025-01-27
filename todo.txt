@@ -7,8 +7,8 @@
 - Furnizori max 30 caractere iar CFPP sa poata schimba datele furnizorului DONE!
 - filtrare facturi functionala...
     - cimpul data factura Date nu DateTime DONE!!
-    - colapse all in grid
-    - filtrare dupa valoare factura
+    - colapse all in grid DONE!!
+    - filtrare dupa valoare factura DONE!
     - implementare facturi neachitate la data...
     - totul functional si pentru facturi ordonate dupa furnizori
 - Raport situatie facturi

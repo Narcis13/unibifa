@@ -10,7 +10,18 @@
               :defaults="filterDefaults"
               @filtersadded="handleFilters"
             />
+          </div>
+            <div class="row justify-center q-pa-sm">
+              <q-btn
+                  :icon="isExpanded ? 'unfold_less' : 'unfold_more'"
+                  flat
+                  dense
+                  color="primary"
+                  @click="toggleAllGroups"
+                  :label="isExpanded ? 'Colapseaza Tot' : 'Extinde Tot'"
+                />
             </div>
+     
             <div class="row q-gutter-sm">
               <q-btn 
               :disable="!canGroupForPayment"
@@ -303,6 +314,18 @@ function formatAmount(amount) {
   'sursafin':null,
   'datafact':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
   'valoare':{ operator:  { label: '>', value: 'gt' }, value: -9999999 }
+}
+
+const isExpanded = computed(() => {
+  return Object.values(expandedGroups.value || {})[0] || false
+})
+
+const toggleAllGroups = () => {
+  const newState = !isExpanded.value
+  categorii.forEach(category => {
+    expandedGroups.value = expandedGroups.value || {}
+    expandedGroups.value[category] = newState
+  })
 }
 
 const handleFilters = async (filters) => {
