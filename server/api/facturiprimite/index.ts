@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
     try {
       // Extract optional query parameters for filtering
-      console.log('try to get facturi primite')
+     // console.log('try to get facturi primite')
       const { 
         dela, 
         panala, 

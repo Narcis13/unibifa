@@ -241,7 +241,7 @@ model Receptii {
   idFurnizor     Int
   furnizor       furnizori     @relation(fields: [idFurnizor], references: [id])
    nrfact          String        @default("-") @db.VarChar(24)
-  datafact       DateTime
+  datafact       DateTime      @db.Date
   valoare        Decimal       @db.Decimal(15, 2)
   mentiuni       String?       @db.Text
   stare          String        @default("activ") @db.VarChar(24)
@@ -302,7 +302,7 @@ model FacturiPrimite {
   
   // Invoice specific details
   numarFactura       String             @db.VarChar(50)
-  dataFactura        DateTime
+  dataFactura        DateTime           @db.Date
   detaliiFactura     String?            @db.Text
   
   // Financial tracking

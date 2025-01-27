@@ -449,11 +449,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.q-table {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%);
-}
+
 .my-card{
   width: 100%;
   max-width: 250px;
@@ -461,5 +457,8 @@ onMounted(() => {
 .my-card-long{
   width: 100%;
   max-width: 270px;
+}
+.q-table tbody td:before {
+    background: rgba(255, 0, 0, 0.1);
 }
 </style>

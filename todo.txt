@@ -6,7 +6,7 @@
 - OP numar editabil DONE!
 - Furnizori max 30 caractere iar CFPP sa poata schimba datele furnizorului DONE!
 - filtrare facturi functionala...
-    - cimpul data factura Date nu DateTime
+    - cimpul data factura Date nu DateTime DONE!!
     - colapse all in grid
     - filtrare dupa valoare factura
     - implementare facturi neachitate la data...

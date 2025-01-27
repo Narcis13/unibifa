@@ -239,14 +239,14 @@ export default defineEventHandler(async (event) => {
             message: 'Missing required fields'
           })
         }
-    
+       // console.log('receptie.datfact',body.datafact)
         // Create new Receptie
         const newReceptie = await prisma.receptii.create({
           data: {
             idAngajament: Number(body.idAngajament),
             idFurnizor: Number(body.idFurnizor),
             nrfact:body.nrfact,
-            datafact: new Date(body.datafact),
+            datafact: new Date(body.datafact.replace(/\//g, '-')),
             valoare: Number(body.valoare),
             mentiuni: body.mentiuni,
             idCompartiment: Number(body.idCompartiment),
