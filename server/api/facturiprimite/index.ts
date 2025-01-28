@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
         platitedela,
         platitepanala,
         sumaoperator,
+        neachitatela,
         sumavalue,
         sortby,
         platite,
@@ -86,7 +87,42 @@ export default defineEventHandler(async (event) => {
           lte: new Date(panala.replace(/\//g, '-'))
         }
       }
-  
+  /**
+   * 
+   if (neachitatela) {
+        const checkDate = new Date(neachitatela.replace(/\//g, '-'))
+        
+        whereCondition = {
+          AND: [
+            {
+              dataFactura: {
+                lte: checkDate // Only consider invoices created before or on the check date
+              },
+            },
+            {
+              OR: [
+                {
+                  plati: {
+                    none: {} // Invoices that have never been paid
+                  }
+                },
+                {
+                  plati: {
+                    every: {
+                      plata: {
+                        dataop: {
+                          gt: checkDate // All payments were made after the check date
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+   */
       // Add compartiment filter if provided
     if (sumaValue !== null && sumaOperator) {
         switch (sumaOperator) {

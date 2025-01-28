@@ -16,4 +16,5 @@
 - Modificare angajament nevizat
 - Stergere receptie neordonantata
 - stergere ordonantare nevizata
+- stergere factura neachitate
   

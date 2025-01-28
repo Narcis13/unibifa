@@ -312,6 +312,7 @@ function formatAmount(amount) {
   'artbug':null,
   'numefurnizor':null,
   'sursafin':null,
+  'neachitateLaData':date.formatDate(new Date(),'YYYY/MM/DD') ,
   'datafact':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
   'valoare':{ operator:  { label: '>', value: 'gt' }, value: -9999999 }
 }

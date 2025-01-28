@@ -31,7 +31,7 @@ export const useFacturiPrimite = ()=>{
             const sufix = sortateAB ? '&sortby=articolbugetar' : ''
             let prefix= `?dela=${filters.datafact.from}&panala=${filters.datafact.to}`
             if(hasKey(filters,'ramasplata')){
-                prefix+=(filters.ramasplata?`&platite=true&platitedela=${filters.platiteDeLaData}&platitepanala=${filters.platitePanaLaData}`:`&platite=false&neachiatela=${filters.neachitateLaData}`)
+                prefix+=(filters.ramasplata?`&platite=true&platitedela=${filters.platiteDeLaData}&platitepanala=${filters.platitePanaLaData}`:`&platite=false&neachitatela=${filters.neachitateLaData}`)
             }
             else{
                 prefix+=('&platite=toate')
