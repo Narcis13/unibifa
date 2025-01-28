@@ -5,11 +5,21 @@
           <div class="text-h6 row items-center justify-between">
             <div class="row q-gutter-sm">
               <span>Plata facturi</span>
-              <table-filter
+              <facturi-plati-filter
               :columns="columns"
               :defaults="filterDefaults"
               @filtersadded="handleFilters"
             />
+            </div>
+            <div class="row justify-center q-pa-sm">
+              <q-btn
+                  :icon="isExpanded ? 'unfold_less' : 'unfold_more'"
+                  flat
+                  dense
+                  color="primary"
+                  @click="toggleAllGroups"
+                  :label="isExpanded ? 'Colapseaza Tot' : 'Extinde Tot'"
+                />
             </div>
             <div class="row q-gutter-sm">
               <q-btn 
@@ -76,7 +86,7 @@
                     @click="toggleGroup(props.row.furnizor)"
                   />
                   {{ props.row.furnizor.charAt(0).toUpperCase() + props.row.furnizor.slice(1) }}
-                  ({{ filterByFurnizor(props.row.furnizor).length }})
+                  ({{ filterByFurnizor(props.row.furnizor).length }}) ({{ formatAmount(calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(2)) }} lei)
                 </q-td>
               </q-tr>
             </template>
@@ -98,6 +108,7 @@
                 <q-td key="expl">{{ props.row.explicatii }}</q-td>
                 <q-td key="sursafin">{{ props.row.sursafin }}</q-td>
                 <q-td class="text-centrat" key="artbug">{{ props.row.artbug }}</q-td>
+                <q-td class="text-centrat" key="plata">{{ props.row.plata }}</q-td>
               </q-tr>
             </template>
       
@@ -110,6 +121,9 @@
                 <q-td class="text-right">
                   {{ formatAmount(calculateValoareTotalaFurnizor(props.row.furnizor).toFixed(2)) }}
                 </q-td>
+                <q-td class="text-right">
+                  {{ formatAmount(calculateRamasPlataTotalFurnizor(props.row.furnizor).toFixed(2)) }}
+                </q-td>
               </q-tr>
             </template>
             <template v-if="props.row.type === 'total'">
@@ -119,6 +133,9 @@
                 </q-td>
                 <q-td class="text-right">
                   {{ formatAmount(props.row.total) }}
+                </q-td>
+                <q-td class="text-right">
+                  {{ formatAmount(calculateTotalRamasPLata()) }}
                 </q-td>
               </q-tr>
             </template>
@@ -140,11 +157,12 @@
   
   <script setup>
 import { useQuasar,date} from 'quasar'
-  
+import {useFacturiPrimite} from '~/composables/useFacturiPrimite' 
   const pagination = ref({
     rowsPerPage: 0
   })
 const $q = useQuasar()
+const {toateFacturilePrimite} = useFacturiPrimite()
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
 }
@@ -234,6 +252,13 @@ function formatAmount(amount) {
       type:'list',
       options:await $fetch('/api/info/articole')
     }
+    },
+    { 
+      name: 'plata', 
+      label: 'Plata', 
+      field: 'plata' ,
+      align:'center'
+
     }
   ]
 
@@ -244,8 +269,8 @@ function formatAmount(amount) {
   const showPlataDialog=ref(false)
   const processedRows  = ref([])
   let categorii = []
-  const prelucrareFacturi = async ()=>{
-    const facturi = await $fetch('/api/facturiprimite')
+  const prelucrareFacturi = async (filtre)=>{
+    const facturi = await toateFacturilePrimite(false,filtre)
     categorii=[]
     originalRows.value=[]
 
@@ -266,6 +291,7 @@ function formatAmount(amount) {
           explicatii:factura.receptie.mentiuni,
           indicator:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].indicator,
           codang:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].codang,
+          plata:factura.statusPlata==='PLATITA'?`O.P. ${factura.plati[0].plata.numarop} / ${formatDate(factura.plati[0].plata.dataop)}`:'NEPLATITA'
       })
     })
     expandedGroups.value=categorii.reduce((acc, key) => {
@@ -284,15 +310,29 @@ function formatAmount(amount) {
   'artbug':null,
   'numefurnizor':null,
   'sursafin':null,
+  'neachitateLaData':date.formatDate(new Date(),'YYYY/MM/DD') ,
   'datafact':{ from: date.formatDate(new Date(new Date().getFullYear(), 0, 1), 'YYYY/MM/DD'), to: date.formatDate(new Date(),'YYYY/MM/DD') },
   'valoare':{ operator:  { label: '>', value: 'gt' }, value: -9999999 }
+}
+
+const isExpanded = computed(() => {
+  return Object.values(expandedGroups.value || {})[0] || false
+})
+
+const toggleAllGroups = () => {
+  const newState = !isExpanded.value
+  categorii.forEach(category => {
+    expandedGroups.value = expandedGroups.value || {}
+    expandedGroups.value[category] = newState
+  })
 }
 
 const handleFilters = async (filters) => {
   console.log('filters',filters)
   try {
-   // await fetchAngajamente(2024,filters)
- //  ordonantari.value = await fetchOrdonantari(filters)
+    processedRows.value=[]
+    await prelucrareFacturi(filters)
+    processedRows.value=processRows()
   } catch (e){
     console.error(e)
   }
@@ -351,6 +391,9 @@ const handleFilters = async (filters) => {
   const calculateTotalValoare = ()=>{
     return originalRows.value.reduce((sum,factura)=> sum + parseFloat(factura.valoare),0)
   }
+  const calculateTotalRamasPLata = ()=>{
+    return originalRows.value.reduce((sum,factura)=> sum + parseFloat(factura.ramasplata),0)
+  }
   const calculateValoareTotalaFurnizor = (furnizor) => {
     const groupRows = filterByFurnizor(furnizor)
     if (groupRows.length === 0) return 0
@@ -358,7 +401,14 @@ const handleFilters = async (filters) => {
     const total = groupRows.reduce((sum, factura) => sum + parseFloat(factura.valoare), 0)
     return total
   }
-  
+  const calculateRamasPlataTotalFurnizor = (furnizor) => {
+    const groupRows = filterByFurnizor(furnizor)
+    //console.log('groupRows',groupRows,furnizor)
+    if (groupRows.length === 0) return 0
+    
+    const total = groupRows.reduce((sum, factura) => sum + parseFloat(factura.ramasplata), 0)
+    return total
+  }
   const toggleGroup = (furnizor) => {
     expandedGroups.value[furnizor] = !expandedGroups.value[furnizor]
   }
@@ -430,7 +480,7 @@ const handleFilters = async (filters) => {
   }
 
  onMounted(async ()=>{
-  await prelucrareFacturi()
+  await prelucrareFacturi(filterDefaults)
   processedRows.value=processRows()
   //console.log('processed rows',processedRows.value)
  })

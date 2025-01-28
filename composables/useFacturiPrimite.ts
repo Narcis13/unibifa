@@ -45,6 +45,9 @@ export const useFacturiPrimite = ()=>{
             if(hasKey(filters,'sursafin')&&filters.sursafin!==null){
               prefix+=`&sursafin=${filters.sursafin}`
           }
+          if(hasKey(filters,'idcompartiment')&&filters.idcompartiment!==null){
+            prefix+=`&idcompartiment=${filters.idcompartiment}`
+        }
             prefix+=`&sumaoperator=${filters.valoare.operator.value}&sumavalue=${filters.valoare.value}`
             console.log('sunt in useFacturiPrimite fetch facturi primite',filters,prefix)
             return await $fetch('/api/facturiprimite'+prefix+sufix)

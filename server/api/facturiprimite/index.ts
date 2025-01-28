@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
         platitepanala,
         sumaoperator,
         neachitatela,
+        idcompartiment,
         sumavalue,
         sortby,
         platite,
@@ -62,24 +63,7 @@ export default defineEventHandler(async (event) => {
         in: ['NEPLATITA', 'PARTIAL_PLATITA']
       }*/
 
-        if(platite!=='toate'){  
-          whereCondition.statusPlata= {
-            in: platite==='false'?['NEPLATITA', 'PARTIAL_PLATITA']:['PLATITA', 'PARTIAL_PLATITA']
-          }
-          if(platite==='true'){
-            const startDate = new Date(platitedela.replace(/\//g, '-')); // Convert 2025/01/25 to 2025-01-25
-            const endDate = new Date(platitepanala.replace(/\//g, '-'));
-            whereCondition.plati = {
-              some: {
-                plata: {
-                  dataop: {
-                    gte: startDate,
-                    lte: endDate
-                  }
-              }
-              }
-            }
-        }}
+
       // Add date range filter if provided
       if (dela && panala) {
         whereCondition.dataFactura = {
@@ -87,6 +71,61 @@ export default defineEventHandler(async (event) => {
           lte: new Date(panala.replace(/\//g, '-'))
         }
       }
+
+      if(platite!=='toate'){  
+        // whereCondition.statusPlata= {
+        //   in: platite==='false'?['NEPLATITA', 'PARTIAL_PLATITA']:['PLATITA', 'PARTIAL_PLATITA']
+        // }
+        if(platite==='true'){
+          const startDate = new Date(platitedela.replace(/\//g, '-')); // Convert 2025/01/25 to 2025-01-25
+          const endDate = new Date(platitepanala.replace(/\//g, '-'));
+          whereCondition.plati = {
+            some: {
+              plata: {
+                dataop: {
+                  gte: startDate,
+                  lte: endDate
+                }
+            }
+            }
+          }
+          } else {
+            if (neachitatela) {
+              const checkDate = new Date(neachitatela.replace(/\//g, '-'))
+              
+              whereCondition = {
+                AND: [
+                  {
+                    dataFactura: {
+                      lte: checkDate // Only consider invoices created before or on the check date
+                    },
+                  },
+                  {
+                    OR: [
+                      {
+                        plati: {
+                          none: {} // Invoices that have never been paid
+                        }
+                      },
+                      {
+                        plati: {
+                          every: {
+                            plata: {
+                              dataop: {
+                                gt: checkDate // All payments were made after the check date
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+    
+    }
   /**
    * 
    if (neachitatela) {
@@ -154,7 +193,9 @@ export default defineEventHandler(async (event) => {
        if (furnizorId) {
          whereCondition.idFurnizor = Number(furnizorId)
        }
-
+       if (idcompartiment) {
+        whereCondition.idCompartiment = Number(idcompartiment)
+      }
       if (artbug) {
         whereCondition.articolBugetar = {
           id: Number(artbug)

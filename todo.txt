@@ -5,16 +5,18 @@
 - Facturi primite ordonate dupa articol bugetar DONE!
 - OP numar editabil DONE!
 - Furnizori max 30 caractere iar CFPP sa poata schimba datele furnizorului DONE!
-- filtrare facturi functionala...
+- filtrare facturi functionala... DONE !!!!!!!!!!
     - cimpul data factura Date nu DateTime DONE!!
     - colapse all in grid DONE!!
     - filtrare dupa valoare factura DONE!
-    - implementare facturi neachitate la data...
-    - totul functional si pentru facturi ordonate dupa furnizori
+    - implementare facturi neachitate la data... DONE!!
+    - totul functional si pentru facturi ordonate dupa furnizori DONE !!
 - Raport situatie facturi
 - Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol 
 - Modificare angajament nevizat
 - Stergere receptie neordonantata
 - stergere ordonantare nevizata
 - stergere factura neachitate
+- afisare disponibil buget in fereastra de plati(mai vorbesc cu ELENA)
+- implementare afisare si listare registru vize
   

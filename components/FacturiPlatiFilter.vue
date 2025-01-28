@@ -3,8 +3,18 @@
     <q-btn-dropdown color="primary" square icon="tune" class="q-mr-sm">
       <div class="q-pa-md" style="min-width: 300px">
         <div class="text-h6 q-mb-md">Filtre</div>
-        
-        <div v-for="column in filterableColumns" :key="column.name" class="q-mb-md">
+        <q-select
+          
+            v-model="compartiment"
+            :options="compartimente"
+            outlined
+            dense
+            clearable
+            emit-value
+            map-options
+            label="Compartiment"
+          />
+        <div v-for="column in filterableColumns" :key="column.name" class="q-mt-md q-mb-md">
           <div class="text-subtitle2 q-mb-sm">{{ column.label }}</div>
           
           <!-- List filter type -->
@@ -181,12 +191,14 @@
   
   const props = defineProps<Props>()
   const emit = defineEmits(['filtersadded'])
-   console.log('Filtre default',props.defaults)
+
   // Only show columns that have filtering enabled
   const filterableColumns = computed(() => 
     props.columns.filter(col => col.filterOptions?.enabled)
   )
-  
+  const compartimente = await $fetch('api/info/compartimente')
+  const compartiment=ref(null)
+  console.log('Filtre default',props.defaults)
   // Initialize filters object based on column types
   const filters: Ref<Record<string, any>> = ref({})
   const neachitateLaData = ref(date.formatDate(new Date(),'YYYY/MM/DD'))
@@ -248,6 +260,7 @@
    activeFilters['neachitateLaData']=neachitateLaData.value
     activeFilters['platiteDeLaData']=platiteDeLaData.value
     activeFilters['platitePanaLaData']=platitePanaLaData.value
+    if(compartiment.value!==null) activeFilters['idcompartiment']=compartiment.value
     emit('filtersadded', activeFilters)
   }
   </script>
