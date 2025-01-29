@@ -12,7 +12,7 @@
     - implementare facturi neachitate la data... DONE!!
     - totul functional si pentru facturi ordonate dupa furnizori DONE !!
 - Raport situatie facturi
-- Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol 
+- Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol DONE!!
 - Modificare angajament nevizat
 - Stergere receptie neordonantata
 - stergere ordonantare nevizata

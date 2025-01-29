@@ -560,7 +560,7 @@ const printListaAngajamente = async () => {
     titlu:'Lista angajamente',
     format:'A4',
     orientation:'landscape',
-    columns:columns.filter(c=>c.printable),
+    columns:columns.filter(c=>c.printable).map(c=>({title:c.label,dataKey:c.name})),
     sortby:['sursafinantare','artbug'],
     groupby:'artbug',
     subtotal:'suma',
