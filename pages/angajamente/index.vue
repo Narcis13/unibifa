@@ -3,20 +3,29 @@
     <div class="row q-col-gutter-md">
       <div class="col-12">
         <q-card>
-          <q-card-section class="row items-center">
+          <q-card-section class="row justify-between">
             <div class="text-h6 q-mr-md">Angajamente Legale</div>
             <table-filter
               :columns="columns"
               :defaults="filterDefaults"
               @filtersadded="handleFilters"
             />
-            <q-space />
+           <q-space /> 
 
             <q-btn
+              v-if="userStore.utilizator.role=='RESPONSABIL'"
               color="primary"
               icon="add"
               label="Angajament Nou"
               @click="showAddDialog = true"
+            />
+            <q-btn
+              v-if="userStore.utilizator.role=='CFPP'"
+              color="primary"
+              icon="printer"
+              label="Print"
+               style="min-width: 200px;"
+               @click="printListaAngajamente"
             />
           </q-card-section>
 
@@ -281,6 +290,7 @@ const columns = [
  {
     name: 'compartiment',
     label: 'Compartiment',
+    printable: false,
     field: (row: Angajament) => row.compartiment?.denumire,
     align: 'left',
     filterOptions:{
@@ -293,6 +303,7 @@ const columns = [
     name: 'numar',
     label: 'Număr',
     field: 'numar',
+    printable: true,
     align: 'left',
     filterOptions:{
       enabled:false,
@@ -303,6 +314,7 @@ const columns = [
     name: 'data',
     label: 'Data',
     field: 'data',
+    printable: true,
     format: (val: string) => new Date(val).toLocaleDateString(),
     align: 'left',
     filterOptions:{
@@ -313,6 +325,7 @@ const columns = [
   {
     name: 'sursafinantare',
     label: 'Sursa fin.',
+    printable: true,
     field: (row: Angajament) => row.categorie?.sursaFinantare?.scurt,
     align: 'left',
     filterOptions:{
@@ -324,6 +337,7 @@ const columns = [
   {
     name: 'artbug',
     label: 'Art. bug.',
+    printable: true,
     field: (row: Angajament) => row.categorie?.articolBugetar.cod,
     align: 'center',
     filterOptions:{
@@ -336,6 +350,7 @@ const columns = [
   {
     name: 'descriere',
     label: 'Descriere',
+    printable: true,
     field: 'descriere',
     align: 'left',
     filterOptions:{
@@ -346,6 +361,7 @@ const columns = [
   {
     name: 'vizatCFPP',
     label: 'Vizat CFPP',
+    printable: false,
     field: (row: Angajament) => checkIfVizatCFPP(row.modificari),
     format: (val: boolean) => val ? 'Da' : 'Nu',
     align: 'center',
@@ -357,6 +373,7 @@ const columns = [
   {
     name: 'suma',
     label: 'Suma Totala',
+    printable: true,
     field: (row)=>row.totalsuma,
     align: 'right',
    
@@ -368,6 +385,7 @@ const columns = [
   },
   {
     name: 'actiuni',
+    printable: false,
     label: 'Acțiuni',
     field: 'actiuni',
     align: 'center',
@@ -534,6 +552,23 @@ const handleVizaCFPP = async (modificare: ModificareAngajament) => {
 const handlePrint = async (modificare: ModificareAngajament) => {
   //console.log('modificare ang',modificare)
   openInNewTab('/rapoarte/angajamente/'+modificare.id)
+}
+
+const printListaAngajamente = async () => {
+
+  const reportsData = {
+    titlu:'Lista angajamente',
+    format:'A4',
+    orientation:'landscape',
+    columns:columns.filter(c=>c.printable),
+    sortby:['sursafinantare','artbug'],
+    groupby:'artbug',
+    subtotal:'suma',
+    data:angajamente.value
+  } // Your array of objects
+  // Save to localStorage with a unique key
+  localStorage.setItem('tempReports', JSON.stringify(reportsData))
+  openInNewTab('/rapoarte/listaangajamente')
 }
 // Handlers
 const onSubmitAdd = async () => {
