@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 
@@ -207,7 +207,7 @@ onMounted(() => {
 .report-container {
   /* A4 Landscape dimensions */
   width: 297mm;
-  height: 210mm;
+  height: auto; /* Remove fixed height */
   margin: 0 auto;
   background: white;
   padding: 10mm;
@@ -216,20 +216,38 @@ onMounted(() => {
 
 .report-content {
   width: 100%;
-  height: 100%;
-  overflow: auto;
+  /* Remove height and overflow constraints */
 }
 
 /* Print-specific styles */
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
   .report-container {
+    width: 100%;
+    height: auto;
     padding: 0;
     margin: 0;
     box-shadow: none;
+    overflow: visible !important;
   }
   
+  .report-content {
+    width: 100%;
+    overflow: visible !important;
+  }
+
   .q-markup-table {
-    page-break-inside: avoid;
+    width: 100%;
+    page-break-inside: auto; /* Allow table to break across pages */
   }
   
   /* Ensure headers repeat on each page */
@@ -237,9 +255,14 @@ onMounted(() => {
     display: table-header-group;
   }
   
-  /* Avoid breaking inside rows */
+  /* Allow rows to break across pages if needed */
   tr {
-    page-break-inside: avoid;
+    page-break-inside: auto;
+  }
+
+  /* Hide any unnecessary elements during print */
+  .no-print {
+    display: none !important;
   }
 }
 
