@@ -162,6 +162,7 @@ import {useFacturiPrimite} from '~/composables/useFacturiPrimite'
     rowsPerPage: 0
   })
 const $q = useQuasar()
+const router = useRouter()
 const {toateFacturilePrimite} = useFacturiPrimite()
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
@@ -171,6 +172,10 @@ function formatAmount(amount) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount)
+}
+const openInNewTab = (path) => {
+  const url = router.resolve(path).href
+  window.open(url, '_blank')
 }
   // Add unique identifier to original rows
   const originalRows = ref([
@@ -183,6 +188,7 @@ function formatAmount(amount) {
       required: true, 
       label: 'Furnizor', 
       align: 'left', 
+      printable: true,
       field: 'numefurnizor',
     filterOptions:{
       enabled:true,
@@ -193,12 +199,14 @@ function formatAmount(amount) {
     { 
       name: 'nrfact', 
       label: 'Nr. fact.', 
+      printable: true,
       field: 'nrfact' ,
       align:'left'
     },
     { 
       name: 'datafact', 
       label: 'Data fact.', 
+      printable: true,
       field: 'dataFactura' ,
       align:'center',
       filterOptions:{
@@ -208,6 +216,7 @@ function formatAmount(amount) {
     },{
       name:'valoare',
       label:'Valoare',
+      printable: true,
       field:'valoare',
       align:'right',
     filterOptions:{
@@ -217,6 +226,7 @@ function formatAmount(amount) {
     },{
       name:'ramasplata',
       label:'Ramas de plata',
+      printable: true,
       field:'ramasplata',
       align:'right',
     filterOptions:{
@@ -234,6 +244,7 @@ function formatAmount(amount) {
     { 
       name: 'sursafin', 
       label: 'Sursa fin.', 
+      printable: true,
       field: 'sursafin' ,
       align:'left',
     filterOptions:{
@@ -245,6 +256,7 @@ function formatAmount(amount) {
     { 
       name: 'artbug', 
       label: 'Art. bug.', 
+      printable: true,
       field: 'artbug' ,
       align:'center',
     filterOptions:{
@@ -256,6 +268,7 @@ function formatAmount(amount) {
     { 
       name: 'plata', 
       label: 'Plata', 
+      printable: true,
       field: 'plata' ,
       align:'center'
 
@@ -440,8 +453,21 @@ const handleFilters = async (filters) => {
   }
   
   const handleSecondAction = () => {
-    console.log('Second Action clicked')
-    console.log('Selected Rows:', selectedRows.value)
+    console.log('Tiparire nume f')
+    const reportsData = {
+      titlu:'Situatie facturi',
+      format:'A4',
+      orientation:'landscape',
+      subtotaluri:true,
+      columns:columns.filter(c=>c.printable).map(c=>({title:c.label,dataKey:c.name})),
+      sortby:['numefurnizor','datafact'],
+      groupby:'artbug',
+      subtotal:'suma',
+      data:originalRows.value
+    } // Your array of objects
+    // Save to localStorage with a unique key
+    localStorage.setItem('tempReports', JSON.stringify(reportsData))
+    openInNewTab('/rapoarte/listafacturiplati')
   }
 
   const handleMounted = () => {

@@ -19,14 +19,21 @@
               label="Angajament Nou"
               @click="showAddDialog = true"
             />
-            <q-btn
-              v-if="userStore.utilizator.role=='CFPP'"
-              color="primary"
-              icon="printer"
-              label="Print"
-               style="min-width: 200px;"
-               @click="printListaAngajamente"
-            />
+            <q-btn-dropdown   v-if="userStore.utilizator.role=='CFPP'" label="Lista angajamente" color="primary" square icon="printer" class="q-mr-sm" style="min-width: 300px">
+            <div class="q-pa-md" >
+              <div class="text-h6 q-mb-md">
+                <q-checkbox v-model="subtotaluri" label="Subtotal pe surse si articole" />
+              </div>
+                <q-btn
+                
+                  color="primary"
+                  icon="printer"
+                  label="Print"
+                  style="min-width: 200px;"
+                  @click="printListaAngajamente"
+                />
+              </div>
+            </q-btn-dropdown>
           </q-card-section>
 
           <q-card-section>
@@ -285,6 +292,7 @@ function formatAmount(amount: number) {
     maximumFractionDigits: 2
   }).format(amount)
 }
+const subtotaluri = ref(true)
 //const compartiment = ref<Compartiment>({value:0,label:''})
 const columns = [
  {
@@ -560,6 +568,7 @@ const printListaAngajamente = async () => {
     titlu:'Lista angajamente',
     format:'A4',
     orientation:'landscape',
+    subtotaluri:subtotaluri.value,
     columns:columns.filter(c=>c.printable).map(c=>({title:c.label,dataKey:c.name})),
     sortby:['sursafinantare','artbug'],
     groupby:'artbug',

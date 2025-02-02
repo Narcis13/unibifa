@@ -13,7 +13,7 @@
         </thead>
 
         <tbody>
-          <template v-for="(sursaGroup, sursaKey) in groupedData" :key="sursaKey">
+          <template v-if="report.subtotaluri" v-for="(sursaGroup, sursaKey) in groupedData" :key="sursaKey">
             <!-- Sursa Finantare Header -->
             <tr class="bg-grey-3">
               <td :colspan="report.columns.length" class="text-weight-bold">
@@ -68,6 +68,27 @@
               </td>
               <td class="text-weight-bold">
                 {{ formatAmount(calculateSursaSubtotal(sursaGroup)) }}
+              </td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr v-for="row in report.data" :key="row.id">
+              <td v-for="col in report.columns" :key="col.dataKey">
+                <template v-if="col.dataKey === 'data'">
+                  {{ formatDate(row[col.dataKey]) }}
+                </template>
+                <template v-else-if="col.dataKey === 'suma'">
+                  {{ formatAmount(getTotalSuma(row)) }}
+                </template>
+                <template v-else-if="col.dataKey === 'sursafinantare'">
+                  {{ row.categorie?.sursaFinantare?.denumire }}
+                </template>
+                <template v-else-if="col.dataKey === 'artbug'">
+                  {{ row.categorie?.articolBugetar?.cod }}
+                </template>
+                <template v-else>
+                  {{ row[col.dataKey] }}
+                </template>
               </td>
             </tr>
           </template>
@@ -198,6 +219,7 @@ onMounted(() => {
   const savedData = localStorage.getItem('tempReports')
   if (savedData) {
     report.value = JSON.parse(savedData)
+    console.log('Loaded saved report data:', report.value)
     localStorage.removeItem('tempReports')
   }
 })
@@ -255,11 +277,11 @@ onMounted(() => {
     display: table-header-group;
   }
   
-  /* Allow rows to break across pages if needed */
+  /* Allow rows to break across pages if needed 
   tr {
     page-break-inside: auto;
   }
-
+*/
   /* Hide any unnecessary elements during print */
   .no-print {
     display: none !important;
