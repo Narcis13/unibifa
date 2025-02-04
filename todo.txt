@@ -13,7 +13,7 @@
     - totul functional si pentru facturi ordonate dupa furnizori DONE !!
 - Raport situatie facturi DONE!!
 - Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol DONE!!
-- Modificare angajament nevizat
+- Stergere angajament nevizat
 - Stergere receptie neordonantata
 - stergere ordonantare nevizata
 - stergere factura neachitate

@@ -86,11 +86,21 @@
                   <q-btn
                     flat
                     round
-                    color="info"
+                    color="accent"
                     icon="history"
                     @click="showIstoric(props.row)"
                   >
                     <q-tooltip>Istoric modificări</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                   v-if="props.row.modificari.length==1&&!props.row.modificari[0].vizaCFPP"
+                    flat
+                    round
+                    color="negative"
+                    icon="delete"
+                    @click="stergAngajament(props.row)"
+                  >
+                    <q-tooltip>Sterge angajament</q-tooltip>
                   </q-btn>
                 </q-td>
               </template>
@@ -692,6 +702,34 @@ const showIstoric = (angajament: Angajament) => {
   showIstoricDialog.value = true
 }
 
+const stergAngajament = async (angajament: Angajament) => {
+ // selectedAngajament.value = angajament
+ try {
+    const response = await useFetch(`/api/angajamente/${angajament.id}/sterg`, {
+      method: 'DELETE'
+    })
+
+    if (response.error.value) {
+      throw new Error('Failed to delete angajament')
+    }
+
+    // Remove from local array to update table
+    angajamente.value = angajamente.value.filter(a => a.id !== angajament.id)
+
+    // Show success notification
+    $q.notify({
+      color: 'positive',
+      message: 'Angajamentul a fost șters cu succes'
+    })
+
+  } catch (error) {
+    console.error('Error:', error)
+    $q.notify({
+      color: 'negative', 
+      message: 'A apărut o eroare la ștergerea angajamentului'
+    })
+  }
+}
 // Inițializare
 onMounted(async () => {
  
