@@ -11,9 +11,9 @@ export default defineEventHandler(async (event) => {
     try {
       const query = getQuery(event)
      
- 
-  const fromDate = query.from ? new Date(query.from.toString()) : null
-  const toDate = query.to ? new Date(query.to.toString()) : null
+  //console.log('query',query)
+  const fromDate = query.from ? new Date(query.from.toString().replace(/\//g, '-')) : null
+  const toDate = query.to ? new Date(query.to.toString().replace(/\//g, '-')) : null
   const ordonantareFilter = query.ordonantare?.toString()
   const sumaOperator = query.sumaoperator?.toString()
   const sumaValue = query.sumavalue ? parseFloat(query.sumavalue.toString()) : null

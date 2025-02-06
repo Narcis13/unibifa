@@ -70,7 +70,10 @@
           </q-tab-panel>
   
           <q-tab-panel  name="receptii">
-            <receptie-lista :id-compartiment="utilizatorStore.utilizator?.compartiment.id"/>
+            <receptie-lista 
+            :id-compartiment="utilizatorStore.utilizator?.compartiment.id"
+            @receptie-deleted="onReceptieDeleted"
+            />
             <!-- <div class="text-h6">Lista Receptii si Lichidari</div>
            
             <q-table
@@ -225,7 +228,10 @@
 
   }
 ]
-  
+const onReceptieDeleted = async () => {
+  // Update the angajamente_receptii data
+   angajamente_receptii.value = [...await fetchReceptiiAngajamente(utilizatorStore.utilizator?.compartiment.id)]
+}  
 const onReceptieNoua = async (dateReceptie:Receptie)=>{
   dateReceptie.idFurnizor=dateReceptie.idFurnizor.value
   try {

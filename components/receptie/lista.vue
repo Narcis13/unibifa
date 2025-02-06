@@ -39,6 +39,10 @@ const selected = ref<Reception[]>([])
 const receptions = ref<Reception[]>([])
 console.log('setup lista receptii')
 const $q= useQuasar()
+
+const emit = defineEmits(['receptieDeleted'])
+
+
 const isValidSelection = computed(() => {
   // If no selections or only one selection, return false
   if (selected.value.length === 0) {
@@ -60,8 +64,39 @@ const isValidSelection = computed(() => {
     row.articolbugetar === firstSelection.articolbugetar
   )
 })
+ const stergReceptie = async () => {
+  try {
+    loading.value = true
+    const id = selected.value[0].id // Assuming single selection mode
 
+    const { data, error } = await useFetch(`/api/receptii/sterg/${id}`, {
+      method: 'DELETE'
+    })
 
+    if (error.value) throw error.value
+
+    // Remove the deleted item from the array
+    receptions.value = receptions.value.filter(item => item.id !== id)
+    selected.value = [] // Clear selection
+    emit('receptieDeleted', {
+      id
+    })
+    // Show success notification
+    $q.notify({
+      type: 'positive',
+      message: 'Recepția a fost ștearsă cu succes'
+    })
+
+  } catch (err) {
+    console.error('Delete error:', err)
+    $q.notify({
+      type: 'negative', 
+      message: 'Eroare la ștergerea recepției'
+    })
+  } finally {
+    loading.value = false
+  }
+ }
 const columns = [
   {
     name: 'sursafinantare',
@@ -273,6 +308,7 @@ onMounted(() => {
         </FiltruReceptii>
         
         <q-space />
+        <q-btn class="q-mr-md" color="accent" :disable="!isValidSelection" no-caps icon="delete" label="Sterge receptie" @click="stergReceptie" />
         <q-btn color="primary" :disable="!isValidSelection" no-caps icon="payments" label="Ordonanțează la plată" @click="ordonantareNoua" />
       </template>
 
