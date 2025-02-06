@@ -47,39 +47,46 @@ export default defineEventHandler(async (event) => {
 
     const angajamenteWithSums = await prisma.$queryRaw`
     SELECT 
-      a.id,
-      a.*,
-      sf.scurt as sursa_denumire,
-      ab.cod as articol_denumire,
-      COUNT(DISTINCT m.id) as totalModificari,
-      COUNT(DISTINCT CASE WHEN m.vizaCFPP = true THEN m.id END) as totalVizate,
-      (
-        SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
-        SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)
-      ) as totalsuma,
-      COALESCE(SUM(r.valoare), 0) as totalreceptii,
-      (
-        (SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
-        SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)) - 
-        COALESCE(SUM(r.valoare), 0)
-      ) as suma_disponibila
-    FROM Angajamente a
-    LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
-    LEFT JOIN Receptii r ON a.id = r.idAngajament
-    LEFT JOIN Categorii cat ON cat.id = a.idCategorie
-    LEFT JOIN sursefinantare sf ON sf.id = cat.idsursa
-    LEFT JOIN articolebugetare ab ON ab.id = cat.idarticol
-    WHERE a.data >= ${firstDayOfYear}
-      AND a.idCompartiment = ${idcompartiment}
-    GROUP BY 
-      a.id, a.numar, a.data, a.idCategorie, a.idCompartiment, 
-      a.descriere, a.exercitiuBugetar, a.created_at, a.updated_at,
-      sf.scurt, ab.cod
-    HAVING 
-      COUNT(DISTINCT m.id) > 0 
-      AND COUNT(DISTINCT m.id) = COUNT(DISTINCT CASE WHEN m.vizaCFPP = true THEN m.id END)
-      AND suma_disponibila > 0
-    ORDER BY sf.scurt, ab.cod
+  a.id,
+  a.*,
+  sf.scurt as sursa_denumire,
+  ab.cod as articol_denumire,
+  COUNT(DISTINCT m.id) as totalModificari,
+  COUNT(DISTINCT CASE WHEN m.vizaCFPP = true THEN m.id END) as totalVizate,
+  (
+    SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
+    SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)
+  ) as totalsuma,
+  COALESCE((
+    SELECT SUM(r2.valoare)
+    FROM Receptii r2
+    WHERE r2.idAngajament = a.id
+  ), 0) as totalreceptii,
+  (
+    (SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
+    SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)) - 
+    COALESCE((
+      SELECT SUM(r2.valoare)
+      FROM Receptii r2
+      WHERE r2.idAngajament = a.id
+    ), 0)
+  ) as suma_disponibila
+FROM Angajamente a
+LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
+LEFT JOIN Categorii cat ON cat.id = a.idCategorie
+LEFT JOIN sursefinantare sf ON sf.id = cat.idsursa
+LEFT JOIN articolebugetare ab ON ab.id = cat.idarticol
+WHERE a.data >= ${firstDayOfYear}
+  AND a.idCompartiment = ${idcompartiment}
+GROUP BY 
+  a.id, a.numar, a.data, a.idCategorie, a.idCompartiment, 
+  a.descriere, a.exercitiuBugetar, a.created_at, a.updated_at,
+  sf.scurt, ab.cod
+HAVING 
+  COUNT(DISTINCT m.id) > 0 
+  AND COUNT(DISTINCT m.id) = COUNT(DISTINCT CASE WHEN m.vizaCFPP = true THEN m.id END)
+  AND suma_disponibila > 0
+ORDER BY sf.scurt, ab.cod
   `
 
     // Fetch related data in a separate efficient query
