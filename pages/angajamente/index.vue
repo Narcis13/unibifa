@@ -92,7 +92,7 @@
                   >
                     <q-tooltip>Istoric modificări</q-tooltip>
                   </q-btn>
-                  <q-btn
+               <!--     <q-btn
                    v-if="props.row.modificari.length==1&&!props.row.modificari[0].vizaCFPP"
                     flat
                     round
@@ -101,7 +101,7 @@
                     @click="stergAngajament(props.row)"
                   >
                     <q-tooltip>Sterge angajament</q-tooltip>
-                  </q-btn>
+                  </q-btn>  -->
                 </q-td>
               </template>
             </q-table>
@@ -261,6 +261,16 @@
                     >
                       <q-tooltip>Printează</q-tooltip>
                     </q-btn>
+                    <q-btn
+                 
+                    flat
+                    round
+                    color="info"
+                    icon="edit"
+                    @click="stergAngajament(props.row)"
+                  >
+                    <q-tooltip>Sterge angajament</q-tooltip>
+                  </q-btn>
                   </q-td>
                 </template>
               </q-table>
@@ -703,8 +713,9 @@ const showIstoric = (angajament: Angajament) => {
 }
 
 const stergAngajament = async (angajament: Angajament) => {
+  console.log('modific',angajament)
  // selectedAngajament.value = angajament
- try {
+ /*try {
     const response = await useFetch(`/api/angajamente/${angajament.id}/sterg`, {
       method: 'DELETE'
     })
@@ -728,7 +739,7 @@ const stergAngajament = async (angajament: Angajament) => {
       color: 'negative', 
       message: 'A apărut o eroare la ștergerea angajamentului'
     })
-  }
+  }*/
 }
 // Inițializare
 onMounted(async () => {
