@@ -1,4 +1,4 @@
-import type { Angajament, CreateAngajamentDTO, ModificareAngajament, ModificareAngajamentDTO } from '~/types/angajamente'
+import type { Angajament, CreateAngajamentDTO, ModAngajament, ModificareAngajamentDTO } from '~/types/angajamente'
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore'
 
 export const useAngajamente = () => {
@@ -82,6 +82,28 @@ export const useAngajamente = () => {
       loading.value = false
     }
   }
+  
+  const modificareAngajament = async (idAngajament: number, idModificare:number, data: Omit<ModAngajament, 'idUser'>) => {
+   //console.log('sunt in modificare angajament',idAngajament,idModificare,data)
+   try {
+    const result = await $fetch(`/api/angajamente/${idAngajament}/modific`, {
+      method: 'PUT',
+      body: {...data,idModificare}
+    })
+    
+    // Update the local state
+   
+
+    
+    return result
+  } catch (e) {
+    error.value = 'Eroare la modificarea angajamentului'
+    console.error(e)
+    throw e
+  } finally {
+    loading.value = false
+  }
+  }
 
   const addModificare = async (idAngajament: number, data: Omit<ModificareAngajamentDTO, 'idUser'>) => {
     loading.value = true
@@ -107,11 +129,11 @@ export const useAngajamente = () => {
     }
   }
 
-  const validateDisponibil = async (idCategorie: number, suma: number) => {
+  const validateDisponibil = async (idCategorie: number, suma: number,idAngajamentExclus:number = 0) => {
     try {
       const result = await $fetch(`/api/angajamente/validate`, {
         method: 'POST',
-        body: { idCategorie, suma }
+        body: { idCategorie, suma, idAngajamentExclus }
       })
       return result.valid
     } catch (e) {
@@ -121,14 +143,14 @@ export const useAngajamente = () => {
     }
   }
   const infoVizibil = ref(false)
-  const categorieSelectata = async (idCategorie:number)=>{
+  const categorieSelectata = async (idCategorie:number,idAngajamentExclus:number = 0)=>{
    
     infoVizibil.value=true
 
     try {
       const result = await $fetch(`/api/angajamente/validate`, {
         method: 'POST',
-        body: { idCategorie, suma:0 }
+        body: { idCategorie, suma:0,idAngajamentExclus }
       })
       //console.log('Categorie selectata',idCategorie,result)
       situatieBuget.value.disponibilBugetar=result.disponibilBugetar
@@ -145,6 +167,7 @@ export const useAngajamente = () => {
     loading,
     error,
     fetchAngajamente,
+    modificareAngajament,
     fetchCategoriiByCompartiment,
     createAngajament,
     addModificare,

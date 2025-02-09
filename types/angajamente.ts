@@ -44,6 +44,15 @@ export interface ModificareAngajament {
   }
 }
 
+export interface ModAngajament {
+  
+  exercitiuBugetar:number
+  idCategorie:number
+  descriere: string
+  suma: number
+  dataang:string
+  idCompartiment?:number
+}
 export interface CreateAngajamentDTO {
   idCategorie: number
   idCompartiment: number

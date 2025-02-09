@@ -114,10 +114,26 @@ const loading = ref(false)
 const selected = ref([])
 //const route = useRoute()
 const router = useRouter()
+const stergSiReceptia = ref(true)
 
 const openInNewTab = (path:string) => {
   const url = router.resolve(path).href
   window.open(url, '_blank')
+}
+const anuleazaOrdonantare = async ()=>{
+  console.log(stergSiReceptia.value)
+  if(selected.value.length==0) return
+  try {
+   // await $fetch('/api/ordonantari/anuleaza/'+selected.value[0].id,{method:'POST',body:JSON.stringify({stergSiReceptia:stergSiReceptia.value})})
+    selected.value=[]
+   // toateOrdonantarile()
+    $q.notify({
+      color: 'positive',
+      message: 'Ordonantarea a fost anulata cu succes!',
+    })
+  } catch (e){
+    console.error(e)
+  }
 }
 const filterDefaults:Record<string,any> = {
   'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
@@ -267,6 +283,21 @@ onMounted(() => {
                 <q-icon name="search" />
               </template>
            </q-input>
+           <q-btn-dropdown    label="Anuleaza ordonantare" color="primary" square icon="delete" class="q-mr-sm" style="min-width: 300px">
+            <div class="q-pa-md" >
+              <div class="text-h6 q-mb-md">
+                <q-checkbox v-model="stergSiReceptia" label="Sterg si receptia/lichidarea" />
+              </div>
+                <q-btn
+                  v-close-popup
+                  color="primary"
+                  icon="delete"
+                  label="Anuleaza!"
+                  style="min-width: 200px;"
+                  @click="anuleazaOrdonantare"
+                />
+              </div>
+            </q-btn-dropdown>
           <q-btn
            v-show="userStore.utilizator.role=='CFPP'"
             color="primary"

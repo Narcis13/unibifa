@@ -71,16 +71,16 @@
               <template #body-cell-actiuni="props">
                 <q-td :props="props">
                   <q-btn
-                    v-if="userStore.utilizator.role=='RESPONSABIL'"
+                    
                     flat
                     round
                     color="primary"
                     icon="edit"
                     @click="openModificareDialog(props.row)"
-                    :disable="!checkIfVizatCFPP(props.row.modificari)"
+                    :disable="userStore.utilizator.role=='RESPONSABIL'&&!checkIfVizatCFPP(props.row.modificari)"
                   >
                     <q-tooltip>
-                      {{ checkIfVizatCFPP(props.row.modificari) ? 'Modifica angajament' : 'Necesită viză CFPP' }}
+                     Modifica angajament
                     </q-tooltip>
                   </q-btn>
                   <q-btn
@@ -127,11 +127,24 @@
     <q-dialog v-model="showAddDialog" persistent>
       <q-card style="min-width: 350px">
         <q-card-section>
-          <div class="text-h6">Angajament Nou</div>
+          <div class="text-h6">Angajament {{ userStore.utilizator.role=='CFPP'? selectedAngajament?.numar:'nou' }}</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <q-form @submit="onSubmitAdd" class="q-gutter-md">
+            <q-input v-if="userStore.utilizator.role=='CFPP'" style="width: 200px" label="Data angajament"  v-model="dataAng" mask="date" :rules="['date']">
+                                        <template v-slot:append>
+                                            <q-icon name="event" class="cursor-pointer">
+                                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                                <q-date v-model="dataAng"  >
+                                                <div class="row items-center justify-end">
+                                                    <q-btn v-close-popup label="Inchide" color="primary" flat />
+                                                </div>
+                                                </q-date>
+                                            </q-popup-proxy>
+                                            </q-icon>
+                                        </template>
+          </q-input>
             <q-select
               v-model="newAngajament.idCategorie"
               :options="categoriiOptions"
@@ -170,8 +183,8 @@
             />
 
             <div class="row justify-end q-gutter-sm">
-              <q-btn label="Anulează" color="negative" @click="reset" v-close-popup />
-              <q-btn label="Salvează" type="submit" color="primary" />
+              <q-btn label="Abandoneaza" color="negative" @click="reset" v-close-popup />
+              <q-btn :disable="selectedAngajament?.totalVizate>0" :label="userStore.utilizator.role=='CFPP'? 'Modifica':'Salveaza' " type="submit" color="primary" />
             </div>
           </q-form>
         </q-card-section>
@@ -261,16 +274,7 @@
                     >
                       <q-tooltip>Printează</q-tooltip>
                     </q-btn>
-                    <q-btn
-                 
-                    flat
-                    round
-                    color="info"
-                    icon="edit"
-                    @click="stergAngajament(props.row)"
-                  >
-                    <q-tooltip>Sterge angajament</q-tooltip>
-                  </q-btn>
+
                   </q-td>
                 </template>
               </q-table>
@@ -293,7 +297,7 @@ import type { Angajament, ModificareAngajament } from '~/types/angajamente'
 import type { CreateVizaCFPPDTO } from "~/types/vizecfpp"
 const $q = useQuasar()
 const router = useRouter()
-const { angajamente, categoriiOptions, loading, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
+const { angajamente, categoriiOptions, loading,modificareAngajament, fetchAngajamente, fetchCategoriiByCompartiment, createAngajament, addModificare, validateDisponibil, categorieSelectata, infoVizibil , situatieBuget} = useAngajamente()
 const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPAngajament} = useVizaCFPP()
 const userStore = useUtilizatorStore()
 console.log('setup angajamente',angajamente)
@@ -313,6 +317,7 @@ function formatAmount(amount: number) {
   }).format(amount)
 }
 const subtotaluri = ref(true)
+const dataAng = ref(date.formatDate(new Date(),'YYYY/MM/DD'))
 //const compartiment = ref<Compartiment>({value:0,label:''})
 const columns = [
  {
@@ -602,10 +607,21 @@ const printListaAngajamente = async () => {
 // Handlers
 const onSubmitAdd = async () => {
   try {
-    const isValid = await validateDisponibil(
+    let isValid = false
+    if(userStore.utilizator.role=='RESPONSABIL'){
+      isValid= await validateDisponibil(
       newAngajament.value.idCategorie!,
       newAngajament.value.suma
     )
+    } else {
+      isValid= await validateDisponibil(
+      newAngajament.value.idCategorie!,
+      newAngajament.value.suma,
+      selectedAngajament.value?.id
+    )
+     
+    }
+
     
     if (!isValid) {
       $q.notify({
@@ -614,12 +630,17 @@ const onSubmitAdd = async () => {
       })
       return
     }
-
-    await createAngajament(newAngajament.value)
+if(userStore.utilizator.role=='RESPONSABIL'){
+  await createAngajament(newAngajament.value)
+} else {
+  await modificareAngajament(selectedAngajament.value!.id,selectedAngajament.value!.modificari[0].id, {...newAngajament.value, dataang: dataAng.value})
+   console.log('modificare',dataAng.value)
+}
+    
     showAddDialog.value = false
     $q.notify({
       color: 'positive',
-      message: 'Angajamentul a fost creat cu succes',
+      message: `Angajamentul a fost ${userStore.utilizator.role=='RESPONSABIL'?'creat ':'modificat '} cu succes`,
     })
     
     // Reset form
@@ -644,11 +665,22 @@ const onSubmitAdd = async () => {
 
 const openModificareDialog = async (angajament: Angajament) => {
   const totalReceptii= await $fetch(`/api/angajamente/${angajament.id}/totalreceptii`)
-  const sumaMaximaDeDiminuat = parseFloat(angajament.totalsuma)-Number(totalReceptii.total)
+  const sumaMaximaDeDiminuat = parseFloat(angajament.totalsuma)-Number(totalReceptii.total).toFixed(2)
   console.log('opnemodificare',angajament,sumaMaximaDeDiminuat)
   modificare.value.suma = sumaMaximaDeDiminuat
   selectedAngajament.value = angajament
-  showModificareDialog.value = true
+  if(userStore.utilizator.role=='CFPP'){
+    dataAng.value=date.formatDate(new Date(selectedAngajament.value.data),'YYYY/MM/DD')
+    await fetchCategoriiByCompartiment(angajament.idCompartiment)
+    await categorieSelectata(angajament.idCategorie,angajament.id)//aici trebuie sa trimit si id angajament de exclus
+    newAngajament.value.idCategorie=angajament.idCategorie
+    newAngajament.value.descriere=angajament.descriere
+    newAngajament.value.suma=angajament.totalsuma
+    showAddDialog.value = true
+  } else {
+    showModificareDialog.value = true
+  }
+
 }
 
 const onSubmitModificare = async () => {
@@ -713,7 +745,7 @@ const showIstoric = (angajament: Angajament) => {
 }
 
 const stergAngajament = async (angajament: Angajament) => {
-  console.log('modific',angajament)
+  console.log('modific',angajament,selectedAngajament.value)
  // selectedAngajament.value = angajament
  /*try {
     const response = await useFetch(`/api/angajamente/${angajament.id}/sterg`, {
