@@ -1,10 +1,10 @@
 <template>
   <div class="q-pa-md">
     <div class="row q-mb-md q-pa-md items-center">
-      <div class="col-4">
+      <div class="col-3">
         <h1 class="text-h5">Surse de finantere / bugete</h1>
       </div>
-      <div class="col-4">
+      <div class="col-3">
         <q-select
           v-model="selectedSource"
           :options="sourceOptions"
@@ -23,7 +23,7 @@
           </template>
         </q-select>
       </div>
-      <div class="col-4 text-right">
+      <div class="col-3 text-right">
         <q-input
           v-model="filter"
           placeholder="Cauta"
@@ -35,6 +35,16 @@
             <q-icon name="search" />
           </template>
         </q-input>
+      </div>
+      <div class="col-3">
+       <q-btn
+       
+          color="primary"
+          label="Export"
+          @click="exportBugete"
+        >
+          <q-icon name="upgrade" />
+        </q-btn>
       </div>
     </div>
 
@@ -253,7 +263,7 @@
 import { useUtilizatorStore } from '~/stores/useUtilizatorStore';
 import { useBugete } from '~/composables/useBugete'
 import type { Buget } from '~/types/bugete'
-import { useQuasar } from 'quasar'
+import { exportFile, useQuasar } from 'quasar'
 
 interface FormState {
   trimI: number
@@ -319,7 +329,25 @@ const filteredBugete = computed(() => {
     budget => budget.sursaFinantare.id === selectedSource.value
   )
 })
+function wrapCsvValue (val, formatFn, row) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
 
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`
+}
 const onSourceChange = () => {
   // Additional logic if needed when source changes
 }
@@ -511,6 +539,34 @@ const visibleColumns = computed(() => {
   return baseColumns
 })
 
+const exportBugete = ()=>
+{
+  console.log('Exporting bugete')
+  const content = [baseColumns.map(col => wrapCsvValue(col.label))].concat(
+          filteredBugete.value.map(row => baseColumns.map(col => wrapCsvValue(
+            typeof col.field === 'function'
+              ? col.field(row)
+              : row[ col.field === void 0 ? col.name : col.field ],
+            col.format,
+            row
+          )).join(','))
+        ).join('\r\n')
+
+        const status = exportFile(
+          'buget-export-'+Date.now()+'.csv',
+          content,
+          'text/csv'
+        )
+
+        if (status !== true) {
+          $q.notify({
+            message: 'Browser denied file download...',
+            color: 'negative',
+            icon: 'warning'
+          })
+        }
+      
+}
 
 // Fetch data on component mount
 onMounted(() => {

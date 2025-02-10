@@ -121,12 +121,24 @@ const openInNewTab = (path:string) => {
   window.open(url, '_blank')
 }
 const anuleazaOrdonantare = async ()=>{
-  console.log(stergSiReceptia.value)
+  console.log(stergSiReceptia.value,selectedRow.value)
   if(selected.value.length==0) return
   try {
    // await $fetch('/api/ordonantari/anuleaza/'+selected.value[0].id,{method:'POST',body:JSON.stringify({stergSiReceptia:stergSiReceptia.value})})
+   const response = await useFetch(`/api/ordonantari/${selectedRow.value.id}`, {
+      method: 'DELETE'
+    })
+
+    if(stergSiReceptia.value){
+     // await $fetch('/api/receptii/anuleaza/'+selected.value[0].primareceptie.id,{method:'POST'})
+     const { data, error } = await useFetch(`/api/receptii/sterg/${selectedRow.value.primareceptie.id}`, {
+      method: 'DELETE'
+    })
+
+    if (error.value) throw error.value
+    }
     selected.value=[]
-   // toateOrdonantarile()
+    toateOrdonantarile()
     $q.notify({
       color: 'positive',
       message: 'Ordonantarea a fost anulata cu succes!',
@@ -283,7 +295,7 @@ onMounted(() => {
                 <q-icon name="search" />
               </template>
            </q-input>
-           <q-btn-dropdown    label="Anuleaza ordonantare" color="primary" square icon="delete" class="q-mr-sm" style="min-width: 300px">
+           <q-btn-dropdown   :disable="!selectedRow||selectedRow.vizaCFPP>0"  label="Anuleaza ordonantare" color="primary" square icon="delete" class="q-mr-sm" style="min-width: 300px">
             <div class="q-pa-md" >
               <div class="text-h6 q-mb-md">
                 <q-checkbox v-model="stergSiReceptia" label="Sterg si receptia/lichidarea" />

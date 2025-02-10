@@ -16,17 +16,15 @@
 - Stergere angajament nevizat DONE!!
 - Stergere receptie neordonantata DONE!!
 - la interogare angajamenete sa para doar cu sumele (modificarile) din intervalul respectiv!
-- stergere ordonantare nevizata
-- modificare modificare angajament de catre rol CFPP (data,explicatii,suma,categorie)
+- stergere ordonantare nevizata DONE!!
+- modificare modificare angajament de catre rol CFPP (data,explicatii,suma,categorie) DONE!!
+- buget export EXCEL (sau CSV) DONE!?
 - stergere factura neachitate
 - afisare disponibil buget in fereastra de plati(mai vorbesc cu ELENA)
 - implementare afisare si listare registru vize
 
 
 
-Invalid `prisma.angajamente.create()` invocation:
-3|ALOP2    | 
-3|ALOP2    | 
-3|ALOP2    | Unique constraint failed on the constraint: `Angajamente_numar_key`
+
 
   
