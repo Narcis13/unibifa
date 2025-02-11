@@ -25,7 +25,7 @@
                 <q-checkbox v-model="subtotaluri" label="Subtotal pe surse si articole" />
               </div>
                 <q-btn
-                
+                  v-close-popup
                   color="primary"
                   icon="printer"
                   label="Print"
@@ -60,6 +60,13 @@
               </template>
 
   <!-- Keep the special handling for specific columns -->
+              <template #body-cell-sumaperioada="props">
+                <q-td :props="props">
+                  <span :class="{ 'text-negative': !checkIfVizatCFPP(props.row.modificari) }">
+                    {{ calculateTotalSum(props.row.modificari) }}
+                  </span>
+                </q-td>
+              </template>
               <template #body-cell-suma="props">
                 <q-td :props="props">
                   <span :class="{ 'text-negative': !checkIfVizatCFPP(props.row.modificari) }">
@@ -404,9 +411,21 @@ const columns = [
     }
   },
   {
+    name: 'sumaperioada',
+    label: 'Suma (cf. perioada)',
+    printable: true,
+    field: (row)=>row.sumaperioada,
+    align: 'right',
+   
+    filterOptions:{
+      enabled:false
+    }
+
+  },
+  {
     name: 'suma',
     label: 'Suma Totala',
-    printable: true,
+    printable: false,
     field: (row)=>row.totalsuma,
     align: 'right',
    
@@ -533,7 +552,7 @@ function reset(){
 }
 // Calculate total sum from modifications
 const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
-  console.log('Calculate total...')
+  console.log('Calculate total...',filterDefaults.value)
   const total = modificari.reduce((sum, mod) => {
     return Number(sum) + Number(mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
   }, 0)
@@ -553,6 +572,7 @@ const checkIfVizatCFPP = (modificari: ModificareAngajament[] = []): boolean => {
 
 const handleFilters = async (filters: Record<string, any>) => {
   console.log('filters',filters)
+  filterDefaults.value = filters
   try {
     await fetchAngajamente(2024,filters)
     console.log('angajamente',angajamente)

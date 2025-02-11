@@ -6,7 +6,7 @@
       <q-markup-table flat bordered dense class="full-width" v-if="report.columns">
         <thead>
           <tr>
-            <th v-for="col in report.columns" :key="col.dataKey" class="text-left">
+            <th v-for="col in report.columns" :key="col.dataKey" class="text-center">
               {{ col.title }}
             </th>
           </tr>
@@ -16,7 +16,7 @@
           <template v-if="report.subtotaluri" v-for="(sursaGroup, sursaKey) in groupedData" :key="sursaKey">
             <!-- Sursa Finantare Header -->
             <tr class="bg-grey-3">
-              <td :colspan="report.columns.length" class="text-weight-bold">
+              <td :colspan="report.columns.length" class="text-weight-bold ">
                 {{ sursaKey }}
               </td>
             </tr>
@@ -31,11 +31,11 @@
 
               <!-- Data Rows -->
               <tr v-for="row in artGroup" :key="row.id">
-                <td v-for="col in report.columns" :key="col.dataKey">
+                <td v-for="col in report.columns" :key="col.dataKey" :class="col.dataKey === 'sumaperioada' ? 'text-right' : ''">
                   <template v-if="col.dataKey === 'data'">
                     {{ formatDate(row[col.dataKey]) }}
                   </template>
-                  <template v-else-if="col.dataKey === 'suma'">
+                  <template v-else-if="col.dataKey === 'sumaperioada'">
                     {{ formatAmount(getTotalSuma(row)) }}
                   </template>
                   <template v-else-if="col.dataKey === 'sursafinantare'">
@@ -73,11 +73,11 @@
           </template>
           <template v-else>
             <tr v-for="row in report.data" :key="row.id">
-              <td v-for="col in report.columns" :key="col.dataKey">
+              <td v-for="col in report.columns" :key="col.dataKey" :class="col.dataKey === 'sumaperioada' ? 'text-right' : ''">
                 <template v-if="col.dataKey === 'data'">
                   {{ formatDate(row[col.dataKey]) }}
                 </template>
-                <template v-else-if="col.dataKey === 'suma'">
+                <template v-else-if="col.dataKey === 'sumaperioada'">
                   {{ formatAmount(getTotalSuma(row)) }}
                 </template>
                 <template v-else-if="col.dataKey === 'sursafinantare'">
@@ -149,7 +149,7 @@ function formatDate(date) {
 }
 
 function getTotalSuma(row) {
-  return row.totalsuma || 0
+  return row.sumaperioada || 0
 }
 
 function calculateSubtotal(group) {
