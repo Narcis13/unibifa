@@ -15,7 +15,7 @@
 - Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol DONE!!
 - Stergere angajament nevizat DONE!!
 - Stergere receptie neordonantata DONE!!
-- la interogare angajamenete sa para doar cu sumele (modificarile) din intervalul respectiv!
+- la interogare angajamenete sa para doar cu sumele (modificarile) din intervalul respectiv! DONE!!
 - stergere ordonantare nevizata DONE!!
 - modificare modificare angajament de catre rol CFPP (data,explicatii,suma,categorie) DONE!!
 - buget export EXCEL (sau CSV) DONE!?
