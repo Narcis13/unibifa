@@ -63,7 +63,7 @@
               <template #body-cell-sumaperioada="props">
                 <q-td :props="props">
                   <span :class="{ 'text-negative': !checkIfVizatCFPP(props.row.modificari) }">
-                    {{ calculateTotalSum(props.row.modificari) }}
+                    {{ formatAmount(props.row.sumaperioada) }}
                   </span>
                 </q-td>
               </template>
@@ -763,6 +763,7 @@ const showIstoric = (angajament: Angajament) => {
   selectedAngajament.value = angajament
   showIstoricDialog.value = true
 }
+
 
 const stergAngajament = async (angajament: Angajament) => {
   console.log('modific',angajament,selectedAngajament.value)

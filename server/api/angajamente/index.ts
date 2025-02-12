@@ -97,8 +97,19 @@ export default defineEventHandler(async (event) => {
         a.*,
         COUNT(m.id) as totalModificari,
         COUNT(CASE WHEN m.vizaCFPP = true THEN 1 END) as totalVizate,
-        SUM(CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - SUM(CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END) as totalsuma
-        
+        SUM(CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - SUM(CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END) as totalsuma,
+        SUM(
+      CASE 
+        WHEN m.created_at >= ${new Date(from)} 
+        AND m.created_at < ${todate}
+        THEN 
+          CASE 
+            WHEN m.tipModificare = 'MAJORARE' THEN m.suma 
+            ELSE -m.suma 
+          END
+        ELSE 0
+      END
+    ) as sumaperioada
       FROM Angajamente a
       LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
       LEFT JOIN Categorii cat on cat.id = a.idCategorie
@@ -161,7 +172,7 @@ export default defineEventHandler(async (event) => {
         totalModificari: Number(counts.totalModificari),
         totalVizate: Number(counts.totalVizate),
         totalsuma:Number(counts.totalsuma),
-        sumaperioada:Number(counts.totalsuma),
+        sumaperioada:Number(counts.sumaperioada),
       }
     })
   }
