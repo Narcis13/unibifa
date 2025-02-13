@@ -54,8 +54,8 @@ export default defineEventHandler(async (event) => {
   COUNT(DISTINCT m.id) as totalModificari,
   COUNT(DISTINCT CASE WHEN m.vizaCFPP = true THEN m.id END) as totalVizate,
   (
-    SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
-    SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)
+    SUM( CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
+    SUM( CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)
   ) as totalsuma,
   COALESCE((
     SELECT SUM(r2.valoare)
@@ -63,8 +63,8 @@ export default defineEventHandler(async (event) => {
     WHERE r2.idAngajament = a.id
   ), 0) as totalreceptii,
   (
-    (SUM(DISTINCT CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
-    SUM(DISTINCT CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)) - 
+    (SUM( CASE WHEN m.tipModificare = 'MAJORARE' THEN m.suma ELSE 0 END) - 
+    SUM( CASE WHEN m.tipModificare = 'DIMINUARE' THEN m.suma ELSE 0 END)) - 
     COALESCE((
       SELECT SUM(r2.valoare)
       FROM Receptii r2

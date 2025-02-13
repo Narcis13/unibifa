@@ -167,6 +167,10 @@ const handleFilters = async (filters: Record<string, any>) => {
   }
 }
 const selectedRow = computed(() => selected.value[0])
+const totalValoare = computed(() => {
+  return ordonantari.value.reduce((sum, item) => sum + Number(item.valoare), 0)
+})
+
 const selectatSiNevizat = computed(()=>{
   return selected.value[0]&&selected.value[0].vizaCFPP==0
 })
@@ -382,7 +386,13 @@ onMounted(() => {
             />
           </q-td>
         </template>
-
+        <template v-slot:bottom-row>
+        <q-tr>
+          <q-td colspan="4" class="text-right">Total:</q-td>
+          <q-td class="text-right">{{ formatAmount(totalValoare) }}</q-td>
+          <q-td colspan="3"></q-td>
+        </q-tr>
+      </template>
       </q-table>
     </div>
 
