@@ -15,7 +15,7 @@
 - Raport situatie lunara angajamente grupate de surse articole si subtotal fiecare articol DONE!!
 - Stergere angajament nevizat DONE!!
 - Stergere receptie neordonantata DONE!!
-- la interogare angajamenete sa para doar cu sumele (modificarile) din intervalul respectiv! DONE!!
+- la interogare angajamenete sa para doar cu sumele (modificarile) din intervalul respectiv!
 - stergere ordonantare nevizata DONE!!
 - modificare modificare angajament de catre rol CFPP (data,explicatii,suma,categorie) DONE!!
 - buget export EXCEL (sau CSV) DONE!?
@@ -27,4 +27,8 @@
 
 
 
-  
+  BUGURI
+  - modificari angajamenete cu aceeasi suma nu o recunoaste la receptii
+  - angajamente in perioada daca dau pe februarie si angjamentul e in ianuarie nu imi afiseaza nimic
+  - subtotal la interogare ordonantari (la grid)
+  - daca am mai multe facturi de la acelasi furnizor si acelasi articol si selectez mai multe la plata si apoi anulez opul nu mi le pune inapoi corect
