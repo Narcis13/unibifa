@@ -25,13 +25,13 @@ const  links_administrare= [
 
   
   const   links_operatiuni= [
-    { icon: 'folder', roles:['CFPP','RESPONSABIL'],text: 'Buget',ruta:'/bugete' },
-    { icon: 'restore', roles:['RESPONSABIL'],text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
-    { icon: 'watch_later', roles:['CFPP'],text: 'Furnizori',ruta:'/furnizori'  },
-    { icon: 'watch_later', roles:['CFPP','RESPONSABIL'],text: 'Angajamente',ruta:'/angajamente' },
-    { icon: 'thumb_up_alt',roles:['CFPP','RESPONSABIL'], text: 'Lichidari/receptii',ruta:'/receptii'  },
-    { icon: 'thumb_up_alt',roles:['CFPP','RESPONSABIL'], text: 'Ordonantari plata',ruta:'/ordonantari'  },
-    { icon: 'thumb_up_alt', roles:['ECONOMIST'],text: 'Plati',ruta:'/facturiplati'  },
+    { icon: 'receipt_long', roles:['CFPP','RESPONSABIL'],text: 'Buget',ruta:'/bugete' },
+    { icon: 'supervisor_account', roles:['RESPONSABIL'],text: 'Furnizori',ruta:'/nomenclatoare/furnizori'  },
+    { icon: 'supervisor_account', roles:['CFPP'],text: 'Furnizori',ruta:'/furnizori'  },
+    { icon: 'today', roles:['CFPP','RESPONSABIL'],text: 'Angajamente',ruta:'/angajamente' },
+    { icon: 'wysiwyg',roles:['CFPP','RESPONSABIL'], text: 'Lichidari/receptii',ruta:'/receptii'  },
+    { icon: 'approval',roles:['CFPP','RESPONSABIL'], text: 'Ordonantari plata',ruta:'/ordonantari'  },
+    { icon: 'done_all', roles:['ECONOMIST'],text: 'Plati',ruta:'/facturiplati'  },
     { icon: 'thumb_up_alt', roles:['CFPP'],text: 'Registru vize CFPP',ruta:'/registruvize'  },
 
   ] 

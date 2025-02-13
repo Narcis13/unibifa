@@ -29,6 +29,6 @@
 
   BUGURI
   - modificari angajamenete cu aceeasi suma nu o recunoaste la receptii DONE!
-  - angajamente in perioada daca dau pe februarie si angjamentul e in ianuarie nu imi afiseaza nimic
+  - angajamente in perioada daca dau pe februarie si angjamentul e in ianuarie nu imi afiseaza nimic DONE!!
   - subtotal la interogare ordonantari (la grid) DONE!!
   - daca am mai multe facturi de la acelasi furnizor si acelasi articol si selectez mai multe la plata si apoi anulez opul nu mi le pune inapoi corect

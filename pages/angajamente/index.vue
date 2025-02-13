@@ -552,7 +552,7 @@ function reset(){
 }
 // Calculate total sum from modifications
 const calculateTotalSum = (modificari: ModificareAngajament[] = []) => {
-  console.log('Calculate total...',filterDefaults.value)
+ // console.log('Calculate total...',filterDefaults.value)
   const total = modificari.reduce((sum, mod) => {
     return Number(sum) + Number(mod.tipModificare === 'MAJORARE' ? mod.suma : -mod.suma)
   }, 0)
@@ -571,7 +571,7 @@ const checkIfVizatCFPP = (modificari: ModificareAngajament[] = []): boolean => {
 }
 
 const handleFilters = async (filters: Record<string, any>) => {
-  console.log('filters',filters)
+ // console.log('filters',filters)
   filterDefaults.value = filters
   try {
     await fetchAngajamente(2024,filters)

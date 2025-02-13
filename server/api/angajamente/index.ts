@@ -91,7 +91,10 @@ export default defineEventHandler(async (event) => {
           operatorSql = Prisma.sql`>`;
       }
     }
-
+/* 
+      WHERE a.data >= ${new Date(from)}
+        AND a.data < ${todate}
+*/
     const angajamenteWithCounts = await prisma.$queryRaw`
       SELECT 
         a.*,
@@ -113,8 +116,8 @@ export default defineEventHandler(async (event) => {
       FROM Angajamente a
       LEFT JOIN ModificariAngajamente m ON a.id = m.idAngajament
       LEFT JOIN Categorii cat on cat.id = a.idCategorie
-      WHERE a.data >= ${new Date(from)}
-        AND a.data < ${todate}
+      WHERE m.created_at >= ${new Date(from)}
+        AND m.created_at < ${todate}
         ${query.compartiment ? Prisma.sql`AND a.idCompartiment = ${Number(query.compartiment)}` : Prisma.sql`AND a.idCompartiment > 0`}
         ${query.sursa ? Prisma.sql`AND cat.idsursa = ${Number(query.sursa)}` : Prisma.sql`AND cat.idsursa > 0`}
         ${query.artbug ? Prisma.sql`AND cat.idarticol = ${Number(query.artbug)}` : Prisma.sql`AND cat.idarticol > 0`}
