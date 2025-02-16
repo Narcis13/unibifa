@@ -142,13 +142,13 @@ export default defineEventHandler(async (event) => {
         })
   
         // 3. Set sumaAchitata to 0 for all related FacturiPlati entries
-        await tx.facturiPlati.updateMany({
+        await tx.facturiPlati.deleteMany({
           where: {
             idPlata: idPlata
-          },
+          }/*,
           data: {
             sumaAchitata: 0
-          }
+          }*/
         })
   
         // 4. For each affected invoice, we need to:

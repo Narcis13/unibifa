@@ -8,8 +8,7 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
     try {
-      // Extract optional query parameters for filtering
-     // console.log('try to get facturi primite')
+
       const { 
         dela, 
         panala, 
@@ -26,8 +25,7 @@ export default defineEventHandler(async (event) => {
         furnizorId, 
         statusPlata 
       } = getQuery(event)
-     // console.log('sortby', sortby)
-      // Build where clause for filtering
+ 
       const sumaOperator = sumaoperator?.toString()
       const sumaValue = sumavalue ? parseFloat(sumavalue.toString()) : null
 
@@ -54,17 +52,13 @@ export default defineEventHandler(async (event) => {
           }
         ];
       }
-     // console.log('platite',typeof  platite)
+     
 
       let whereCondition: any = {
        
       }
-      /*statusPlata: {
-        in: ['NEPLATITA', 'PARTIAL_PLATITA']
-      }*/
 
 
-      // Add date range filter if provided
       if (dela && panala) {
         whereCondition.dataFactura = {
           gte: new Date(dela.replace(/\//g, '-')),
@@ -73,9 +67,7 @@ export default defineEventHandler(async (event) => {
       }
 
       if(platite!=='toate'){  
-        // whereCondition.statusPlata= {
-        //   in: platite==='false'?['NEPLATITA', 'PARTIAL_PLATITA']:['PLATITA', 'PARTIAL_PLATITA']
-        // }
+
         if(platite==='true'){
           const startDate = new Date(platitedela.replace(/\//g, '-')); // Convert 2025/01/25 to 2025-01-25
           const endDate = new Date(platitepanala.replace(/\//g, '-'));
@@ -97,14 +89,14 @@ export default defineEventHandler(async (event) => {
                 AND: [
                   {
                     dataFactura: {
-                      lte: checkDate // Only consider invoices created before or on the check date
+                      lte: checkDate 
                     },
                   },
                   {
                     OR: [
                       {
                         plati: {
-                          none: {} // Invoices that have never been paid
+                          none: {} 
                         }
                       },
                       {
@@ -112,7 +104,7 @@ export default defineEventHandler(async (event) => {
                           every: {
                             plata: {
                               dataop: {
-                                gt: checkDate // All payments were made after the check date
+                                gt: checkDate 
                               }
                             }
                           }
@@ -126,43 +118,7 @@ export default defineEventHandler(async (event) => {
           }
     
     }
-  /**
-   * 
-   if (neachitatela) {
-        const checkDate = new Date(neachitatela.replace(/\//g, '-'))
-        
-        whereCondition = {
-          AND: [
-            {
-              dataFactura: {
-                lte: checkDate // Only consider invoices created before or on the check date
-              },
-            },
-            {
-              OR: [
-                {
-                  plati: {
-                    none: {} // Invoices that have never been paid
-                  }
-                },
-                {
-                  plati: {
-                    every: {
-                      plata: {
-                        dataop: {
-                          gt: checkDate // All payments were made after the check date
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      }
-   */
-      // Add compartiment filter if provided
+
     if (sumaValue !== null && sumaOperator) {
         switch (sumaOperator) {
           case 'gt':
@@ -189,7 +145,7 @@ export default defineEventHandler(async (event) => {
         }
       }
   
-      // Add furnizor filter if provided
+ 
        if (furnizorId) {
          whereCondition.idFurnizor = Number(furnizorId)
        }
@@ -207,12 +163,11 @@ export default defineEventHandler(async (event) => {
           id: Number(sursafin)
         }
       }
-      // Add status plata filter if provided
+   
       if (statusPlata) {
         whereCondition.statusPlata = statusPlata
       }
-   //  console.log('whereCondition',whereCondition)
-      // Retrieve facturi primite with all requested relations
+
       const facturiPrimite = await prisma.facturiPrimite.findMany({
         where: whereCondition,
         include: {
@@ -372,3 +327,62 @@ export default defineEventHandler(async (event) => {
       }
   }
 })
+
+
+/*
+ if(platite!=='toate'){  
+
+        if(platite==='true'){
+          const startDate = new Date(platitedela.replace(/\//g, '-')); // Convert 2025/01/25 to 2025-01-25
+          const endDate = new Date(platitepanala.replace(/\//g, '-'));
+          whereCondition.plati = {
+            some: {
+              plata: {
+                dataop: {
+                  gte: startDate,
+                  lte: endDate
+                }
+            }
+            }
+          }
+          } else {
+            if (neachitatela) {
+              const checkDate = new Date(neachitatela.replace(/\//g, '-'))
+              
+              whereCondition = {
+                AND: [
+                  {
+                    dataFactura: {
+                      lte: checkDate 
+                    },
+                  },
+                  {
+                    OR: [
+                      {
+                        plati: {
+                          none: {} 
+                        }
+                      },
+                      {
+                        plati: {
+                          every: {
+                            plata: {
+                              dataop: {
+                                gt: checkDate 
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+    
+    }
+
+
+
+*/
