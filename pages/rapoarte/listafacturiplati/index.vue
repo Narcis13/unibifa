@@ -15,13 +15,13 @@
         <tbody>
           <template v-if="report.subtotaluri" v-for="(sursaGroup, sursaKey) in groupedData" :key="sursaKey">
             <!-- Sursa Finantare Header -->
-            <tr class="bg-grey-3">
+            <tr v-if="!report.doarsubtotaluri" class="bg-grey-3">
               <td :colspan="report.columns.length" class="text-weight-bold">
                 {{ sursaKey }}
               </td>
             </tr>
 
-            <template v-for="(artGroup, artKey) in sursaGroup" :key="artKey">
+            <template v-if="!report.doarsubtotaluri" v-for="(artGroup, artKey) in sursaGroup" :key="artKey">
               <!-- Article Bugetar Header -->
               <tr class="bg-grey-2">
                 <td :colspan="report.columns.length" class="text-weight-bold q-pl-md">
@@ -39,7 +39,7 @@
                     {{ formatAmount(getTotalSuma(row)) }}
                   </template>
                   <template v-else-if="col.dataKey === 'sursafin'">
-                    {{ getInitials(row[col.dataKey]) }}
+                    {{ getInitials(row[col.dataKey]) }} {{ row['artbug'] }}
                   </template>
                   <template v-else-if="col.dataKey === 'artbug'">
                     {{ row[col.dataKey] }}
@@ -52,7 +52,7 @@
 
               <!-- Article Subtotal -->
               <tr class="bg-grey-1">
-                <td :colspan="report.columns.length - 1" class="text-right">
+                <td :colspan="report.columns.length - 2" class="text-right">
                   Subtotal {{ artKey }}:
                 </td>
                 <td class="text-weight-bold">
@@ -63,7 +63,7 @@
 
             <!-- Sursa Finantare Subtotal -->
             <tr class="bg-grey-3">
-              <td :colspan="report.columns.length - 1" class="text-right">
+              <td :colspan="report.columns.length - 2" class="text-right">
                 Subtotal {{ sursaKey }}:
               </td>
               <td class="text-weight-bold">
@@ -219,75 +219,67 @@
   </script>
   
   <style scoped>
+.report-container {
+  /* A4 Portrait dimensions */
+  width: 297mm;  /* Changed from 297mm */
+  height: auto;
+  margin: 0 auto;
+  background: white;
+  padding: 10mm;
+  box-sizing: border-box;
+}
+
+.report-content {
+  width: 100%;
+}
+
+/* Print-specific styles */
+@media print {
+  @page {
+    size: A4 portrait;  /* Changed from landscape */
+    margin: 10mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
   .report-container {
-    /* A4 Landscape dimensions */
-    width: 297mm;
-    height: auto; /* Remove fixed height */
-    margin: 0 auto;
-    background: white;
-    padding: 10mm;
-    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    overflow: visible !important;
   }
   
   .report-content {
     width: 100%;
-    /* Remove height and overflow constraints */
+    overflow: visible !important;
   }
-  
-  /* Print-specific styles */
-  @media print {
-    @page {
-      size: A4 landscape;
-      margin: 10mm;
-    }
-  
-    body {
-      margin: 0;
-      padding: 0;
-    }
-  
-    .report-container {
-      width: 100%;
-      height: auto;
-      padding: 0;
-      margin: 0;
-      box-shadow: none;
-      overflow: visible !important;
-    }
-    
-    .report-content {
-      width: 100%;
-      overflow: visible !important;
-    }
-  
-    .q-markup-table {
-      width: 100%;
-      page-break-inside: auto; /* Allow table to break across pages */
-    }
-    
-    /* Ensure headers repeat on each page */
-    thead {
-      display: table-header-group;
-    }
-    
-    /* Allow rows to break across pages if needed 
-    tr {
-      page-break-inside: auto;
-    }
-  */
-    /* Hide any unnecessary elements during print */
-    .no-print {
-      display: none !important;
-    }
-  }
-  
-  /* Table styles */
+
   .q-markup-table {
-    font-size: 0.85rem;
+    width: 100%;
+    page-break-inside: auto;
   }
   
-  .q-markup-table th,
-  .q-markup-table td {
-    padding: 4px 8px;
+  thead {
+    display: table-header-group;
   }
-  </style>
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Table styles */
+.q-markup-table {
+  font-size: 0.85rem;
+}
+
+.q-markup-table th,
+.q-markup-table td {
+  padding: 4px 8px;
+}
+</style>

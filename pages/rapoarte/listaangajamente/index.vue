@@ -21,16 +21,16 @@
               </td>
             </tr>
 
-            <template v-for="(artGroup, artKey) in sursaGroup" :key="artKey">
+            <template  v-for="(artGroup, artKey) in sursaGroup" :key="artKey">
               <!-- Article Bugetar Header -->
-              <tr class="bg-grey-2">
+              <tr v-if="!report.doarsubtotaluri" class="bg-grey-2">
                 <td :colspan="report.columns.length" class="text-weight-bold q-pl-md">
                   {{ artKey }}
                 </td>
               </tr>
 
               <!-- Data Rows -->
-              <tr v-for="row in artGroup" :key="row.id">
+              <tr v-if="!report.doarsubtotaluri" v-for="row in artGroup" :key="row.id">
                 <td v-for="col in report.columns" :key="col.dataKey" :class="col.dataKey === 'sumaperioada' ? 'text-right' : ''">
                   <template v-if="col.dataKey === 'data'">
                     {{ formatDate(row[col.dataKey]) }}

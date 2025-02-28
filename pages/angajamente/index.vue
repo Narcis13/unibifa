@@ -20,9 +20,12 @@
               @click="showAddDialog = true"
             />
             <q-btn-dropdown   v-if="userStore.utilizator.role=='CFPP'" label="Lista angajamente" color="primary" square icon="printer" class="q-mr-sm" style="min-width: 300px">
-            <div class="q-pa-md" >
+            <div class="column q-pa-md" >
               <div class="text-h6 q-mb-md">
                 <q-checkbox v-model="subtotaluri" label="Subtotal pe surse si articole" />
+              </div>
+              <div class="text-h6 q-mb-md">
+                <q-checkbox v-model="doarsubtotaluri" label="Doar subtotaluri" />
               </div>
                 <q-btn
                   v-close-popup
@@ -324,6 +327,7 @@ function formatAmount(amount: number) {
   }).format(amount)
 }
 const subtotaluri = ref(true)
+const doarsubtotaluri = ref(false)
 const dataAng = ref(date.formatDate(new Date(),'YYYY/MM/DD'))
 //const compartiment = ref<Compartiment>({value:0,label:''})
 const columns = [
@@ -614,6 +618,7 @@ const printListaAngajamente = async () => {
     format:'A4',
     orientation:'landscape',
     subtotaluri:subtotaluri.value,
+    doarsubtotaluri:doarsubtotaluri.value,
     columns:columns.filter(c=>c.printable).map(c=>({title:c.label,dataKey:c.name})),
     sortby:['sursafinantare','artbug'],
     groupby:'artbug',

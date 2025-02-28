@@ -29,11 +29,26 @@
                 label="Plata" 
                 @click="handleFirstAction"
               />
-              <q-btn 
+              <!-- <q-btn 
                 color="secondary" 
                 label="Tiparire" 
                 @click="handleSecondAction"
-              />
+              /> -->
+              <q-btn-dropdown   label="Lista facturi" color="primary" square icon="printer" class="q-mr-sm" style="min-width: 300px">
+                <div class="q-pa-md" >
+                  <div class="text-h6 q-mb-md">
+                    <q-checkbox v-model="subtotaluri" label="Doar antet si subtotaluri" />
+                  </div>
+                    <q-btn
+                      v-close-popup
+                      color="primary"
+                      icon="printer"
+                      label="Print"
+                      style="min-width: 200px;"
+                      @click="handleSecondAction"
+                    />
+                  </div>
+            </q-btn-dropdown>
             </div>
           </div>
         </q-card-section>
@@ -165,6 +180,7 @@ import {useFacturiPrimite} from '~/composables/useFacturiPrimite'
   })
 const $q = useQuasar()
 const router = useRouter()
+const subtotaluri = ref(false)
 const {toateFacturilePrimite} = useFacturiPrimite()
 function formatDate(date) {
   return new Date(date).toLocaleDateString('ro-RO')
@@ -229,7 +245,7 @@ const openInNewTab = (path) => {
     },{
       name:'ramasplata',
       label:'Ramas de plata',
-      printable: true,
+      printable: false,
       field:'ramasplata',
       align:'right',
     filterOptions:{
@@ -259,7 +275,7 @@ const openInNewTab = (path) => {
     { 
       name: 'artbug', 
       label: 'Art. bug.', 
-      printable: true,
+      printable: false,
       field: 'artbug' ,
       align:'center',
     filterOptions:{
@@ -271,7 +287,7 @@ const openInNewTab = (path) => {
     { 
       name: 'plata', 
       label: 'Plata', 
-      printable: true,
+      printable: false,
       field: 'plata' ,
       align:'center'
 
@@ -474,6 +490,7 @@ const handleFilters = async (filters) => {
       sortby:['artbug','numefurnizor'],
       groupby:'artbug',
       subtotal:'suma',
+      doarsubtotaluri:subtotaluri.value,
       data:originalRows.value
     } // Your array of objects
     // Save to localStorage with a unique key
