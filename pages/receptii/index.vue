@@ -23,43 +23,46 @@
   
         <q-tab-panels v-model="activeTab" animated>
           <q-tab-panel  name="adauga">
+            <q-input
+              v-model="filterAngajamente"
+              debounce="300"
+              placeholder="Caută..."
+              dense
+              outlined
+              class="q-mb-md"
+              style="max-width: 300px"
+            >
+              <template v-slot:append>
+                <q-icon v-if="filterAngajamente" name="close" class="cursor-pointer" @click="filterAngajamente = ''" />
+                <q-icon name="search" />
+              </template>
+            </q-input>
             <q-table
               :rows="angajamente_receptii"
               :columns="ang_columns"
               row-key="id"
               v-model:expanded="expanded"
-              :pagination="pagination"
-              
+              v-model:pagination="pagination"
+              :filter="filterAngajamente"
+              :filter-method="filterTable"
             >
-            <template v-slot:header="props">
-              <q-tr :props="props">
-                <q-th auto-width />
-                <q-th
-                  v-for="col in props.cols"
-                  :key="col.name"
-                  :props="props"
-                >
-                  {{ col.label }}
-                </q-th>
-              </q-tr>
-            </template>
-
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td auto-width>
-                  <q-btn size="lg" color="accent" round dense @click="props.expand = !props.expand;expansion()" :icon="props.expand ? 'remove' : 'add'" />
-                </q-td>
                 <q-td
                   v-for="col in props.cols"
                   :key="col.name"
                   :props="props"
                 >
-                  {{ col.value }}
+                  <template v-if="col.name === 'expand'">
+                    <q-btn size="lg" color="accent" round dense @click="props.expand = !props.expand;expansion()" :icon="props.expand ? 'remove' : 'add'" />
+                  </template>
+                  <template v-else>
+                    {{ col.value }}
+                  </template>
                 </q-td>
               </q-tr>
               <q-tr v-if="props.expand" :props="props">
                 <q-td colspan="100%">
-                  <!-- <div class="text-left">This is expand slot for row above: {{ props.row }}.</div> -->
                   <receptie-noua :id-comp="utilizatorStore.utilizator?.compartiment.id" :id-ang="props.row.id" :totalreceptii="props.row.totalreceptii" :sumadisponibila="props.row.suma_disponibila" :data-ang="new Date(props.row.data)" @adaugreceptienoua="onReceptieNoua" @adaugreceptiesiordonantare="onReceptieSiOrdonantareNoua"/>
                   <receptie-istoric :receptii="props.row.receptii"/>
                 </q-td>
@@ -127,17 +130,17 @@
   //const toate_receptiile = await fetchReceptions(utilizatorStore.utilizator?.compartiment.id)
   //console.log('Toate receptiile',toate_receptiile)
   const expanded=ref([])
+  const filterAngajamente = ref('')
   const router = useRouter()
   const openInNewTab = (path:string) => {
   const url = router.resolve(path).href
   window.open(url, '_blank')
 }
   const pagination = ref({
-    sortBy: 'datafact',
-    descending: true,
+    sortBy: 'numar',
+    descending: false,
     page: 1,
-    rowsPerPage: 20,
-    rowsNumber: 0
+    rowsPerPage: 20
   })
 
   function formatAmount(amount: number) {
@@ -151,6 +154,29 @@
    // console.log('Expansion',expanded.value)
     if(expanded.value.length==2) expanded.value.shift()
   }
+
+  // Funcție de filtrare personalizată pentru q-table
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function filterTable(rows: any[], terms: string, cols: any[], getCellValue: (col: any, row: any) => any) {
+    if (!terms || terms.trim() === '') return rows
+
+    const lowerTerms = terms.toLowerCase().trim()
+
+    return rows.filter(row => {
+      // Caută în câmpurile principale
+      const numar = String(row.numar || '').toLowerCase()
+      const descriere = String(row.descriere || '').toLowerCase()
+      const sursaFin = String(row.categorie?.sursaFinantare?.scurt || '').toLowerCase()
+      const artBug = String(row.categorie?.articolBugetar?.cod || '').toLowerCase()
+      const totalsuma = String(row.totalsuma || '').toLowerCase()
+
+      return numar.includes(lowerTerms) ||
+             descriere.includes(lowerTerms) ||
+             sursaFin.includes(lowerTerms) ||
+             artBug.includes(lowerTerms) ||
+             totalsuma.includes(lowerTerms)
+    })
+  }
   const columns: TableColumn[] = [
     { name: 'id', label: 'ID', field: 'id', sortable: true },
     { name: 'angajament', label: 'Angajament', field: 'idAngajament', sortable: true },
@@ -162,70 +188,71 @@
   ]
   
   const ang_columns = [
-
+  {
+    name: 'expand',
+    label: '',
+    field: 'expand',
+    align: 'left' as const
+  },
   {
     name: 'numar',
     label: 'Număr',
     field: 'numar',
-    align: 'left'
+    align: 'left' as const,
+    sortable: true
   },
   {
     name: 'data',
     label: 'Data',
     field: 'data',
     format: (val: string) => new Date(val).toLocaleDateString(),
-    align: 'left'
+    align: 'left' as const,
+    sortable: true
   },
   {
     name: 'sursafinantare',
     label: 'Sursa fin.',
-    field: (row) => row.categorie?.sursaFinantare?.scurt,
-    align: 'left',
-    filterOptions:{
-      enabled:true,
-      type:'list',
-      options:await $fetch('/api/info/surse')
-    }
+    field: (row: any) => row.categorie?.sursaFinantare?.scurt,
+    align: 'left' as const,
+    sortable: true
   },
   {
     name: 'artbug',
     label: 'Art. bug.',
-    field: (row) => row.categorie?.articolBugetar.cod,
-    align: 'center'
+    field: (row: any) => row.categorie?.articolBugetar?.cod,
+    align: 'center' as const,
+    sortable: true
   },
-
   {
     name: 'descriere',
     label: 'Descriere',
     field: 'descriere',
-    align: 'left'
+    align: 'left' as const,
+    sortable: true
   },
   {
     name: 'totalsuma',
     label: 'Suma Totală',
     field: 'totalsuma',
     format: (val: string) => formatAmount(Number(val)),
-    align: 'right'
-
-
+    align: 'right' as const,
+    sortable: true
   },
   {
     name: 'sumareceptii',
     label: 'Suma Receptii',
     field: 'totalreceptii',
     format: (val: string) => formatAmount(Number(val)),
-    align: 'right'
-
-
+    align: 'right' as const,
+    sortable: true
   },
   {
     name: 'sumadisponibila',
     label: 'Suma Disponibila',
     field: 'suma_disponibila',
     format: (val: string) => formatAmount(Number(val)),
-    align: 'right'
-
-
+    align: 'right' as const,
+    sortable: true
   }
 ]
 const onReceptieDeleted = async () => {

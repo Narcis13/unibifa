@@ -19,7 +19,7 @@
               label="Angajament Nou"
               @click="showAddDialog = true"
             />
-            <q-btn-dropdown   v-if="userStore.utilizator.role=='CFPP'" label="Lista angajamente" color="primary" square icon="printer" class="q-mr-sm" style="min-width: 300px">
+            <q-btn-dropdown  label="Lista angajamente" color="primary" square icon="printer" class="q-mr-sm" style="min-width: 300px">
             <div class="column q-pa-md" >
               <div class="text-h6 q-mb-md">
                 <q-checkbox v-model="subtotaluri" label="Subtotal pe surse si articole" />

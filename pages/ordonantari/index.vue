@@ -12,6 +12,8 @@ const {vizaUrmatoare,createVizaCFPP,aplicaVizaCFPPOrdonantare} = useVizaCFPP()
 const {createFacturaPrimita} = useFacturiPrimite()
 const $q = useQuasar()
 const filter = ref('')
+const subtotaluri = ref(true)
+const doarsubtotaluri = ref(false)
 const userStore = useUtilizatorStore()
 const nomenclatoareStore=useNomenclatoareStore()
 const furnizoriOptions = ref(userStore.utilizator.role=='CFPP'?await $fetch('/api/info/totifurnizorii'):nomenclatoareStore.baza.furnizori_index.map(f=>({label:f.denumire,value:f.id})))
@@ -20,18 +22,20 @@ const columns = [
     name: 'compartiment',
     label: 'Compartiment',
     field: 'compartiment',
+    printable: false,
     align: 'left',
     sortable: true,
     filterOptions:{
       enabled:true,
       type:'list',
-      options:userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :await $fetch('/api/info/compartimente') 
+      options:userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :await $fetch('/api/info/compartimente')
     }
   },
   {
     name: 'numar',
     label: 'Număr',
     field: 'numar',
+    printable: true,
     align: 'left',
     sortable: true
   },
@@ -39,6 +43,7 @@ const columns = [
     name: 'dataord',
     label: 'Data',
     field: 'dataord',
+    printable: true,
     align: 'left',
     sortable: true,
     filterOptions:{
@@ -50,6 +55,7 @@ const columns = [
     name: 'furnizor',
     label: 'Furnizor',
     field: 'furnizor_denumire',
+    printable: true,
     align: 'left',
     sortable: true,
     filterOptions:{
@@ -62,6 +68,7 @@ const columns = [
     name: 'valoare',
     label: 'Valoare',
     field: 'valoare',
+    printable: true,
     align: 'right',
     sortable: true,
     filterOptions:{
@@ -73,6 +80,7 @@ const columns = [
     name: 'sursa',
     label: 'Sursa finantare',
     field:(row)=> row.primareceptie.angajament.categorie?.sursa.scurt,
+    printable: true,
     align: 'left',
     sortable: true,
     filterOptions:{
@@ -85,6 +93,7 @@ const columns = [
     name: 'artbug',
     label: 'Art. bug.',
     field:(row)=> row.primareceptie.angajament.categorie?.articol.cod,
+    printable: true,
     align: 'left',
     sortable: true,
     filterOptions:{
@@ -97,6 +106,7 @@ const columns = [
     name: 'vizaCFPP',
     label: 'Viză CFPP',
     field: 'vizaCFPP',
+    printable: false,
     align: 'center',
     sortable: true,
     filterOptions:{
@@ -199,6 +209,23 @@ function formatAmount(amount: number) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount)
+}
+
+const printListaOrdonantari = async () => {
+  const reportsData = {
+    titlu: 'Lista ordonanțări de plată',
+    format: 'A4',
+    orientation: 'landscape',
+    subtotaluri: subtotaluri.value,
+    doarsubtotaluri: doarsubtotaluri.value,
+    columns: columns.filter(c => c.printable).map(c => ({ title: c.label, dataKey: c.name })),
+    sortby: ['sursa', 'artbug'],
+    groupby: 'artbug',
+    subtotal: 'valoare',
+    data: ordonantari.value
+  }
+  localStorage.setItem('tempReports', JSON.stringify(reportsData))
+  openInNewTab('/rapoarte/listaordonantari')
 }
 
 // Action handlers
@@ -330,6 +357,24 @@ onMounted(() => {
             :disable="!selectedRow"
             @click="handlePrint"
           />
+          <q-btn-dropdown label="Lista ordonanțări" color="primary" square icon="printer" class="q-ml-sm" style="min-width: 300px">
+            <div class="column q-pa-md">
+              <div class="text-h6 q-mb-md">
+                <q-checkbox v-model="subtotaluri" label="Subtotal pe surse si articole" />
+              </div>
+              <div class="text-h6 q-mb-md">
+                <q-checkbox v-model="doarsubtotaluri" label="Doar subtotaluri" />
+              </div>
+              <q-btn
+                v-close-popup
+                color="primary"
+                icon="printer"
+                label="Print"
+                style="min-width: 200px;"
+                @click="printListaOrdonantari"
+              />
+            </div>
+          </q-btn-dropdown>
           </div>
           
         </div>
