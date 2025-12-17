@@ -16,7 +16,7 @@ const subtotaluri = ref(true)
 const doarsubtotaluri = ref(false)
 const userStore = useUtilizatorStore()
 const nomenclatoareStore=useNomenclatoareStore()
-const furnizoriOptions = ref(userStore.utilizator.role=='CFPP'?await $fetch('/api/info/totifurnizorii'):nomenclatoareStore.baza.furnizori_index.map(f=>({label:f.denumire,value:f.id})))
+const furnizoriOptions = ref(userStore.utilizator?.role=='CFPP'?await $fetch('/api/info/totifurnizorii'):nomenclatoareStore.baza.furnizori_index.map(f=>({label:f.denumire,value:f.id})))
 const columns = [
 {
     name: 'compartiment',
@@ -28,7 +28,7 @@ const columns = [
     filterOptions:{
       enabled:true,
       type:'list',
-      options:userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :await $fetch('/api/info/compartimente')
+      options:userStore.utilizator?.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :await $fetch('/api/info/compartimente')
     }
   },
   {
@@ -158,7 +158,7 @@ const anuleazaOrdonantare = async ()=>{
   }
 }
 const filterDefaults:Record<string,any> = {
-  'compartiment':userStore.utilizator.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
+  'compartiment':userStore.utilizator?.role=='RESPONSABIL'?[{value:userStore.utilizator.compartiment.id,label:userStore.utilizator.compartiment.denumire}] :null,
   'vizaCFPP':false,
   'artbug':null,
   'furnizor':null,
