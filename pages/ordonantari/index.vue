@@ -245,6 +245,37 @@ function handlePrint() {
   console.log('Printing:', selectedRow.value)
   openInNewTab('/rapoarte/ordonantari/'+selectedRow.value.id)
 }
+
+async function handleXML() {
+  if (!selectedRow.value) return
+
+  try {
+    const response = await $fetch(`/api/ordonantari/${selectedRow.value.id}/xml`, {
+      responseType: 'text'
+    })
+
+    const blob = new Blob([response as string], { type: 'application/xml' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `ORDNT-${selectedRow.value.numar}.xml`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    $q.notify({
+      color: 'positive',
+      message: 'Fișierul XML a fost generat cu succes!'
+    })
+  } catch (error) {
+    console.error('Error generating XML:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Eroare la generarea fișierului XML'
+    })
+  }
+}
 //console.log('Ordonantari',userStore.utilizator.role)
 
 const vizeaza = async ()=>{
@@ -356,6 +387,14 @@ onMounted(() => {
             label="Print"
             :disable="!selectedRow"
             @click="handlePrint"
+          />
+          <q-btn
+            color="accent"
+            icon="download"
+            label="XML"
+            :disable="!selectedRow"
+            class="q-ml-sm"
+            @click="handleXML"
           />
           <q-btn-dropdown label="Lista ordonanțări" color="primary" square icon="printer" class="q-ml-sm" style="min-width: 300px">
             <div class="column q-pa-md">
