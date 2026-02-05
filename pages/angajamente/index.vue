@@ -597,10 +597,10 @@ const handleVizaCFPP = async (modificare: ModificareAngajament) => {
   vizaData.value.userid=userStore.utilizator.id
   vizaData.value.nrviza=nrviza as string
   vizaData.value.nrvizac=userStore.utilizator.first_name.substr(0,1)+userStore.utilizator.last_name.substr(0,1)+'-'+nrviza
-  vizaData.value.codang=selectedAngajament.value?.categorie?.articolBugetar.codang
-  vizaData.value.indicator=selectedAngajament.value?.categorie?.articolBugetar.indicator
+  vizaData.value.codang=selectedAngajament.value?.modificari.length>1?selectedAngajament.value?.modificari[selectedAngajament.value?.modificari.length-1].codang:selectedAngajament.value?.categorie?.articolBugetar.codang
+  vizaData.value.indicator=selectedAngajament.value?.modificari.length>1?selectedAngajament.value?.modificari[selectedAngajament.value?.modificari.length-1].indicator:selectedAngajament.value?.categorie?.articolBugetar.indicator
 
- // console.log('Modificare',modificare,selectedAngajament.value,vizaData.value)
+  console.log('MA PREGATESC DE VIZA',selectedAngajament.value,selectedAngajament.value?.modificari.length>1?selectedAngajament.value?.modificari[selectedAngajament.value?.modificari.length-1].codang:selectedAngajament.value?.categorie?.articolBugetar.codang)
   showVizaDialog.value=true
  // selectedModificare.value = modificare
  // showVizaDialog.value = true
