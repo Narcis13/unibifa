@@ -288,6 +288,9 @@ const openInNewTab = (path) => {
     originalRows.value=[]
 
     facturi.map(factura=>{
+      // facturile de regularizare pot fi inregistrate fara receptie / angajament
+      const creareAngajament = factura.receptie?.angajament?.modificari?.find(modificare=>modificare.motiv==='Creare angajament')
+      const primaPlata = factura.plati?.[0]?.plata
       if(!categorii.includes(factura.furnizor.denumire)) categorii.push(factura.furnizor.denumire)
       originalRows.value.push({
           id:factura.id,
@@ -301,10 +304,10 @@ const openInNewTab = (path) => {
           codfiscalfurnizor:factura.furnizor.codfiscal,
           ibanfurnizor:factura.furnizor.iban,
           ibanplatitor:factura.articolBugetar.iban,
-          explicatii:factura.receptie.mentiuni,
-          indicator:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].indicator,
-          codang:factura.receptie.angajament.modificari.filter(modificare=>modificare.motiv==='Creare angajament')[0].codang,
-          plata:factura.statusPlata==='PLATITA'?`O.P. ${factura.plati[0].plata.numarop} / ${formatDate(factura.plati[0].plata.dataop)}`:'NEPLATITA'
+          explicatii:factura.receptie?.mentiuni ?? factura.detaliiFactura ?? '',
+          indicator:creareAngajament?.indicator ?? factura.articolBugetar.indicator ?? '',
+          codang:creareAngajament?.codang ?? factura.articolBugetar.codang ?? '',
+          plata:factura.statusPlata==='PLATITA'&&primaPlata?`O.P. ${primaPlata.numarop} / ${formatDate(primaPlata.dataop)}`:'NEPLATITA'
       })
     })
     expandedGroups.value=categorii.reduce((acc, key) => {
